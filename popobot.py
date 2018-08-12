@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 # Настройки
-import apiai
-import json
 import configparser
+import json
+import apiai
+import pyowm
 import requests
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-
 
 settings = configparser.ConfigParser()
 settings._interpolation = configparser.ExtendedInterpolation()
@@ -21,12 +21,18 @@ def start_command(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text='Привет, давай пообщаемся?')
 
 
-def url_builder(city):
-    user_api_key = settings.get(section='Tokens', option='weather_api_key')  # Obtain yours form: http://openweathermap.org/
-    unit = 'metric'  # For Fahrenheit use imperial, for Celsius use metric, and the default is Kelvin.
-    api = 'http://api.openweathermap.org/data/2.5/weather?q='  # Search for your city ID here: http://bulk.openweathermap.org/sample/city.list.json.gz
-    full_api_url = api + city + '&mode=json&units=' + unit + '&APPID=' + user_api_key
-    return full_api_url
+# def url_builder(city):
+#     user_api_key = settings.get(section='Tokens', option='weather_api_key')  # Obtain yours form: http://openweathermap.org/
+#     unit = 'metric'  # For Fahrenheit use imperial, for Celsius use metric, and the default is Kelvin.
+#     api = 'http://api.openweathermap.org/data/2.5/weather?q='  # Search for your city ID here: http://bulk.openweathermap.org/sample/city.list.json.gz
+#     full_api_url = api + city + '&mode=json&units=' + unit + '&APPID=' + user_api_key
+#     return full_api_url
+
+
+def get_weather(city):
+    owm = pyowm.OWM(API_key=settings.get(section='Tokens', option='weather_api_key'), language='ru')
+    observation = owm.weather_at_place(name=city)
+    return observation.get_weather().get_temperature('celsius')
 
 
 def text_message(bot, update):
@@ -38,12 +44,16 @@ def text_message(bot, update):
     request_weather.session_id = 'BatlabAIBot'  # ID Сессии диалога (нужно, чтобы потом учить бота)
     request_smalltalk.query = update.message.text  # Посылаем запрос к ИИ с сообщением от юзера
     request_weather.query = update.message.text  # Посылаем запрос к ИИ с сообщением от юзера
-    response_json_talks = json.loads(request_smalltalk.getresponse().read().decode('utf-8'))
-    response_json_weather = json.loads(request_weather.getresponse().read().decode('utf-8'))
+    response_json_talks = json.loads(s=request_smalltalk.getresponse().read().decode('utf-8'))
+    response_json_weather = json.loads(s=request_weather.getresponse().read().decode('utf-8'))
     # Если есть ответ от бота - присылаем юзеру, если нет - бот его не понял
     if response_json_weather['result'].get('action'):
-        r = requests.get(url_builder(response_json_weather['result']['parameters']['address']['city'])).json()
-        bot.send_message(chat_id=update.message.chat_id, text=r)
+        w = get_weather(city=response_json_weather['result']['parameters']['address']['city'])
+        r = requests.get(url='http://api.openweathermap.org/data/2.5/weather', params={
+                         'q': response_json_weather['result']['parameters']['address']['city'],
+                         'lang': 'ru', 'mode': 'json', 'units': 'metric',
+                         'APPID': settings.get(section='Tokens', option='weather_api_key')}).json()
+        bot.send_message(chat_id=update.message.chat_id, text=r['weather'])
         return
     response = response_json_talks['result']['fulfillment']['speech']  # Разбираем JSON и вытаскиваем ответ
     if response:
