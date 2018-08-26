@@ -8,27 +8,62 @@ import requests
 import telebot
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from configparser import ExtendedInterpolation, ConfigParser
+import logging
 
+from user import User
 
+logging.basicConfig(filename='log.log', datefmt='%d/%m/%Y %I:%M:%S %p',
+                    format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s', level=logging.INFO)
 settings = ConfigParser()
 settings._interpolation = ExtendedInterpolation()
 settings.read(filenames='security_data.ini')
-
 bot = telebot.TeleBot(token=settings.get(section='Tokens', option='bot_token'))
+
+
+def get_weather(city):
+    owm = pyowm.OWM(API_key=settings.get(section='Tokens', option='weather_api_key'), language='ru')
+    observation = owm.weather_at_place(name=city)
+    return observation.get_weather().get_temperature('celsius')
 
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-	bot.reply_to(message=message, text="Howdy, how are you doing?")
+    user = User(message.from_user.first_name, message.from_user.last_name, message.from_user.username,
+                message.from_user.id, message.from_user.language_code, message.text)
+    logging.info(user)
+    bot.reply_to(message=message, text="Howdy, how are you doing?")
 
 
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
-	bot.reply_to(message=message, text=message.text)
+    user = User(message.from_user.first_name, message.from_user.last_name, message.from_user.username,
+                message.from_user.id, message.from_user.language_code, message.text)
+    logging.info(user)
+    request_smalltalk = apiai.ApiAI(
+        client_access_token=settings.get('Tokens', 'apiai_smalltalk_token')).text_request()  # Токен API к Dialogflow
+    request_weather = apiai.ApiAI(
+        client_access_token=settings.get('Tokens', 'apiai_weather_token')).text_request()  # Токен API к Dialogflow
+    request_smalltalk.lang = 'ru'  # На каком языке будет послан запрос
+    request_weather.lang = 'ru'  # На каком языке будет послан запрос
+    request_smalltalk.session_id = 'BatlabAIBot'  # ID Сессии диалога (нужно, чтобы потом учить бота)
+    request_weather.session_id = 'BatlabAIBot'  # ID Сессии диалога (нужно, чтобы потом учить бота)
+    request_smalltalk.query = message.text  # Посылаем запрос к ИИ с сообщением от юзера
+    request_weather.query = message.text  # Посылаем запрос к ИИ с сообщением от юзера
+    response_json_talks = json.loads(s=request_smalltalk.getresponse().read().decode('utf-8'))
+    response_json_weather = json.loads(s=request_weather.getresponse().read().decode('utf-8'))
+    if response_json_weather['result'].get('action'):
+        w = get_weather(city=response_json_weather['result']['parameters']['address']['city'])
+        # r = requests.get(url='http://api.openweathermap.org/data/2.5/weather', params={
+        #                  'q': response_json_weather['result']['parameters']['address']['city'],
+        #                  'lang': 'ru', 'mode': 'json', 'units': 'metric',
+        #                  'APPID': settings.get(section='Tokens', option='weather_api_key')}).json()
+        bot.reply_to(message=message, text=json.dumps(w))
+        return
+    response = response_json_talks['result']['fulfillment']['speech']  # Разбираем JSON и вытаскиваем ответ
+    bot.reply_to(message=message, text=response)
 
 
-bot.polling()
-
+bot.polling(none_stop=True, timeout=123)
 
 # settings = configparser.ConfigParser()
 # settings._interpolation = configparser.ExtendedInterpolation()
