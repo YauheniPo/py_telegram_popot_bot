@@ -28,3 +28,22 @@ class User:
 
     def __repr__(self):
         return str(self.__dict__)
+
+
+class OnlyOne:
+    class __OnlyOne:
+
+        def __str__(self):
+            return repr(self)
+    instance = None
+
+    def __init__(self):
+        if not OnlyOne.instance:
+            OnlyOne.instance = OnlyOne.__OnlyOne()
+
+    def __getattr__(self, name):
+        return getattr(self.instance, name)
+
+    def __setattr__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self.instance, key, value)

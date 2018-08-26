@@ -11,7 +11,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from configparser import ExtendedInterpolation, ConfigParser
 import logging
 
-from user import User
+from user import User, OnlyOne
 
 logging.basicConfig(filename='log.log', datefmt='%d/%m/%Y %I:%M:%S %p',
                     format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s', level=logging.INFO)
@@ -30,19 +30,23 @@ def get_weather(city):
     return observation.get_weather().get_temperature('celsius')
 
 
+def init_user(data, text):
+    user = User(data.first_name, data.last_name, data.username, data.id, data.language_code, text)
+    logging.info(user)
+    return user
+
+
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-    user = User(message.from_user.first_name, message.from_user.last_name, message.from_user.username,
-                message.from_user.id, message.from_user.language_code, message.text)
-    logging.info(user)
+    user = init_user(message.from_user, message.text)
+
     bot.reply_to(message=message, text='Привет {username}, давай пообщаемся?'.format(username=user.get_username()))
 
 
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
-    user = User(message.from_user.first_name, message.from_user.last_name, message.from_user.username,
-                message.from_user.id, message.from_user.language_code, message.text)
-    logging.info(user)
+    user = init_user(message.from_user, message.text)
+
     request_smalltalk = apiai.ApiAI(
         client_access_token=settings.get('Tokens', 'apiai_smalltalk_token')).text_request()  # Токен API к Dialogflow
     request_weather = apiai.ApiAI(
@@ -55,6 +59,7 @@ def echo_all(message):
     request_weather.query = message.text  # Посылаем запрос к ИИ с сообщением от юзера
     response_json_talks = json.loads(s=request_smalltalk.getresponse().read().decode('utf-8'))
     response_json_weather = json.loads(s=request_weather.getresponse().read().decode('utf-8'))
+
     if response_json_weather['result'].get('action'):
         # r = requests.get(url='http://api.openweathermap.org/data/2.5/weather', params={
         #                  'q': response_json_weather['result']['parameters']['address']['city'],
@@ -63,6 +68,7 @@ def echo_all(message):
         w = get_weather(city=response_json_weather['result']['parameters']['address']['city'])
         bot.reply_to(message=message, text=json.dumps(w))
         return
+
     response = response_json_talks['result']['fulfillment']['speech']  # Разбираем JSON и вытаскиваем ответ
     if not response:
         response = 'Я Вас не совсем понял!'
