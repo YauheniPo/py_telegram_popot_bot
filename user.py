@@ -6,6 +6,7 @@ class User:
         self._username = username
         self._user_id = user_id
         self._lang = lang
+        self._message_text = message.text
         self._message = message
 
     def get_last_name(self):
@@ -25,6 +26,9 @@ class User:
 
     def get_message(self):
         return self._message
+
+    def get_message_text(self):
+        return self._message_text
 
     def __repr__(self):
         return str(self.__dict__)
