@@ -1,139 +1,81 @@
 # -*- coding: utf-8 -*-
 
-# Настройки
-import json
-import apiai
-import pyowm
-import requests
-import telebot
-from pyowm.exceptions import api_response_error
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from configparser import ExtendedInterpolation, ConfigParser
 import logging
+import requests
+from configparser import ExtendedInterpolation, ConfigParser
 
-from user import User, OnlyOne
+import telebot
+from telebot import types
+from telebot.types import ReplyKeyboardMarkup, KeyboardButton
+
+from user import User
 
 logging.basicConfig(filename='log.log', datefmt='%d/%m/%Y %I:%M:%S %p',
-                    format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s', level=logging.INFO)
-settings = ConfigParser()
-settings._interpolation = ExtendedInterpolation()
-settings.read(filenames='security_data.ini')
-bot = telebot.TeleBot(token=settings.get(section='Tokens', option='bot_token'))
+                    format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s',
+                    level=logging.INFO)
+config = ConfigParser()
+config._interpolation = ExtendedInterpolation()
+config.read(filenames='security_data.ini')
+bot = telebot.TeleBot(token=config.get(section='Tokens', option='bot_token'))
 
 
-def get_weather(city):
-    owm = pyowm.OWM(API_key=settings.get(section='Tokens', option='weather_api_key'), language='ru')
-    try:
-        observation = owm.weather_at_place(name=city)
-    except api_response_error.NotFoundError:
-        return "The searched item was not found."
-    return observation.get_weather().get_temperature('celsius')
-
-
-def init_user(data, text):
-    user = User(data.first_name, data.last_name, data.username, data.id, data.language_code, text)
+def init_user(message):
+    user = User(message.from_user.first_name, message.from_user.last_name, message.from_user.username,
+                message.from_user.id, message.from_user.language_code, message)
     logging.info(user)
     return user
 
 
-@bot.message_handler(commands=['start', 'help'])
-def send_welcome(message):
-    user = init_user(message.from_user, message.text)
-
-    bot.reply_to(message=message, text='Привет {username}, давай пообщаемся?'.format(username=user.get_username()))
+def start(user):
+    bot.send_message(chat_id=user.get_user_id(),
+                     text='Привет {username}, давай пообщаемся?'.format(username=user.get_username()))
 
 
-@bot.message_handler(func=lambda message: True)
+@bot.message_handler(commands=['currency'])
+def get_currency(message):
+     return
+
+
+command_dict = {'/start': start}
+
+currency = KeyboardButton('/currency')
+
+base_buttons = ReplyKeyboardMarkup(resize_keyboard=True)  # под клавиатурой
+base_buttons.add(currency)
+
+
+@bot.message_handler(content_types=['text', 'document'], func=lambda message: True)
 def echo_all(message):
-    user = init_user(message.from_user, message.text)
+    user = init_user(message)
 
-    request_smalltalk = apiai.ApiAI(
-        client_access_token=settings.get('Tokens', 'apiai_smalltalk_token')).text_request()  # Токен API к Dialogflow
-    request_weather = apiai.ApiAI(
-        client_access_token=settings.get('Tokens', 'apiai_weather_token')).text_request()  # Токен API к Weather
-    request_smalltalk.lang = user.get_lang()  # На каком языке будет послан запрос
-    request_weather.lang = user.get_lang()  # На каком языке будет послан запрос
-    request_smalltalk.session_id = 'BatlabAIBot'  # ID Сессии диалога (нужно, чтобы потом учить бота)
-    request_weather.session_id = 'BatlabAIBot'  # ID Сессии диалога (нужно, чтобы потом учить бота)
-    request_smalltalk.query = message.text  # Посылаем запрос к ИИ с сообщением от юзера
-    request_weather.query = message.text  # Посылаем запрос к ИИ с сообщением от юзера
-    response_json_talks = json.loads(s=request_smalltalk.getresponse().read().decode('utf-8'))
-    response_json_weather = json.loads(s=request_weather.getresponse().read().decode('utf-8'))
+    if message.text in command_dict:
+        command_dict[message.text](user=user)
+        # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
+    else:
+        # keyboard = types.InlineKeyboardMarkup()  # наша клавиатура под сообщением
+        # key_yes = types.InlineKeyboardButton(text='Да', callback_data='yes')  # кнопка «Да»
+        # keyboard.add(key_yes)  # добавляем кнопку в клавиатуру
+        # key_no = types.InlineKeyboardButton(text='Нет', callback_data='no')
+        # keyboard.add(key_no)
 
-    if response_json_weather['result'].get('action'):
-        # r = requests.get(url='http://api.openweathermap.org/data/2.5/weather', params={
-        #                  'q': response_json_weather['result']['parameters']['address']['city'],
-        #                  'lang': 'ru', 'mode': 'json', 'units': 'metric',
-        #                  'APPID': settings.get(section='Tokens', option='weather_api_key')}).json()
-        w = get_weather(city=response_json_weather['result']['parameters']['address']['city'])
-        bot.reply_to(message=message, text=json.dumps(w))
-        return
+        bot.send_message(chat_id=user.get_user_id(), text="xx", reply_markup=base_buttons)
+        # bot.send_message(reply_markup=btn)
 
-    response = response_json_talks['result']['fulfillment']['speech']  # Разбираем JSON и вытаскиваем ответ
-    if not response:
-        response = 'Я Вас не совсем понял!'
-    bot.reply_to(message=message, text=response)
+        # bot.send_message(chat_id=user.get_user_id(), text="Hi")
 
 
-bot.polling(none_stop=True, timeout=123)
+@bot.callback_query_handler(func=lambda call: True)  # обработчик кнопок
+def callback_worker(call):
+    if call.data == "yes":  # call.data это callback_data, которую мы указали при объявлении кнопки
+        # код сохранения данных, или их обработки
+        bot.send_message(call.message.chat.id, 'Запомню')
+    elif call.data == "no":
+        print('x')
+        # переспрашиваем
 
-# settings = configparser.ConfigParser()
-# settings._interpolation = configparser.ExtendedInterpolation()
-# settings.read(filenames='security_data.ini')
-#
-# updater = Updater(token=settings.get(section='Tokens', option='bot_token'))  # Токен API к Telegram
-# dispatcher = updater.dispatcher
-#
-#
-# # Обработка команд
-# def start_command(bot, update):
-#     bot.send_message(chat_id=update.message.chat_id, text='Привет, давай пообщаемся?')
-#
-#
-# # def url_builder(city):
-# #     user_api_key = settings.get(section='Tokens', option='weather_api_key')  # Obtain yours form: http://openweathermap.org/
-# #     unit = 'metric'  # For Fahrenheit use imperial, for Celsius use metric, and the default is Kelvin.
-# #     api = 'http://api.openweathermap.org/data/2.5/weather?q='  # Search for your city ID here: http://bulk.openweathermap.org/sample/city.list.json.gz
-# #     full_api_url = api + city + '&mode=json&units=' + unit + '&APPID=' + user_api_key
-# #     return full_api_url
-#
-#
-# def get_weather(city):
-#     owm = pyowm.OWM(API_key=settings.get(section='Tokens', option='weather_api_key'), language='ru')
-#     observation = owm.weather_at_place(name=city)
-#     return observation.get_weather().get_temperature('celsius')
-#
-#
-# def text_message(bot, update):
-#     request_smalltalk = apiai.ApiAI(client_access_token=settings.get('Tokens', 'apiai_smalltalk_token')).text_request()  # Токен API к Dialogflow
-#     request_weather = apiai.ApiAI(client_access_token=settings.get('Tokens', 'apiai_weather_token')).text_request()  # Токен API к Dialogflow
-#     request_smalltalk.lang = 'ru'  # На каком языке будет послан запрос
-#     request_weather.lang = 'ru'  # На каком языке будет послан запрос
-#     request_smalltalk.session_id = 'BatlabAIBot'  # ID Сессии диалога (нужно, чтобы потом учить бота)
-#     request_weather.session_id = 'BatlabAIBot'  # ID Сессии диалога (нужно, чтобы потом учить бота)
-#     request_smalltalk.query = update.message.text  # Посылаем запрос к ИИ с сообщением от юзера
-#     request_weather.query = update.message.text  # Посылаем запрос к ИИ с сообщением от юзера
-#     response_json_talks = json.loads(s=request_smalltalk.getresponse().read().decode('utf-8'))
-#     response_json_weather = json.loads(s=request_weather.getresponse().read().decode('utf-8'))
-#     # Если есть ответ от бота - присылаем юзеру, если нет - бот его не понял
-#     if response_json_weather['result'].get('action'):
-#         w = get_weather(city=response_json_weather['result']['parameters']['address']['city'])
-#         r = requests.get(url='http://api.openweathermap.org/data/2.5/weather', params={
-#                          'q': response_json_weather['result']['parameters']['address']['city'],
-#                          'lang': 'ru', 'mode': 'json', 'units': 'metric',
-#                          'APPID': settings.get(section='Tokens', option='weather_api_key')}).json()
-#         bot.send_message(chat_id=update.message.chat_id, text=r['weather'])
-#         return
-#     response = response_json_talks['result']['fulfillment']['speech']  # Разбираем JSON и вытаскиваем ответ
-#     if response:
-#         bot.send_message(chat_id=update.message.chat_id, text=response)
-#     else:
-#         bot.send_message(chat_id=update.message.chat_id, text='Я Вас не совсем понял!')
-#
-#     # response = 'Получил Ваше сообщение: ' + update.message.text
-#     # bot.send_message(chat_id=update.message.chat_id, text=response)
-#
-#
+
+bot.polling(none_stop=True, interval=0)
+
 # # Хендлеры
 # start_command_handler = CommandHandler(command='start', callback=start_command)
 # text_message_handler = MessageHandler(filters=Filters.text, callback=text_message)
