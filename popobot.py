@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import requests
 from configparser import ExtendedInterpolation, ConfigParser
 
 import telebot
-from telebot import types
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
+from features.currency.currency_api import fetch_currency_list, get_currency_response_json
 from user import User
 
 logging.basicConfig(filename='log.log', datefmt='%d/%m/%Y %I:%M:%S %p',
@@ -27,13 +26,15 @@ def init_user(message):
 
 
 def start(user):
-    bot.send_message(chat_id=user.get_user_id(),
-                     text='Привет {username}, давай пообщаемся?'.format(username=user.get_username()))
+    bot.send_message(chat_id=user.user_id,
+                     text='Привет {username}, давай пообщаемся?'.format(username=user.username))
 
 
 @bot.message_handler(commands=['currency'])
 def get_currency(message):
-     return
+    user = init_user(message)
+
+    bot.send_message(chat_id=user.user_id, text=fetch_currency_list(get_currency_response_json())[-1].Cur_OfficialRate, reply_markup=base_buttons)
 
 
 command_dict = {'/start': start}
@@ -58,10 +59,10 @@ def echo_all(message):
         # key_no = types.InlineKeyboardButton(text='Нет', callback_data='no')
         # keyboard.add(key_no)
 
-        bot.send_message(chat_id=user.get_user_id(), text="xx", reply_markup=base_buttons)
+        bot.send_message(chat_id=user.user_id, text="xx", reply_markup=base_buttons)
         # bot.send_message(reply_markup=btn)
 
-        # bot.send_message(chat_id=user.get_user_id(), text="Hi")
+        # bot.send_message(chat_id=user.user_id, text="Hi")
 
 
 @bot.callback_query_handler(func=lambda call: True)  # обработчик кнопок
