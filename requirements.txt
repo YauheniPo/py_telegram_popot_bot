@@ -1,7 +1,7 @@
 telebot==0.0.3
 apiai==1.2.3
 pyTelegramBotAPI==3.6.6
-requests==2.22.0
+requests==2.20.0
 pyowm==2.10.0
 python-telegram-bot==12.2.0
 matplotlib==3.1.2
