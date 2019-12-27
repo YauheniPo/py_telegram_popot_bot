@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 import os
 
 import matplotlib.pyplot as plt
+
+from config import currency_graph_path
 
 
 def fetch_currency_graph(currency_data):
@@ -11,5 +14,5 @@ def fetch_currency_graph(currency_data):
     plt.gcf().autofmt_xdate()
     if not os.path.exists('graphs'):
         os.makedirs('graphs')
-    plt.savefig(os.path.join("graphs", "graph.png"))
+    plt.savefig(currency_graph_path)
     plt.close()

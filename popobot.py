@@ -2,14 +2,15 @@
 
 import logging
 import os
-from configparser import ExtendedInterpolation, ConfigParser
 
 import telebot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
+from config import currency_graph_path
 from features.currency.currency_api import fetch_currency_list, get_currency_response_json
 from features.currency.graph import fetch_currency_graph
 from user import User
+from util.util_date import currency_msg_date_format
 
 base_cmd_start = '/start'
 base_cmd_currency = '/currency'
@@ -17,10 +18,8 @@ base_cmd_currency = '/currency'
 logging.basicConfig(filename='log.log', datefmt='%d/%m/%Y %I:%M:%S %p',
                     format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s',
                     level=logging.INFO)
-config = ConfigParser()
-config._interpolation = ExtendedInterpolation()
-config.read(filenames='security_data.ini')
-bot = telebot.TeleBot(token=config.get(section='Tokens', option='bot_token'))
+
+bot = telebot.TeleBot(token=os.environ.get('bot_token'))
 
 base_buttons = ReplyKeyboardMarkup(resize_keyboard=True)  # под клавиатурой
 base_buttons.add(KeyboardButton(base_cmd_currency), KeyboardButton(base_cmd_start))
@@ -34,8 +33,7 @@ def init_user(message):
 
 
 def start(user):
-    bot.send_message(chat_id=user.user_id, text='Привет {username}, давай пообщаемся?'.format(username=user.username),
-                     reply_markup=base_buttons)
+    bot.send_message(chat_id=user.user_id, text='Привет {username}, давай пообщаемся?'.format(username=user.username))
 
 
 @bot.message_handler(regexp='^\{command}'.format(command=base_cmd_currency))
@@ -46,12 +44,12 @@ def get_currency(message):
     currency_data_for_text = currency_data[-10:]
 
     bot_text_response = "\n".join(
-        ["{day} -    {rate} BYR".format(day=currency_day.Date.strftime("%d.%m"), rate=currency_day.Cur_OfficialRate)
+        ["{day} -    {rate} BYR".format(day=currency_day.Date.strftime(currency_msg_date_format), rate=currency_day.Cur_OfficialRate)
          for currency_day in currency_data_for_text])
 
-    bot.send_message(chat_id=user.user_id, text=bot_text_response, reply_markup=base_buttons)
+    bot.send_message(chat_id=user.user_id, text=bot_text_response)
     fetch_currency_graph(currency_data)
-    bot.send_photo(chat_id=user.user_id, photo=open(os.path.join("graphs", "graph.png"), 'rb'))
+    bot.send_photo(chat_id=user.user_id, photo=open(currency_graph_path, 'rb'))
 
 
 command_dict = {base_cmd_start: start, base_cmd_currency: None}
@@ -64,14 +62,13 @@ def echo_all(message):
     if message.text in command_dict:
         command_dict[message.text](user=user)
         # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
-    else:
+
         # keyboard = types.InlineKeyboardMarkup()  # наша клавиатура под сообщением
         # key_yes = types.InlineKeyboardButton(text='Да', callback_data='yes')  # кнопка «Да»
         # keyboard.add(key_yes)  # добавляем кнопку в клавиатуру
         # key_no = types.InlineKeyboardButton(text='Нет', callback_data='no')
         # keyboard.add(key_no)
 
-        bot.send_message(chat_id=user.user_id, text="", reply_markup=base_buttons)
         # bot.send_message(reply_markup=btn)
 
         # bot.send_message(chat_id=user.user_id, text="Hi")

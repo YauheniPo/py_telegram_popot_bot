@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class User:
 
     def __init__(self, last_name, first_name, username, user_id, lang, message):
