@@ -28,3 +28,10 @@ def get_currency_response_json():
         params=parameters)
 
     return response.json()
+
+
+def get_currency_data_message(currency_data_list, currency_msg_date_format):
+    return "\n".join(
+        ["{day} -    {rate} BYR".format(day=currency_day.Date.strftime(currency_msg_date_format),
+                                        rate=currency_day.Cur_OfficialRate)
+         for currency_day in currency_data_list])

@@ -4,10 +4,12 @@ import logging
 import os
 
 import telebot
+from telebot import types
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
+from telegram import ParseMode
 
 from config import currency_graph_path
-from features.currency.currency_api import fetch_currency_list, get_currency_response_json
+from features.currency.currency_api import fetch_currency_list, get_currency_response_json, get_currency_data_message
 from features.currency.graph import fetch_currency_graph
 from user import User
 from util.util_date import currency_msg_date_format
@@ -40,16 +42,24 @@ def start(user):
 def get_currency(message):
     user = init_user(message)
 
-    currency_data = fetch_currency_list(get_currency_response_json())
-    currency_data_for_text = currency_data[-10:]
+    currency_data_bot = fetch_currency_list(get_currency_response_json())
 
-    bot_text_response = "\n".join(
-        ["{day} -    {rate} BYR".format(day=currency_day.Date.strftime(currency_msg_date_format), rate=currency_day.Cur_OfficialRate)
-         for currency_day in currency_data_for_text])
+    bot_text_response_past_days = get_currency_data_message(currency_data_bot[-10:-1], currency_msg_date_format)
+    bot_text_response_current_day = get_currency_data_message([currency_data_bot[-1]], currency_msg_date_format)
 
-    bot.send_message(chat_id=user.user_id, text=bot_text_response)
-    fetch_currency_graph(currency_data)
-    bot.send_photo(chat_id=user.user_id, photo=open(currency_graph_path, 'rb'))
+    currency_graph_keyboard = types.InlineKeyboardMarkup()
+    currency_graph_button = types.InlineKeyboardButton(text='Currency Graph', callback_data='currency_graph')
+    currency_graph_keyboard.add(currency_graph_button)
+
+    bot.send_message(chat_id=user.user_id,
+                     text=
+'''<i>{bot_text_response_past_days}</i>
+
+<b>{bot_text_response_current_day}</b>'''.format(
+                         bot_text_response_past_days=bot_text_response_past_days,
+                         bot_text_response_current_day=bot_text_response_current_day),
+                     reply_markup=currency_graph_keyboard,
+                     parse_mode=ParseMode.HTML)
 
 
 command_dict = {base_cmd_start: start, base_cmd_currency: None}
@@ -61,6 +71,8 @@ def echo_all(message):
 
     if message.text in command_dict:
         command_dict[message.text](user=user)
+    else:
+        bot.send_message(chat_id=user.user_id, text=message.text)
         # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
 
         # keyboard = types.InlineKeyboardMarkup()  # наша клавиатура под сообщением
@@ -76,23 +88,11 @@ def echo_all(message):
 
 @bot.callback_query_handler(func=lambda call: True)  # обработчик кнопок
 def callback_worker(call):
-    if call.data == "yes":  # call.data это callback_data, которую мы указали при объявлении кнопки
-        # код сохранения данных, или их обработки
-        bot.send_message(call.message.chat.id, 'Запомню')
-    elif call.data == "no":
-        print('x')
-        # переспрашиваем
+    if call.data == "currency_graph":
+        currency_data_bot = fetch_currency_list(get_currency_response_json())
+
+        fetch_currency_graph(currency_data_bot)
+        bot.send_photo(chat_id=call.from_user.id, photo=open(currency_graph_path, 'rb'))
 
 
-bot.polling(none_stop=True, interval=0)
-
-# # Хендлеры
-# start_command_handler = CommandHandler(command='start', callback=start_command)
-# text_message_handler = MessageHandler(filters=Filters.text, callback=text_message)
-# # Добавляем хендлеры в диспетчер
-# dispatcher.add_handler(handler=start_command_handler)
-# dispatcher.add_handler(handler=text_message_handler)
-# # Начинаем поиск обновлений
-# updater.start_polling(clean=True)
-# # Останавливаем бота, если были нажаты Ctrl + C
-# updater.idle()
+bot.polling(none_stop=True)
