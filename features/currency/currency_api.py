@@ -23,8 +23,8 @@ def get_currency_response_json():
     }
 
     response = requests.get(
-        "{currency_api_url}{currency_id}".format(currency_api_url=config.currency_api_url,
-                                                 currency_id=config.dollar_id),
+        url="{currency_api_url}{currency_id}".format(currency_api_url=config.currency_api_url,
+                                                     currency_id=config.currency_dollar_id),
         params=parameters)
 
     return response.json()
