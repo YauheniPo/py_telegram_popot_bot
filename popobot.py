@@ -1,101 +1,111 @@
 # -*- coding: utf-8 -*-
-
-import logging
-import os
-
 import telebot
 from telebot import types
 from telegram import ParseMode
 
-import config
-from config import currency_graph_path
-from features.cinema.cinema_site_parsing import get_site_content, get_tree_movies, get_movies, get_cinema_data_message
-from features.currency.currency_api import fetch_currency_list, get_currency_response_json, get_currency_data_message
+from config import *
+from features.cinema.cinema_site_parsing import *
+from features.currency.currency_api import *
 from features.currency.graph import fetch_currency_graph
+from features.football.football_site_parsing import *
+from msg_context import *
 from user import User
 from util.util_date import currency_msg_date_format
+from util.util_request import get_site_content
+
+users = dict()
+
+
+def get_user(user_id=None, message=None):
+    if user_id is None:
+        return users[message.from_user.id]
+    return users[user_id]
+
 
 base_cmd_start = '/start'
 base_cmd_currency = '/currency'
 base_cmd_cinema = '/cinema'
+base_cmd_football = '/football'
 
 button_currency_graph = "currency_graph"
 button_cinema_soon = "cinema_soon"
 
-logging.basicConfig(filename='log.log', datefmt='%d/%m/%Y %I:%M:%S %p',
-                    format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s',
+buttons_football = {'UEFA Champions League': football_ucl_path,
+                    'UEFA Europa League': football_le_path}
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='log.log',
+                    datefmt='%d/%m/%Y %I:%M:%S %p',
+                    format=u'%(asctime)s %(levelname)-8s %(name)-45s %(message)s',
                     level=logging.INFO)
 
 bot = telebot.TeleBot(token=os.environ.get('bot_token'))
 
 
-def init_user(message):
-    user = User(message.from_user.first_name, message.from_user.last_name, message.from_user.username,
-                message.from_user.id, message.from_user.language_code, message)
-    logging.info(user)
-    return user
+def get_message_keyboard(key_dict):
+    message_keyboard = types.InlineKeyboardMarkup()
+    for key in key_dict:
+        button = types.InlineKeyboardButton(text=key, callback_data=key_dict[key])
+        message_keyboard.add(button)
+    logger.info("Get message keyboard: {}".format(key_dict))
+    return message_keyboard
 
 
 @bot.message_handler(regexp='^\{start}'.format(start=base_cmd_start))
 def start(message):
-    user = init_user(message)
+    users[message.from_user.id] = User(message)
 
-    bot.send_message(chat_id=user.user_id, text='Привет {username}, давай пообщаемся?'.format(username=user.username))
+    bot.send_message(chat_id=get_user(message=message).user_id,
+                     text=start_base_cmd_text.format(start=base_cmd_start,
+                                                     currency=base_cmd_currency,
+                                                     cinema=base_cmd_cinema,
+                                                     football=base_cmd_football))
 
 
 @bot.message_handler(regexp='^\{command}'.format(command=base_cmd_currency))
-def get_currency(message):
-    user = init_user(message)
+def currency(message):
+    user = get_user(message=message)
 
-    currency_data_bot = fetch_currency_list(get_currency_response_json())
+    currency_list = fetch_currency_list(get_currency_response_json())
 
-    bot_text_response_past_days = get_currency_data_message(currency_data_bot[-10:-1], currency_msg_date_format)
-    bot_text_response_current_day = get_currency_data_message([currency_data_bot[-1]], currency_msg_date_format)
-
-    currency_graph_keyboard = types.InlineKeyboardMarkup()
-    currency_graph_button = types.InlineKeyboardButton(text='Currency Graph', callback_data=button_currency_graph)
-    currency_graph_keyboard.add(currency_graph_button)
+    currency_response_past_days = get_currency_data_message(currency_list[-10:-1], currency_msg_date_format)
+    currency_response_current_day = get_currency_data_message([currency_list[-1]], currency_msg_date_format)
 
     bot.send_message(chat_id=user.user_id,
-                     text="<i>{bot_text_response_past_days}</i>\n\n<b>{bot_text_response_current_day}</b>".format(
-                         bot_text_response_past_days=bot_text_response_past_days,
-                         bot_text_response_current_day=bot_text_response_current_day),
-                     reply_markup=currency_graph_keyboard,
+                     text=currency_bot_text.format(
+                         currency_past_days=currency_response_past_days,
+                         currency_current_day=currency_response_current_day),
+                     reply_markup=get_message_keyboard({'Currency Graph': button_currency_graph}),
                      parse_mode=ParseMode.HTML)
 
 
 @bot.message_handler(regexp='^\{cinema}'.format(cinema=base_cmd_cinema))
 def start(message):
-    user = init_user(message)
+    user = get_user(message=message)
 
-    movies = get_movies(get_tree_movies(get_site_content(config.cinema_url + config.cinema_url_path_movie)))
-
-    cinema_soon_keyboard = types.InlineKeyboardMarkup()
-    cinema_soon_button = types.InlineKeyboardButton(text='Movie soon', callback_data=button_cinema_soon)
-    cinema_soon_keyboard.add(cinema_soon_button)
+    movies = get_movies(get_tree_movies(get_site_content(config.cinema_url + config.cinema_url_path_today)))
 
     bot.send_message(chat_id=user.user_id,
                      text=get_cinema_data_message(movies),
-                     reply_markup=cinema_soon_keyboard,
+                     reply_markup=get_message_keyboard({'Upcoming New Movies': button_cinema_soon}),
                      parse_mode=ParseMode.HTML)
+
+
+@bot.message_handler(regexp='^\{football}'.format(football=base_cmd_football))
+def start(message):
+    user = get_user(message=message)
+
+    bot.send_message(chat_id=user.user_id,
+                     text=football_base_cmd_text,
+                     reply_markup=get_message_keyboard(buttons_football))
 
 
 @bot.message_handler(content_types=['text', 'document'], func=lambda message: True)
 def echo_all(message):
-    user = init_user(message)
+    user = get_user(message=message)
 
     bot.send_message(chat_id=user.user_id, text=message.text)
     # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
-
-    # keyboard = types.InlineKeyboardMarkup()  # наша клавиатура под сообщением
-    # key_yes = types.InlineKeyboardButton(text='Да', callback_data='yes')  # кнопка «Да»
-    # keyboard.add(key_yes)  # добавляем кнопку в клавиатуру
-    # key_no = types.InlineKeyboardButton(text='Нет', callback_data='no')
-    # keyboard.add(key_no)
-
-    # bot.send_message(reply_markup=btn)
-
-    # bot.send_message(chat_id=user.user_id, text="Hi")
 
     # base_buttons = ReplyKeyboardMarkup(resize_keyboard=True)  # под клавиатурой
     # base_buttons.add(KeyboardButton(base_cmd_currency), KeyboardButton(base_cmd_start))
@@ -103,15 +113,28 @@ def echo_all(message):
 
 @bot.callback_query_handler(func=lambda call: True)  # обработчик кнопок
 def callback_worker(call):
+    logger.info("Button '{}'".format(call.data))
+    user = get_user(call.from_user.id)
+
     if call.data == button_currency_graph:
         currency_data_bot = fetch_currency_list(get_currency_response_json())
         fetch_currency_graph(currency_data_bot)
-        bot.send_photo(chat_id=call.from_user.id, photo=open(currency_graph_path, 'rb'))
+        bot.send_photo(chat_id=user.user_id, photo=open(currency_graph_path, 'rb'))
 
-    if call.data == button_cinema_soon:
-        movies = get_movies(get_tree_movies(
-            get_site_content(config.cinema_url + config.cinema_url_path_movie + config.cinema_url_path_soon)))
-        bot.send_message(chat_id=user.user_id, text=get_cinema_data_message(movies))
+    elif call.data == button_cinema_soon:
+        movies = get_movies(get_tree_movies(get_site_content(url=config.cinema_url + config.cinema_url_path_soon,
+                                                             params=cinema_soon_params)))
+        bot.send_message(chat_id=user.user_id,
+                         text=get_cinema_data_message(movies),
+                         parse_mode=ParseMode.HTML)
+
+    elif call.message.text == football_base_cmd_text:
+        matches = get_matches(get_tree_matches(
+            get_site_content(url=config.football_url + call.data + config.football_url_path_calendar)))
+        bot.send_message(chat_id=user.user_id,
+                         text="<b>{}</b>\n\n".format([key for key, value in buttons_football.items()
+                                                      if value == call.data][0]) + get_football_data_message(matches),
+                         parse_mode=ParseMode.HTML)
 
 
 bot.polling(none_stop=True)

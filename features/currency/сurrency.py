@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from dataclasses import dataclass
 import datetime
+from dataclasses import dataclass
 
 from util.util_date import currency_json_date_format
 
