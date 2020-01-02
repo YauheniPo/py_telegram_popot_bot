@@ -1,19 +1,21 @@
+# -*- coding: utf-8 -*-
 import logging
 
 import config
 from features.cinema.cinema import Cinema
 from msg_context import cinema_bot_text
+from util.util_parsing import get_tree_html_content
 
 cinema_soon_params = {'utm_source': config.cinema_url, 'utm_medium': 'films', 'utm_campaign': 'premiere_block'}
 
 logger = logging.getLogger(__name__)
 
 
-def get_movies(tree_movies):
+def get_movies(site_content):
     logger.info("Get movies")
 
     movies = []
-    for movie in tree_movies:
+    for movie in get_tree_html_content(site_content).xpath("//div[contains(@class, 'events')]/ul//li"):
         movie_title = movie.xpath(".//a[@class='name']//text()")[0]
         movie_media = str(''.join(movie.xpath(".//a[@class='media']//text()"))).strip()
         tree_movie_info = movie.xpath(".//div[@class='txt']//p//text()")

@@ -1,16 +1,19 @@
+# -*- coding: utf-8 -*-
 import logging
 
 from features.football.match import Match
 from msg_context import football_bot_text
+from util.util_parsing import get_tree_html_content
 
 logger = logging.getLogger(__name__)
 
 
-def get_matches(tree_matches):
+def get_matches(site_content):
     logger.info("Get matches")
 
     matches = []
-    for match in tree_matches:
+    for match in get_tree_html_content(site_content).xpath(
+            "//div[contains(@class, 'statistics-table')]//tr//td[contains(text(), '-:-')]/ancestor::tr"):
         host_team = match.xpath(".//div[contains(@class, 'team_left')]//span//text()")[0]
         guest_team = match.xpath(".//div[contains(@class, 'team_right')]//span//text()")[0]
         match_date = \
