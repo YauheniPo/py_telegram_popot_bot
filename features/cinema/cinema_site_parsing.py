@@ -1,7 +1,5 @@
 import logging
 
-from lxml import html
-
 import config
 from features.cinema.cinema import Cinema
 from msg_context import cinema_bot_text
@@ -9,11 +7,6 @@ from msg_context import cinema_bot_text
 cinema_soon_params = {'utm_source': config.cinema_url, 'utm_medium': 'films', 'utm_campaign': 'premiere_block'}
 
 logger = logging.getLogger(__name__)
-
-
-def get_tree_movies(site_content):
-    tree_html_content = html.fromstring(site_content)
-    return tree_html_content.xpath("//div[contains(@class, 'events')]/ul//li")
 
 
 def get_movies(tree_movies):

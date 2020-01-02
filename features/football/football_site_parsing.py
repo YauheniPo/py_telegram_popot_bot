@@ -1,17 +1,9 @@
 import logging
 
-from lxml import html
-
 from features.football.match import Match
 from msg_context import football_bot_text
 
 logger = logging.getLogger(__name__)
-
-
-def get_tree_matches(site_content):
-    tree_html_content = html.fromstring(site_content)
-    return tree_html_content.xpath(
-        "//div[contains(@class, 'statistics-table')]//tr//td[contains(text(), '-:-')]/ancestor::tr")
 
 
 def get_matches(tree_matches):

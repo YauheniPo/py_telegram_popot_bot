@@ -11,12 +11,18 @@ from features.football.football_site_parsing import *
 from msg_context import *
 from user import User
 from util.util_date import currency_msg_date_format
+from util.util_parsing import get_items
 from util.util_request import get_site_content
 
 users = dict()
 
 
 def get_user(user_id=None, message=None):
+    if bool(os.environ.get('demo')):
+        if user_id is None:
+            return User(message=message)
+        return User(user_id=user_id)
+
     if user_id is None:
         return users[message.from_user.id]
     return users[user_id]
@@ -53,7 +59,7 @@ def get_message_keyboard(key_dict):
 
 @bot.message_handler(regexp='^\{start}'.format(start=base_cmd_start))
 def start(message):
-    users[message.from_user.id] = User(message)
+    users[message.from_user.id] = User(message=message)
 
     bot.send_message(chat_id=get_user(message=message).user_id,
                      text=start_base_cmd_text.format(start=base_cmd_start,
@@ -83,7 +89,8 @@ def currency(message):
 def start(message):
     user = get_user(message=message)
 
-    movies = get_movies(get_tree_movies(get_site_content(config.cinema_url + config.cinema_url_path_today)))
+    movies = get_movies(get_items(get_site_content(config.cinema_url + config.cinema_url_path_today),
+                                  "//div[contains(@class, 'events')]/ul//li"))
 
     bot.send_message(chat_id=user.user_id,
                      text=get_cinema_data_message(movies),
@@ -104,7 +111,8 @@ def start(message):
 def echo_all(message):
     user = get_user(message=message)
 
-    bot.send_message(chat_id=user.user_id, text=message.text)
+    bot.send_message(chat_id=user.user_id,
+                     text=message.text)
     # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
 
     # base_buttons = ReplyKeyboardMarkup(resize_keyboard=True)  # под клавиатурой
@@ -119,21 +127,27 @@ def callback_worker(call):
     if call.data == button_currency_graph:
         currency_data_bot = fetch_currency_list(get_currency_response_json())
         fetch_currency_graph(currency_data_bot)
-        bot.send_photo(chat_id=user.user_id, photo=open(currency_graph_path, 'rb'))
+        bot.send_photo(chat_id=user.user_id,
+                       photo=open(currency_graph_path, 'rb'))
 
     elif call.data == button_cinema_soon:
-        movies = get_movies(get_tree_movies(get_site_content(url=config.cinema_url + config.cinema_url_path_soon,
-                                                             params=cinema_soon_params)))
+        movies = get_movies(get_items(get_site_content(url=config.cinema_url + config.cinema_url_path_soon,
+                                                       params=cinema_soon_params),
+                                      "//div[contains(@class, 'events')]/ul//li"))
         bot.send_message(chat_id=user.user_id,
                          text=get_cinema_data_message(movies),
                          parse_mode=ParseMode.HTML)
 
-    elif call.message.text == football_base_cmd_text:
-        matches = get_matches(get_tree_matches(
-            get_site_content(url=config.football_url + call.data + config.football_url_path_calendar)))
+    elif call.data in buttons_football.values():
+        matches = get_matches(get_items(
+            get_site_content(url=config.football_url + call.data + config.football_url_path_calendar),
+            "//div[contains(@class, 'statistics-table')]//tr//td[contains(text(), '-:-')]/ancestor::tr"))
+        football_message_title = [key for key, value in buttons_football.items() if value == call.data][0]
+        actual_buttons_football = dict(buttons_football)
+        del actual_buttons_football[football_message_title]
         bot.send_message(chat_id=user.user_id,
-                         text="<b>{}</b>\n\n".format([key for key, value in buttons_football.items()
-                                                      if value == call.data][0]) + get_football_data_message(matches),
+                         text="<b>{}</b>\n\n".format(football_message_title) + get_football_data_message(matches),
+                         reply_markup=get_message_keyboard(actual_buttons_football),
                          parse_mode=ParseMode.HTML)
 
 
