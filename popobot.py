@@ -128,8 +128,12 @@ def instagram(message):
 def echo_all(message):
     user = get_user(chat=message.chat)
 
-    if message.text is not None and is_match_by_regexp(message.text, instagram_link_regexp):
-        insta_post = get_insta_post_data(get_site_content(re.sub('.*w\.', '', message.text, 1)))
+    user_message = message.text
+    logger.info("User message: '{}'".format(user_message))
+
+    if user_message is not None and is_match_by_regexp(user_message, instagram_link_regexp):
+        logger.info("Instagram link '{}'".format(user_message))
+        insta_post = get_insta_post_data(get_site_content(re.sub('.*w\.', '', user_message, 1)))
 
         post_description = insta_post.warning
         if post_description is None:
@@ -141,6 +145,7 @@ def echo_all(message):
                                  text=error_msg_save_image)
                 return
 
+            logger.info("Send image '{}'".format(insta_post.image_path))
             bot.send_photo(chat_id=user.user_id,
                            photo=open(insta_post.image_path, 'rb'))
 
@@ -167,13 +172,18 @@ def callback_worker(call):
         fetch_currency(call.data, call.message)
 
     elif call.data == currency_graph:
-        actual_currency = list(set(buttons_currency_selection.values()) - set([
-            currency_data['callback_data']
+        actual_currency = list(set(buttons_currency_selection.keys()) - set([
+            currency_data['text']
             for currency_data in call.message.json['reply_markup']['inline_keyboard'][1]]))[0]
 
-        currency_data_bot = fetch_currency_list(get_currency_response_json(actual_currency))
+        currency_data_bot = fetch_currency_list(get_currency_response_json(buttons_currency_selection[actual_currency]))
         fetch_currency_graph(currency_data_bot)
+
+        actual_buttons_currency_selection = dict(buttons_currency_selection)
+        del actual_buttons_currency_selection[actual_currency]
+
         bot.send_photo(chat_id=user.user_id,
+                       reply_markup=get_message_keyboard(actual_buttons_currency_selection),
                        photo=open(currency_graph_path, 'rb'))
 
     elif call.data == cinema_soon:
