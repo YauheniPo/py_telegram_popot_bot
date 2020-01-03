@@ -117,7 +117,7 @@ def instagram(message):
 def echo_all(message):
     user = get_user(message=message)
 
-    if is_match_by_regexp(message.text, instagram_link_regexp):
+    if message.text is not None and is_match_by_regexp(message.text, instagram_link_regexp):
         insta_post = get_insta_post_data(get_site_content(re.sub('.*w\.', '', message.text, 1)))
 
         post_description = insta_post.warning
@@ -132,9 +132,7 @@ def echo_all(message):
         bot.send_message(chat_id=user.user_id,
                          text=post_description,
                          parse_mode=ParseMode.HTML)
-    else:
-        bot.send_message(chat_id=user.user_id,
-                         text=message.text)
+
     # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
 
     # base_buttons = ReplyKeyboardMarkup(resize_keyboard=True)  # под клавиатурой
