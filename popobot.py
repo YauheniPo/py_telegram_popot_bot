@@ -126,6 +126,7 @@ def echo_all(message):
 
             bot.send_photo(chat_id=user.user_id,
                            photo=open(insta_post.image_path, 'rb'))
+
             post_description = "<b>Post description</b>\n\n" + insta_post.post_description
 
         bot.send_message(chat_id=user.user_id,

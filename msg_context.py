@@ -20,4 +20,8 @@ football_bot_text = "<i>{date}</i>   <b>{host_team} -:- {guest_team}</b>"
 instagram_bot_text = """
 You will receive a PUBLIC post file from Instagram by sending a link to this post to the bot.
                      
-Please copy/share Instagram post link and paste/ move to bot"""
+Please copy/share Instagram post link and paste/ move to bot."""
+instagram_warning_text_not_public = 'This Instagram post is not PUBLIC.'
+instagram_warning_not_description = 'Post without description.'
+
+error_msg_save_image = 'Save image ERROR.'

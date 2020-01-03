@@ -7,6 +7,7 @@ import requests
 
 from config import instagram_image_folder
 from features.instagram.insta_post import InstaPost
+from msg_context import instagram_warning_text_not_public, error_msg_save_image, instagram_warning_not_description
 from util.util_parsing import get_tree_html_content
 
 logger = logging.getLogger(__name__)
@@ -19,10 +20,10 @@ def get_insta_post_data(post_content):
     warning_msg = None
     post_description = None
     if not tree_post_description:
-        warning_msg = 'This Instagram post does not a PUBLIC.'
+        warning_msg = instagram_warning_text_not_public
     else:
         post_description = json.loads(str(tree_post_description[0]).strip()) \
-            .get('caption', 'post without description')
+            .get('caption', instagram_warning_not_description)
     return InstaPost(image_url=image_utl, post_description=post_description, warning=warning_msg)
 
 
@@ -36,8 +37,8 @@ def fetch_insta_post_image(insta_post):
         f = open(photo_name, 'ab')
         f.write(requests_url.content)
     except:
-        logger.error(u"Save image ERROR: {}".format(photo_name))
-        insta_post.warning = 'Save image ERROR'
+        logger.error(u"{}: {}".format(error_msg_save_image, photo_name))
+        insta_post.warning = error_msg_save_image
     finally:
         if f is not None:
             f.close()
