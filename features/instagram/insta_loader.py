@@ -7,7 +7,7 @@ import requests
 
 from config import instagram_image_folder
 from features.instagram.insta_post import InstaPost
-from msg_context import instagram_warning_text_not_public, error_msg_save_image, instagram_warning_not_description
+from msg_context import instagram_warning_text_not_public, instagram_warning_not_description
 from util.util_parsing import get_tree_html_content
 
 logger = logging.getLogger(__name__)
@@ -17,6 +17,7 @@ def get_insta_post_data(post_content):
     tree_html_content = get_tree_html_content(post_content)
     image_utl = tree_html_content.xpath("//meta[@property='og:image']")[0].get('content')
     tree_post_description = tree_html_content.xpath("//script[@type='application/ld+json']//text()")
+
     warning_msg = None
     post_description = None
     if not tree_post_description:
@@ -36,9 +37,6 @@ def fetch_insta_post_image(insta_post):
             os.makedirs(instagram_image_folder)
         f = open(photo_name, 'ab')
         f.write(requests_url.content)
-    except:
-        logger.error(u"{}: {}".format(error_msg_save_image, photo_name))
-        insta_post.warning = error_msg_save_image
     finally:
         if f is not None:
             f.close()

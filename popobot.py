@@ -22,14 +22,14 @@ bot = telebot.TeleBot(token=os.environ.get('bot_token'))
 users = dict()
 
 
-def get_user(user_id=None, message=None):
+def get_user(user_id=None, chat=None):
     if bool(os.environ.get('demo')):
         if user_id is None:
-            return User(message=message)
+            return User(chat=chat)
         return User(user_id=user_id)
 
     if user_id is None:
-        return users[message.from_user.id]
+        return users[chat.from_user.id]
     return users[user_id]
 
 
@@ -46,20 +46,21 @@ logging.basicConfig(filename='log.log',
                     level=logging.INFO)
 
 
-def get_message_keyboard(key_dict):
+def get_message_keyboard(*args):
     message_keyboard = types.InlineKeyboardMarkup()
-    for key in key_dict:
-        button = types.InlineKeyboardButton(text=key, callback_data=key_dict[key])
-        message_keyboard.add(button)
-    logger.info("Get message keyboard: {}".format(key_dict))
+    for button in args:
+        buttons = [types.InlineKeyboardButton(text=key, callback_data=button[key]) for key in button]
+        message_keyboard.row(*buttons)
+    logger.info("Get message keyboard: {}".format(args))
     return message_keyboard
 
 
 @bot.message_handler(regexp='^\{start}'.format(start=base_cmd_start))
 def start(message):
-    users[message.from_user.id] = User(message=message)
+    user = User(chat=message.chat)
+    users[message.from_user.id] = user
 
-    bot.send_message(chat_id=get_user(message=message).user_id,
+    bot.send_message(chat_id=user.user_id,
                      text=start_base_cmd_text.format(start=base_cmd_start,
                                                      currency=base_cmd_currency,
                                                      cinema=base_cmd_cinema,
@@ -67,26 +68,36 @@ def start(message):
                                                      instagram=base_cmd_instagram))
 
 
-@bot.message_handler(regexp='^\{command}'.format(command=base_cmd_currency))
-def currency(message):
-    user = get_user(message=message)
+def fetch_currency(actual_currency: int, message):
+    user = get_user(chat=message.chat)
 
-    currency_list = fetch_currency_list(get_currency_response_json())
+    currency_list = fetch_currency_list(get_currency_response_json(actual_currency))
 
     currency_response_past_days = get_currency_data_message(currency_list[-10:-1], currency_msg_date_format)
     currency_response_current_day = get_currency_data_message([currency_list[-1]], currency_msg_date_format)
 
+    current_currency = list(buttons_currency_selection.keys())[
+        list(buttons_currency_selection.values()).index(actual_currency)]
+    actual_buttons_currency_selection = dict(buttons_currency_selection)
+    del actual_buttons_currency_selection[current_currency]
+
     bot.send_message(chat_id=user.user_id,
                      text=currency_bot_text.format(
+                         currency=current_currency,
                          currency_past_days=currency_response_past_days,
                          currency_current_day=currency_response_current_day),
-                     reply_markup=get_message_keyboard(button_currency_graph),
+                     reply_markup=get_message_keyboard(button_currency_graph, actual_buttons_currency_selection),
                      parse_mode=ParseMode.HTML)
+
+
+@bot.message_handler(regexp='^\{command}'.format(command=base_cmd_currency))
+def currency(message):
+    fetch_currency(config.currency_dollar_id, message)
 
 
 @bot.message_handler(regexp='^\{cinema}'.format(cinema=base_cmd_cinema))
 def cinema(message):
-    user = get_user(message=message)
+    user = get_user(chat=message.chat)
 
     movies = get_movies(get_site_content(config.cinema_url + config.cinema_url_path_today))
 
@@ -98,16 +109,16 @@ def cinema(message):
 
 @bot.message_handler(regexp='^\{football}'.format(football=base_cmd_football))
 def football(message):
-    user = get_user(message=message)
+    user = get_user(chat=message.chat)
 
     bot.send_message(chat_id=user.user_id,
                      text=football_base_cmd_text,
-                     reply_markup=get_message_keyboard(buttons_football))
+                     reply_markup=get_message_keyboard(buttons_football[0], buttons_football[1]))
 
 
 @bot.message_handler(regexp='^\{instagram}'.format(instagram=base_cmd_instagram))
 def instagram(message):
-    user = get_user(message=message)
+    user = get_user(chat=message.chat)
 
     bot.send_message(chat_id=user.user_id,
                      text=instagram_bot_text)
@@ -115,14 +126,20 @@ def instagram(message):
 
 @bot.message_handler(content_types=['text', 'document'], func=lambda message: True)
 def echo_all(message):
-    user = get_user(message=message)
+    user = get_user(chat=message.chat)
 
     if message.text is not None and is_match_by_regexp(message.text, instagram_link_regexp):
         insta_post = get_insta_post_data(get_site_content(re.sub('.*w\.', '', message.text, 1)))
 
         post_description = insta_post.warning
         if post_description is None:
-            fetch_insta_post_image(insta_post)
+            try:
+                fetch_insta_post_image(insta_post)
+            except:
+                logger.error(u"{}: {}".format(error_msg_save_image, insta_post.image_path))
+                bot.send_message(chat_id=user.user_id,
+                                 text=error_msg_save_image)
+                return
 
             bot.send_photo(chat_id=user.user_id,
                            photo=open(insta_post.image_path, 'rb'))
@@ -144,8 +161,17 @@ def callback_worker(call):
     logger.info("Button '{}'".format(call.data))
     user = get_user(call.from_user.id)
 
-    if call.data == currency_graph:
-        currency_data_bot = fetch_currency_list(get_currency_response_json())
+    dict_buttons_football = dict((key, d[key]) for d in buttons_football for key in d)
+
+    if call.data in [str(currency_id) for currency_id in buttons_currency_selection.values()]:
+        fetch_currency(call.data, call.message)
+
+    elif call.data == currency_graph:
+        actual_currency = list(set(buttons_currency_selection.values()) - set([
+            currency_data['callback_data']
+            for currency_data in call.message.json['reply_markup']['inline_keyboard'][1]]))[0]
+
+        currency_data_bot = fetch_currency_list(get_currency_response_json(actual_currency))
         fetch_currency_graph(currency_data_bot)
         bot.send_photo(chat_id=user.user_id,
                        photo=open(currency_graph_path, 'rb'))
@@ -157,11 +183,11 @@ def callback_worker(call):
                          text=get_cinema_data_message(movies),
                          parse_mode=ParseMode.HTML)
 
-    elif call.data in buttons_football.values():
+    elif call.data in dict_buttons_football.values():
         matches = get_matches(get_site_content(url=config.football_url + call.data + config.football_url_path_calendar))
-        football_message_title = [key for key, value in buttons_football.items() if value == call.data][0]
+        football_message_title = [key for key, value in dict_buttons_football.items() if value == call.data][0]
 
-        actual_buttons_football = dict(buttons_football)
+        actual_buttons_football = dict(dict_buttons_football)
         del actual_buttons_football[football_message_title]
 
         bot.send_message(chat_id=user.user_id,

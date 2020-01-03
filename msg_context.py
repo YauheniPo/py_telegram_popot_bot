@@ -8,6 +8,7 @@ start_base_cmd_text = """
 {instagram} - save PUBLIC instagram post by link"""
 
 currency_bot_text = """
+<b>{currency}</b>
 <i>{currency_past_days}</i>
 
 <b>{currency_current_day}</b>"""
