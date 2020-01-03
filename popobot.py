@@ -119,10 +119,11 @@ def echo_all(message):
 
     if is_match_by_regexp(message.text, instagram_link_regexp):
         insta_post = get_insta_post_data(get_site_content(re.sub('.*w\.', '', message.text, 1)))
-        fetch_insta_post_image(insta_post)
 
         post_description = insta_post.warning
         if post_description is None:
+            fetch_insta_post_image(insta_post)
+
             bot.send_photo(chat_id=user.user_id,
                            photo=open(insta_post.image_path, 'rb'))
             post_description = "<b>Post description</b>\n\n" + insta_post.post_description
