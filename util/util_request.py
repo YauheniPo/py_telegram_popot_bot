@@ -9,5 +9,5 @@ logger = logging.getLogger(__name__)
 def get_site_content(url, params={}):
     logger.info("Get site content")
 
-    r = requests.get(config.uri.format(url=url), params=params)
+    r = requests.get(config.uri_https.format(url=url), params=params)
     return r.text

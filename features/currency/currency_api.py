@@ -14,7 +14,7 @@ def fetch_currency_list(json_data):
     return [Currency(**d) for d in json_data]
 
 
-def get_currency_response_json():
+def get_currency_response_json(currency_id):
     logger.info("Get currency data")
 
     import util.util_date as date_util
@@ -29,7 +29,7 @@ def get_currency_response_json():
 
     response = requests.get(
         url="{currency_api_url}/{currency_id}".format(currency_api_url=config.currency_api_url,
-                                                      currency_id=config.currency_dollar_id),
+                                                      currency_id=currency_id),
         params=parameters)
 
     return response.json()
