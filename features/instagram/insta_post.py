@@ -9,8 +9,9 @@ class InstaPost:
     media_content_path = []
     post_description = None
 
-    def __init__(self, content_type=None):
+    def __init__(self, content_type=None, is_private_profile=False):
         self.content_type = content_type
+        self.is_private_profile = is_private_profile
 
     def append_media_url(self, media_url):
         self.media_url.append(media_url)

@@ -121,17 +121,11 @@ def instagram(message):
                      text=instagram_bot_text)
 
 
-@bot.message_handler(content_types=['text', 'document'], func=lambda message: True)
-def echo_all(message):
-    user = get_user(chat=message.chat)
+def send_instagram_media(user_message, user):
+    logger.info("Instagram link '{}'".format(user_message))
+    insta_post = get_insta_post_data(get_site_content(re.sub('.*w\.', '', user_message, 1)))
 
-    user_message = message.text
-    logger.info("User message: '{}'".format(user_message))
-
-    if user_message is not None and is_match_by_regexp(user_message, instagram_link_regexp):
-        logger.info("Instagram link '{}'".format(user_message))
-        insta_post = get_insta_post_data(get_site_content(re.sub('.*w\.', '', user_message, 1)))
-
+    if not insta_post.is_private_profile:
         try:
             fetch_insta_post_content_files(insta_post)
         except:
@@ -151,8 +145,22 @@ def echo_all(message):
 
         if insta_post.post_description:
             bot.send_message(chat_id=user.user_id,
-                             text="<b>Post description</b>\n\n" + insta_post.post_description,
+                             text="<b>Post description</b>\n\n" + insta_post.post_description[0]['node']['text'],
                              parse_mode=ParseMode.HTML)
+    else:
+        bot.send_message(chat_id=user.user_id,
+                         text=instagram_warning_text_not_public)
+
+
+@bot.message_handler(content_types=['text', 'document'], func=lambda message: True)
+def echo_all(message):
+    user = get_user(chat=message.chat)
+
+    user_message = message.text
+    logger.info("User message: '{}'".format(user_message))
+
+    if user_message is not None and is_match_by_regexp(user_message, instagram_link_regexp):
+        send_instagram_media(user_message, user)
 
 
 # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)

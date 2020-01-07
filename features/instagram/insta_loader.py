@@ -28,7 +28,9 @@ def get_insta_post_data(post_content):
         json_data_regex, get_tree_html_content(post_content).xpath(insta_post_data_script_xpath)[0]).group(0)
 
     insta_post_data_json = json.loads(insta_post_data_script_content)
-    insta_post_media_content_json = insta_post_data_json['entry_data']['PostPage'][0]['graphql']['shortcode_media']
+    insta_post_media_content_json = list(list(insta_post_data_json['entry_data'].values())[0][0]['graphql'].values())[0]
+    if insta_post_media_content_json.get('is_private'):
+        return InstaPost(is_private_profile=True)
 
     insta_post = InstaPost(content_type=insta_post_media_content_json['__typename'])
     if insta_post.content_type == instagram_side_type:
