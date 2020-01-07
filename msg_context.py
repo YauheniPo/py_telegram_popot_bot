@@ -25,4 +25,4 @@ Please copy/share Instagram post link and paste/ move to bot."""
 instagram_warning_text_not_public = 'This Instagram post is not PUBLIC.'
 instagram_warning_not_description = 'Post without description.'
 
-error_msg_save_image = 'Save image ERROR.'
+error_msg_save_image = 'Save Instagram media ERROR.'

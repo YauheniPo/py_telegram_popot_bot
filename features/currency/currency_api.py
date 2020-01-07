@@ -6,6 +6,7 @@ import requests
 
 import config
 from features.currency.сurrency import Currency
+from util.util_parsing import date_format_d_m, date_format_Y_m_d
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +18,9 @@ def fetch_currency_list(json_data):
 def get_currency_response_json(currency_id):
     logger.info("Get currency data")
 
-    import util.util_date as date_util
-    end_date = datetime.datetime.now().strftime(date_util.currency_api_param_date_format)
-    start_date = (datetime.datetime.now() - datetime.timedelta(days=config.currency_graph_days)).strftime(
-        date_util.currency_api_param_date_format)
+    end_date = datetime.datetime.now().strftime(date_format_Y_m_d)
+    start_date = (datetime.datetime.now() - datetime.timedelta(days=config.currency_graph_days)) \
+        .strftime(date_format_Y_m_d)
 
     parameters = {
         "startDate": start_date,
@@ -35,8 +35,8 @@ def get_currency_response_json(currency_id):
     return response.json()
 
 
-def get_currency_data_message(currency_data_list, currency_msg_date_format):
+def get_currency_data_message(currency_data_list):
     return "\n".join(
-        ["{day} -    {rate} BYR".format(day=currency_day.Date.strftime(currency_msg_date_format),
+        ["{day} -    {rate} BYR".format(day=currency_day.Date.strftime(date_format_d_m),
                                         rate=currency_day.Cur_OfficialRate)
          for currency_day in currency_data_list])
