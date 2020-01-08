@@ -11,14 +11,19 @@ logger = logging.getLogger(__name__)
 def get_matches(site_content):
     logger.info("Get matches")
 
+    matches_tree_xpath = "//div[contains(@class, 'statistics-table')]//tr//td[contains(text(), '-:-')]/ancestor::tr"
+    match_host_team_xpath = ".//div[contains(@class, 'team_left')]//span"
+    match_guest_team_xpath = ".//div[contains(@class, 'team_right')]//span"
+    match_date_xpath = ".//span[contains(@class, 'date') and contains(@class, 'desktop')]"
+
     matches = []
-    for match in get_tree_html_content(site_content).xpath(
-            "//div[contains(@class, 'statistics-table')]//tr//td[contains(text(), '-:-')]/ancestor::tr"):
-        host_team = match.xpath(".//div[contains(@class, 'team_left')]//span//text()")[0]
-        guest_team = match.xpath(".//div[contains(@class, 'team_right')]//span//text()")[0]
-        match_date = \
-            str(match.xpath(".//span[contains(@class, 'date') and contains(@class, 'desktop')]//text()")[0]).strip()
-        matches.append(Match(host_team=host_team, guest_team=guest_team, date=match_date))
+
+    xpath_get_text = "{xpath}//text()"
+    for match in get_tree_html_content(site_content).xpath(matches_tree_xpath):
+        match_host_team = match.xpath(xpath_get_text.format(xpath=match_host_team_xpath))[0]
+        match_guest_team = match.xpath(xpath_get_text.format(xpath=match_guest_team_xpath))[0]
+        match_date = str(match.xpath(xpath_get_text.format(xpath=match_date_xpath))[0]).strip()
+        matches.append(Match(host_team=match_host_team, guest_team=match_guest_team, date=match_date))
     return matches
 
 

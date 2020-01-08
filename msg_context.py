@@ -2,10 +2,10 @@
 
 start_base_cmd_text = """
 {start} - HELP - telegram bot functionals
-{currency} - $ - currency data and graph
+{currency} - $/€/RUR - currency data and graph
 {cinema} - cinema posters
 {football} - football calendar
-{instagram} - save PUBLIC instagram post by link"""
+{instagram} - save PUBLIC Instagram post content by link"""
 
 currency_bot_text = """
 <b>{currency}</b>
@@ -23,6 +23,6 @@ You will receive a PUBLIC post file from Instagram by sending a link to this pos
                      
 Please copy/share Instagram post link and paste/ move to bot."""
 instagram_warning_text_not_public = 'This Instagram post is not PUBLIC.'
-instagram_warning_not_description = 'Post without description.'
+instagram_warning_unknown_content_type = "Unknown content type."
 
-error_msg_save_image = 'Save image ERROR.'
+error_msg_save_image = 'Save Instagram media ERROR.'

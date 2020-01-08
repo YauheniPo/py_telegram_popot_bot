@@ -1,18 +1,26 @@
 # -*- coding: utf-8 -*-
-import os
 import re
 
-from config import instagram_url_image_name_regexp, instagram_image_folder
+from config import *
 
 
 class InstaPost:
+    media_urls = []
+    media_content_paths = []
+    post_description = None
+    media_types = []
 
-    def __init__(self, image_url, post_description=None, warning=None):
-        self.image_url = image_url
+    def __init__(self, is_private_profile=False):
+        self.is_private_profile = is_private_profile
+
+    def append_media_url(self, media_url):
+        self.media_urls.append(media_url)
+
+        post_image_name = re.search(instagram_url_media_name_regexp, media_url).group(0)
+        self.media_content_paths.append(os.path.join(instagram_post_content_folder, post_image_name))
+
+    def append_media_type(self, media_type):
+        self.media_types.append(media_type)
+
+    def set_description(self, post_description):
         self.post_description = post_description
-        self.warning = warning
-        if post_description is not None:
-            post_image_name = re.sub('[^0-9a-zA-Z]', '_',
-                                     post_description[:100] + re.search(instagram_url_image_name_regexp, image_url)
-                                     .group(0)) + ".jpg"
-            self.image_path = os.path.join(instagram_image_folder, post_image_name)
