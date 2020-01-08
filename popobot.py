@@ -121,6 +121,25 @@ def instagram(message):
                      text=instagram_bot_text)
 
 
+def send_to_user_insta_post_media_content(insta_post, user):
+    for content_type, content_path in zip(insta_post.media_types, insta_post.media_content_paths):
+        logger.info("Send media '{}'".format(content_path))
+        if content_type == instagram_video_type:
+            bot.send_video(chat_id=user.user_id,
+                           data=open(content_path, 'rb'))
+        elif content_type == instagram_image_type:
+            bot.send_photo(chat_id=user.user_id,
+                           photo=open(content_path, 'rb'))
+        else:
+            bot.send_message(chat_id=user.user_id,
+                             text=instagram_warning_unknown_content_type)
+
+    if insta_post.post_description:
+        bot.send_message(chat_id=user.user_id,
+                         text="<b>Post description</b>\n\n" + insta_post.post_description[0]['node']['text'],
+                         parse_mode=ParseMode.HTML)
+
+
 def send_instagram_media(user_message, user):
     logger.info("Instagram link '{}'".format(user_message))
     insta_post = get_insta_post_data(get_site_content(re.sub('.*w\.', '', user_message, 1)))
@@ -128,25 +147,11 @@ def send_instagram_media(user_message, user):
     if not insta_post.is_private_profile:
         try:
             fetch_insta_post_content_files(insta_post)
+            send_to_user_insta_post_media_content(insta_post, user)
         except:
             logger.error(u"{}: {}".format(error_msg_save_image, insta_post))
             bot.send_message(chat_id=user.user_id,
                              text=error_msg_save_image)
-            return
-
-        for path in insta_post.media_content_path:
-            logger.info("Send media '{}'".format(path))
-            if insta_post.content_type == instagram_video_type:
-                bot.send_video(chat_id=user.user_id,
-                               data=open(path, 'rb'))
-            elif insta_post.content_type == instagram_image_type:
-                bot.send_photo(chat_id=user.user_id,
-                               photo=open(path, 'rb'))
-
-        if insta_post.post_description:
-            bot.send_message(chat_id=user.user_id,
-                             text="<b>Post description</b>\n\n" + insta_post.post_description[0]['node']['text'],
-                             parse_mode=ParseMode.HTML)
     else:
         bot.send_message(chat_id=user.user_id,
                          text=instagram_warning_text_not_public)
@@ -159,8 +164,9 @@ def echo_all(message):
     user_message = message.text
     logger.info("User message: '{}'".format(user_message))
 
-    if user_message is not None and is_match_by_regexp(user_message, instagram_link_regexp):
-        send_instagram_media(user_message, user)
+    if user_message is not None:
+        if is_match_by_regexp(user_message, instagram_link_regexp):
+            send_instagram_media(user_message, user)
 
 
 # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
