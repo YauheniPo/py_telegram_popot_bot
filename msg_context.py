@@ -2,7 +2,7 @@
 
 start_base_cmd_text = """
 {start} - HELP - telegram bot functionals
-{currency} - $/€/RUR - currency data and graph
+{currency} - $ / € / RUR - currency data and graph
 {cinema} - cinema posters
 {football} - football calendar
 {instagram} - save PUBLIC Instagram post content by link"""
