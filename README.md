@@ -2,4 +2,4 @@
 
 pip install -r requirements.txt
 
-python popobot.py
+python popot_bot.py

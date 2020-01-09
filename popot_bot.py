@@ -1,20 +1,32 @@
 # -*- coding: utf-8 -*-
 
 import telebot
-from telebot import types
 from telegram import ParseMode
 
+from base.bot_script import fetch_currency, get_message_keyboard, send_instagram_media
+from base.msg_context import *
+from base.user import User
 from features.cinema.cinema_site_parsing import *
 from features.currency.currency_api import *
 from features.currency.currency_graph_generate import fetch_currency_graph
 from features.football.football_site_parsing import *
 from features.instagram.insta_loader import *
-from msg_context import *
-from user import User
 from util.util_parsing import is_match_by_regexp
 from util.util_request import get_site_content
 
 bot = telebot.TeleBot(token=os.environ.get('bot_token'))
+
+base_cmd_start = '/start'
+base_cmd_currency = '/currency'
+base_cmd_cinema = '/cinema'
+base_cmd_football = '/football'
+base_cmd_instagram = '/instagram'
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='log.log',
+                    datefmt='%d/%m/%Y %I:%M:%S %p',
+                    format=u'%(asctime)s %(levelname)-8s %(name)-45s %(message)s',
+                    level=logging.INFO)
 
 users = dict()
 
@@ -30,28 +42,6 @@ def get_user(user_id=None, chat=None):
     return users[user_id]
 
 
-base_cmd_start = '/start'
-base_cmd_currency = '/currency'
-base_cmd_cinema = '/cinema'
-base_cmd_football = '/football'
-base_cmd_instagram = '/instagram'
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(filename='log.log',
-                    datefmt='%d/%m/%Y %I:%M:%S %p',
-                    format=u'%(asctime)s %(levelname)-8s %(name)-45s %(message)s',
-                    level=logging.INFO)
-
-
-def get_message_keyboard(*args):
-    message_keyboard = types.InlineKeyboardMarkup()
-    for button in args:
-        buttons = [types.InlineKeyboardButton(text=key, callback_data=button[key]) for key in button]
-        message_keyboard.row(*buttons)
-    logger.info("Get message keyboard: {}".format(args))
-    return message_keyboard
-
-
 @bot.message_handler(regexp='^\{start}'.format(start=base_cmd_start))
 def start(message):
     user = User(chat=message.chat)
@@ -65,31 +55,11 @@ def start(message):
                                                      instagram=base_cmd_instagram))
 
 
-def fetch_currency(actual_currency: int, message):
-    user = get_user(chat=message.chat)
-
-    currency_list = fetch_currency_list(get_currency_response_json(actual_currency))
-
-    currency_response_past_days = get_currency_data_message(currency_list[-10:-1])
-    currency_response_current_day = get_currency_data_message([currency_list[-1]])
-
-    current_currency = list(buttons_currency_selection.keys())[
-        list(buttons_currency_selection.values()).index(actual_currency)]
-    actual_buttons_currency_selection = dict(buttons_currency_selection)
-    del actual_buttons_currency_selection[current_currency]
-
-    bot.send_message(chat_id=user.user_id,
-                     text=currency_bot_text.format(
-                         currency=current_currency,
-                         currency_past_days=currency_response_past_days,
-                         currency_current_day=currency_response_current_day),
-                     reply_markup=get_message_keyboard(button_currency_graph, actual_buttons_currency_selection),
-                     parse_mode=ParseMode.HTML)
-
-
 @bot.message_handler(regexp='^\{command}'.format(command=base_cmd_currency))
 def currency(message):
-    fetch_currency(config.currency_dollar_id, message)
+    user = get_user(chat=message.chat)
+
+    fetch_currency(bot, user, config.currency_dollar_id)
 
 
 @bot.message_handler(regexp='^\{cinema}'.format(cinema=base_cmd_cinema))
@@ -121,42 +91,6 @@ def instagram(message):
                      text=instagram_bot_text)
 
 
-def send_to_user_insta_post_media_content(insta_post, user):
-    for content_type, content_path in zip(insta_post.media_types, insta_post.media_content_paths):
-        logger.info("Send media '{}'".format(content_path))
-        if content_type == instagram_video_type:
-            bot.send_video(chat_id=user.user_id,
-                           data=open(content_path, 'rb'))
-        elif content_type == instagram_image_type:
-            bot.send_photo(chat_id=user.user_id,
-                           photo=open(content_path, 'rb'))
-        else:
-            bot.send_message(chat_id=user.user_id,
-                             text=instagram_warning_unknown_content_type)
-
-    if insta_post.post_description:
-        bot.send_message(chat_id=user.user_id,
-                         text="<b>Post description</b>\n\n" + insta_post.post_description[0]['node']['text'],
-                         parse_mode=ParseMode.HTML)
-
-
-def send_instagram_media(user_message, user):
-    logger.info("Instagram link '{}'".format(user_message))
-    insta_post = get_insta_post_data(get_site_content(re.sub('.*w\.', '', user_message, 1)))
-
-    if not insta_post.is_private_profile:
-        try:
-            fetch_insta_post_content_files(insta_post)
-            send_to_user_insta_post_media_content(insta_post, user)
-        except:
-            logger.error(u"{}: {}".format(error_msg_save_image, insta_post))
-            bot.send_message(chat_id=user.user_id,
-                             text=error_msg_save_image)
-    else:
-        bot.send_message(chat_id=user.user_id,
-                         text=instagram_warning_text_not_public)
-
-
 @bot.message_handler(content_types=['text', 'document'], func=lambda message: True)
 def echo_all(message):
     user = get_user(chat=message.chat)
@@ -166,16 +100,10 @@ def echo_all(message):
 
     if user_message is not None:
         if is_match_by_regexp(user_message, instagram_link_regexp):
-            send_instagram_media(user_message, user)
+            send_instagram_media(bot, user_message, user)
 
 
-# bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
-
-# base_buttons = ReplyKeyboardMarkup(resize_keyboard=True)  # под клавиатурой
-# base_buttons.add(KeyboardButton(base_cmd_currency), KeyboardButton(base_cmd_start))
-
-
-@bot.callback_query_handler(func=lambda call: True)  # обработчик кнопок
+@bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call):
     logger.info("Button '{}'".format(call.data))
     user = get_user(call.from_user.id)
@@ -183,7 +111,7 @@ def callback_worker(call):
     dict_buttons_football = dict((key, d[key]) for d in buttons_football_leagues for key in d)
 
     if call.data in [str(currency_id) for currency_id in buttons_currency_selection.values()]:
-        fetch_currency(call.data, call.message)
+        fetch_currency(bot, user, call.data)
 
     elif call.data == currency_graph:
         actual_currency = list(set(buttons_currency_selection.keys()) - set([
@@ -221,3 +149,8 @@ def callback_worker(call):
 
 
 bot.polling(none_stop=True)
+
+# bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
+
+# base_buttons = ReplyKeyboardMarkup(resize_keyboard=True)  # под клавиатурой
+# base_buttons.add(KeyboardButton(base_cmd_currency), KeyboardButton(base_cmd_start))
