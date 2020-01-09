@@ -5,13 +5,13 @@ from config import *
 
 
 class InstaPost:
-    media_urls = []
-    media_content_paths = []
-    post_description = None
-    media_types = []
 
     def __init__(self, is_private_profile=False):
         self.is_private_profile = is_private_profile
+        self.post_description = None
+        self.media_urls = []
+        self.media_content_paths = []
+        self.media_types = []
 
     def append_media_url(self, media_url):
         self.media_urls.append(media_url)
