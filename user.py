@@ -15,7 +15,4 @@ class User:
         else:
             self.user_id = user_id
 
-        logger.info(str(self.__dict__))
-
-    def __repr__(self):
-        return "--User-- " + str(self.__dict__)
+        logger.info("--User-- " + str(self.__dict__))
