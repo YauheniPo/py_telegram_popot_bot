@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
 import telebot
+from telebot import types
 from telegram import ParseMode
 
 from base.bot_script import fetch_currency, get_message_keyboard, send_instagram_media
@@ -21,6 +21,7 @@ base_cmd_currency = '/currency'
 base_cmd_cinema = '/cinema'
 base_cmd_football = '/football'
 base_cmd_instagram = '/instagram'
+base_cmd_geo = '/geo'
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='log.log',
@@ -89,6 +90,23 @@ def instagram(message):
 
     bot.send_message(chat_id=user.user_id,
                      text=instagram_bot_text)
+
+
+@bot.message_handler(regexp='^\{geo}'.format(geo=base_cmd_geo))
+def geo(message):
+    user = get_user(chat=message.chat)
+
+    keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+    button_geo = types.KeyboardButton(text="Send location", request_location=True)
+    keyboard.add(button_geo)
+    bot.send_message(user.user_id, "Hello! Click on the button and give me your location.", reply_markup=keyboard)
+
+
+@bot.message_handler(content_types=['location'])
+def location(message):
+    if message.location is not None:
+        print(message.location)
+        print("latitude: %s; longitude: %s" % (message.location.latitude, message.location.longitude))
 
 
 @bot.message_handler(content_types=['text', 'document'], func=lambda message: True)
