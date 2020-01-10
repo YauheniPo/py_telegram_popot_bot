@@ -18,4 +18,4 @@ class User:
         logger.info(str(self.__dict__))
 
     def __repr__(self):
-        return str(self.__dict__)
+        return "--User-- " + str(self.__dict__)

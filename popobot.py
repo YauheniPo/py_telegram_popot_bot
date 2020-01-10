@@ -144,7 +144,7 @@ def send_instagram_media(user_message, user):
     logger.info("Instagram link '{}'".format(user_message))
     insta_post = get_insta_post_data(get_site_content(re.sub('.*w\.', '', user_message, 1)))
 
-    logger.info("Instagram instance '{}'".format(insta_post.__dict__))
+    logger.info("--Instagram instance-- '{}'".format(insta_post.__dict__))
 
     if not insta_post.is_private_profile:
         try:
