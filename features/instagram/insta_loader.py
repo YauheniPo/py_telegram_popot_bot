@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import json
-import logging
 import re
 
-import requests
+import browser_cookie3
+from multipledispatch import dispatch
 
 from config import *
 from features.instagram.insta_post import InstaPost
-from util.util_parsing import get_tree_html_content, json_data_regex
+from util.util_parsing import json_data_regex, find_elements
+from util.util_request import *
 
 logger = logging.getLogger(__name__)
 
@@ -23,18 +24,15 @@ def get_insta_post_with_content_data(insta_post_media_content_json, insta_post: 
     return insta_post
 
 
-def get_insta_post_data(post_content):
-    insta_post_data_script_xpath = "//script[@type='text/javascript'][contains(text(),'window._sharedData = {')]//text()"
+@dispatch(str, InstaPost)
+def get_insta_post_data(post_content, insta_post):
+    insta_post_private_data_script_xpath = "//script[@type='text/javascript'][contains(text(),'window.__additionalDataLoaded(')]//text()"
 
-    insta_post_data_script_content = re.search(
-        json_data_regex, get_tree_html_content(post_content).xpath(insta_post_data_script_xpath)[0]).group(0)
+    insta_post_html_script_content = re.search(
+        json_data_regex, find_elements(post_content, insta_post_private_data_script_xpath)[0]).group(0)
 
-    insta_post_data_json = json.loads(insta_post_data_script_content)
-    insta_post_media_content_json = list(list(insta_post_data_json['entry_data'].values())[0][0]['graphql'].values())[0]
-    if insta_post_media_content_json.get('is_private'):
-        return InstaPost(is_private_profile=True)
-
-    insta_post = InstaPost()
+    insta_post_data_json = json.loads(insta_post_html_script_content)
+    insta_post_media_content_json = list(insta_post_data_json['graphql'].values())[0]
 
     insta_post_description = insta_post_media_content_json['edge_media_to_caption']['edges']
     insta_post.set_description(insta_post_description)
@@ -46,6 +44,14 @@ def get_insta_post_data(post_content):
         get_insta_post_with_content_data(insta_post_media_content_json, insta_post)
 
     return insta_post
+
+
+@dispatch(str)
+def get_insta_post_data(post_url):
+    insta_post = InstaPost(post_url=post_url)
+    site_content = get_site_request_content(url=insta_post.post_url.replace('https', 'http'),
+                                            cookies=browser_cookie3.firefox())
+    return get_insta_post_data(site_content, insta_post)
 
 
 def fetch_insta_post_content_files(insta_post: InstaPost):

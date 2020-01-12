@@ -17,6 +17,10 @@ def get_tree_html_content(site_content):
     return html.fromstring(site_content)
 
 
+def find_elements(site_content, xpath):
+    return get_tree_html_content(site_content).xpath(xpath)
+
+
 def is_match_by_regexp(string, regexp):
     logger.info("String matching '{}'".format(string))
     pattern = re.compile(regexp)
