@@ -1,7 +1,5 @@
 import os
 
-uri_https = "https://{url}"
-
 currency_api_url = "http://www.nbrb.by/API/ExRates/Rates/Dynamics"
 currency_dollar_id = '145'
 currency_euro_id = '292'
@@ -15,14 +13,14 @@ buttons_currency_selection = {'$': currency_dollar_id,
                               '€': currency_euro_id,
                               'RUR': currency_rur_id}
 
-cinema_url = "afisha.tut.by"
+cinema_url = "https://afisha.tut.by"
 cinema_url_path_today = "/film"
 cinema_url_path_soon = "/movie-premiere"
 cinema_soon = "cinema_soon"
 cinema_soon_params = {'utm_source': cinema_url, 'utm_medium': 'films', 'utm_campaign': 'premiere_block'}
 button_cinema_soon = {'Upcoming New Movies': cinema_soon}
 
-football_url = "matchtv.ru/football"
+football_url = "https://matchtv.ru/football"
 football_ucl_path = "/ucl"
 football_le_path = "/le"
 football_url_path_calendar = "/stats/calendar"

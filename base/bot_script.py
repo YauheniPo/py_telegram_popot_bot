@@ -1,5 +1,4 @@
 import logging
-import re
 
 from telebot import types
 from telegram import ParseMode
@@ -8,7 +7,6 @@ from base.msg_context import *
 from config import *
 from features.currency.currency_api import fetch_currency_list, get_currency_response_json, get_currency_data_message
 from features.instagram.insta_loader import get_insta_post_data, fetch_insta_post_content_files
-from util.util_request import get_site_content
 
 logger = logging.getLogger(__name__)
 
@@ -63,18 +61,14 @@ def send_to_user_insta_post_media_content(bot, insta_post, user):
 
 def send_instagram_media(bot, user_message, user):
     logger.info("Instagram link '{}'".format(user_message))
-    insta_post = get_insta_post_data(get_site_content(re.sub('.*w\.', '', user_message, 1)))
+    insta_post = get_insta_post_data(user_message)
 
-    logger.info("--Instagram instance-- '{}'".format(insta_post.__dict__))
+    logger.info(("--Instagram instance-- '{}'".format(insta_post.__dict__)).encode("utf-8"))
 
-    if not insta_post.is_private_profile:
-        try:
-            fetch_insta_post_content_files(insta_post)
-            send_to_user_insta_post_media_content(bot, insta_post, user)
-        except:
-            logger.error(u"{}: {}".format(error_msg_save_image, insta_post))
-            bot.send_message(chat_id=user.user_id,
-                             text=error_msg_save_image)
-    else:
+    try:
+        fetch_insta_post_content_files(insta_post)
+        send_to_user_insta_post_media_content(bot, insta_post, user)
+    except:
+        logger.error(u"{}: {}".format(error_msg_save_image, insta_post))
         bot.send_message(chat_id=user.user_id,
-                         text=instagram_warning_text_not_public)
+                         text=error_msg_save_image)

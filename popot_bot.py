@@ -12,7 +12,7 @@ from features.currency.currency_graph_generate import fetch_currency_graph
 from features.football.football_site_parsing import *
 from features.instagram.insta_loader import *
 from util.util_parsing import is_match_by_regexp
-from util.util_request import get_site_content
+from util.util_request import get_site_request_content
 
 bot = telebot.TeleBot(token=os.environ.get('bot_token'))
 
@@ -67,7 +67,7 @@ def currency(message):
 def cinema(message):
     user = get_user(chat=message.chat)
 
-    movies = get_movies(get_site_content(config.cinema_url + config.cinema_url_path_today))
+    movies = get_movies(get_site_request_content(config.cinema_url + config.cinema_url_path_today))
 
     bot.send_message(chat_id=user.user_id,
                      text=get_cinema_data_message(movies),
@@ -104,9 +104,11 @@ def geo(message):
 
 @bot.message_handler(content_types=['location'])
 def location(message):
+    user = get_user(chat=message.chat)
+
     if message.location is not None:
-        print(message.location)
-        print("latitude: %s; longitude: %s" % (message.location.latitude, message.location.longitude))
+        bot.send_message(user.user_id,
+                         "latitude: %s; longitude: %s" % (message.location.latitude, message.location.longitude))
 
 
 @bot.message_handler(content_types=['text', 'document'], func=lambda message: True)
@@ -132,9 +134,10 @@ def callback_worker(call):
         fetch_currency(bot, user, call.data)
 
     elif call.data == currency_graph:
-        actual_currency = list(set(buttons_currency_selection.keys()) - set([
-            currency_data['text']
-            for currency_data in call.message.json['reply_markup']['inline_keyboard'][1]]))[0]
+        actual_currency = list(
+            set(buttons_currency_selection.keys()) -
+            set([currency_data['text'] for currency_data in call.message.json['reply_markup']['inline_keyboard'][1]]))[
+            0]
 
         currency_data_bot = fetch_currency_list(get_currency_response_json(buttons_currency_selection[actual_currency]))
         fetch_currency_graph(currency_data_bot)
@@ -147,14 +150,15 @@ def callback_worker(call):
                        photo=open(currency_graph_path, 'rb'))
 
     elif call.data == cinema_soon:
-        movies = get_movies(get_site_content(url=config.cinema_url + config.cinema_url_path_soon,
-                                             params=cinema_soon_params))
+        movies = get_movies(get_site_request_content(url=config.cinema_url + config.cinema_url_path_soon,
+                                                     params=cinema_soon_params))
         bot.send_message(chat_id=user.user_id,
                          text=get_cinema_data_message(movies),
                          parse_mode=ParseMode.HTML)
 
     elif call.data in dict_buttons_football.values():
-        matches = get_matches(get_site_content(url=config.football_url + call.data + config.football_url_path_calendar))
+        matches = get_matches(get_site_request_content(
+            url=config.football_url + call.data + config.football_url_path_calendar))
         football_message_title = [key for key, value in dict_buttons_football.items() if value == call.data][0]
 
         actual_buttons_football = dict(dict_buttons_football)
