@@ -222,4 +222,8 @@ def callback_worker(call):
                          parse_mode=ParseMode.HTML)
 
 
-bot.polling(none_stop=True)
+while True:
+    try:
+        bot.polling(none_stop=True)
+    except Exception as e:
+        logger.error(e)
