@@ -2,7 +2,7 @@
 import logging
 
 from features.football.match import Match
-from msg_context import football_bot_text
+from base.msg_context import football_bot_text
 from util.util_parsing import get_tree_html_content
 
 logger = logging.getLogger(__name__)
