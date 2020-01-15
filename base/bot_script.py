@@ -1,26 +1,17 @@
 import logging
 
-from telebot import types
 from telegram import ParseMode
 
 from base.msg_context import *
 from config import *
 from features.currency.currency_api import fetch_currency_list, get_currency_response_json, get_currency_data_message
 from features.instagram.insta_loader import get_insta_post_data, fetch_insta_post_content_files
+from util.bot_helper import get_message_keyboard
 
 logger = logging.getLogger(__name__)
 
 
-def get_message_keyboard(*args):
-    message_keyboard = types.InlineKeyboardMarkup()
-    for button in args:
-        buttons = [types.InlineKeyboardButton(text=key, callback_data=button[key]) for key in button]
-        message_keyboard.row(*buttons)
-    logger.info("Get message keyboard: {}".format(args))
-    return message_keyboard
-
-
-def fetch_currency(bot, user, actual_currency: int):
+def send_currency_rate(bot, user, actual_currency: int):
     currency_list = fetch_currency_list(get_currency_response_json(actual_currency))
 
     currency_response_past_days = get_currency_data_message(currency_list[-10:-1])
