@@ -12,6 +12,7 @@ button_currency_graph = {'Currency Graph': currency_graph}
 buttons_currency_selection = {'$': currency_dollar_id,
                               '€': currency_euro_id,
                               'RUR': currency_rur_id}
+currency_list = [str(currency_id) for currency_id in buttons_currency_selection.values()]
 
 cinema_url = "https://afisha.tut.by"
 cinema_url_path_today = "/film"
@@ -26,6 +27,8 @@ football_le_path = "/le"
 football_url_path_calendar = "/stats/calendar"
 buttons_football_leagues = [{'UEFA Champions League': football_ucl_path},
                             {'UEFA Europa League': football_le_path}]
+dict_buttons_football = dict((key, d[key]) for d in buttons_football_leagues for key in d)
+
 
 instagram_link_regexp = "https?:\/\/www\.instagram\.com[a-zA-Z0-9\.\&\/\?\:@\-_=#]*$"
 instagram_url_media_name_regexp = "[^\/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))"
@@ -33,3 +36,7 @@ instagram_post_content_folder = os.path.join("features", "instagram", "post_cont
 instagram_image_type = "GraphImage"
 instagram_side_type = "GraphSidecar"
 instagram_video_type = "GraphVideo"
+
+location_url = "https://yandex.by/maps/157/minsk/search/{item}/?l=sat%2Cskl&ll={longitude}%2C{latitude}&sll={longitude}%2C{latitude}&sspn=0.01%2C0.004&z=16"
+location_atm = "Банкомат"
+location_folder = os.path.join("features", "location", "map")
