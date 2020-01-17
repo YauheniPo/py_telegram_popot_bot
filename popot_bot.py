@@ -3,7 +3,7 @@ import telebot
 from telebot import types
 from telegram import ParseMode
 
-from base.bot_script import send_currency_rate, get_message_keyboard, send_instagram_media
+from base.bot_script import send_currency_rate, get_message_keyboard, send_instagram_media, sent_map_location
 from base.msg_context import *
 from base.user import User
 from features.cinema.cinema_site_parser import *
@@ -11,8 +11,6 @@ from features.currency.currency_api import *
 from features.currency.currency_graph_generator import fetch_currency_graph
 from features.football.football_site_parser import *
 from features.instagram.insta_loader import *
-from features.location.geo import Geo
-from features.location.map_fetcher import fetch_map
 from util.util_parsing import is_match_by_regexp
 from util.util_request import get_site_request_content
 
@@ -55,7 +53,8 @@ def start(message):
                                                      currency=base_cmd_currency,
                                                      cinema=base_cmd_cinema,
                                                      football=base_cmd_football,
-                                                     instagram=base_cmd_instagram))
+                                                     instagram=base_cmd_instagram,
+                                                     geo=base_cmd_geo))
 
 
 @bot.message_handler(regexp='^\{command}'.format(command=base_cmd_currency))
@@ -109,18 +108,11 @@ def location(message):
     user = get_user(chat=message.chat)
 
     if message.location is not None:
-        geo = Geo(message.location.latitude, message.location.longitude, location_atm)
-        fetch_map(geo)
-        bot.send_photo(chat_id=user.user_id,
-                       reply_to_message_id=message.message_id,
-                       photo=open(geo.screen_path, 'rb'))
-        bot.send_message(chat_id=user.user_id,
-                         reply_to_message_id=message.message_id,
-                         text="<a href='{link}'>GO to Yandex map.\nClick here!</a>".format(link=geo.geo_map_url),
-                         parse_mode=ParseMode.HTML)
+        sent_map_location(bot, user, message)
 
 
-@bot.message_handler(func=lambda message: message.text is not None and is_match_by_regexp(message.text, instagram_link_regexp))
+@bot.message_handler(
+    func=lambda message: message.text is not None and is_match_by_regexp(message.text, instagram_link_regexp))
 def send_instagram_post_content(message):
     user = get_user(chat=message.chat)
 

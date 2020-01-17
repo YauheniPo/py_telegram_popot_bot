@@ -5,7 +5,8 @@ start_base_cmd_text = """
 {currency} - $ / € / RUR - currency data and graph
 {cinema} - cinema posters
 {football} - football calendar
-{instagram} - save Instagram post content by link"""
+{instagram} - save Instagram post content by link
+{geo} - location of the nearest ATMs"""
 
 currency_bot_text = """
 <b>{currency}</b>
