@@ -6,9 +6,10 @@ from config import *
 
 class InstaPost:
 
-    def __init__(self, post_url=None):
+    def __init__(self, post_url=None, message_id=None):
         self.post_url = post_url
-        self.is_private_profile = False
+        self.message_id = message_id
+        self.is_blocked_profile = False
         self.post_description = None
         self.media_urls = []
         self.media_content_paths = []

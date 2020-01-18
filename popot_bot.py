@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import telebot
 from telebot import types
+from telebot.types import Message
 from telegram import ParseMode
 
-from base.bot_script import send_currency_rate, get_message_keyboard, send_instagram_media, sent_map_location
+from base.bot_script import send_currency_rate, get_message_keyboard, send_instagram_media, send_map_location
 from base.msg_context import *
 from base.user import User
 from features.cinema.cinema_site_parser import *
@@ -58,10 +59,18 @@ def start(message):
 
 
 @bot.message_handler(regexp='^\{command}'.format(command=base_cmd_currency))
+@bot.callback_query_handler(func=lambda call: call.data in currency_list)
 def currency(message):
-    user = get_user(chat=message.chat)
+    if type(message) == Message:
+        chat = message.chat
+        actual_currency = config.currency_dollar_id
+    else:
+        chat = message.message.chat
+        actual_currency = message.data
 
-    send_currency_rate(bot, user, config.currency_dollar_id)
+    user = get_user(chat=chat)
+
+    send_currency_rate(bot, user, actual_currency)
 
 
 @bot.message_handler(regexp='^\{cinema}'.format(cinema=base_cmd_cinema))
@@ -108,7 +117,7 @@ def location(message):
     user = get_user(chat=message.chat)
 
     if message.location is not None:
-        sent_map_location(bot, user, message)
+        send_map_location(bot, user, message)
 
 
 @bot.message_handler(
@@ -119,7 +128,7 @@ def send_instagram_post_content(message):
     user_message = message.text
     logger.info("User message: '{}'".format(user_message))
 
-    send_instagram_media(bot, user_message, user)
+    send_instagram_media(bot, message, user)
 
 
 @bot.message_handler(content_types=['text', 'document'], func=lambda message: True)
@@ -180,19 +189,12 @@ def send_football_calendar(call):
                      parse_mode=ParseMode.HTML)
 
 
-@bot.callback_query_handler(func=lambda call: call.data in currency_list)
-def send_currency_data(call):
-    logger.info("Button '{}'".format(call.data))
-    user = get_user(call.from_user.id)
-
-    send_currency_rate(bot, user, call.data)
-
-
-while True:
-    try:
-        bot.polling(none_stop=True)
-    except Exception as e:
-        logger.error(e)
+if __name__ == "__main__":
+    for i in range(0, 5):
+        try:
+            bot.polling(none_stop=True)
+        except Exception as e:
+            logger.error(e)
 
 # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
 
