@@ -38,36 +38,46 @@ def send_to_user_insta_post_media_content(bot, insta_post, user):
         logger.info("Send media '{}'".format(content_path))
         if content_type == instagram_video_type:
             bot.send_video(chat_id=user.user_id,
+                           reply_to_message_id=insta_post.message_id,
                            data=open(content_path, 'rb'))
         elif content_type == instagram_image_type:
             bot.send_photo(chat_id=user.user_id,
+                           reply_to_message_id=insta_post.message_id,
                            photo=open(content_path, 'rb'))
         else:
             bot.send_message(chat_id=user.user_id,
+                             reply_to_message_id=insta_post.message_id,
                              text=instagram_warning_unknown_content_type)
 
     if insta_post.post_description:
         bot.send_message(chat_id=user.user_id,
+                         reply_to_message_id=insta_post.message_id,
                          text="<b>Post description</b>\n\n" + insta_post.post_description[0]['node']['text'],
                          parse_mode=ParseMode.HTML)
 
 
 def send_instagram_media(bot, user_message, user):
-    logger.info("Instagram link '{}'".format(user_message))
+    logger.info("Instagram link '{}'".format(user_message.text))
     insta_post = get_insta_post_data(user_message)
 
     logger.info(("--Instagram instance-- '{}'".format(insta_post.__dict__)).encode("utf-8"))
 
-    try:
-        fetch_insta_post_content_files(insta_post)
-        send_to_user_insta_post_media_content(bot, insta_post, user)
-    except:
-        logger.error(u"{}: {}".format(error_msg_save_image, insta_post))
+    if insta_post.is_blocked_profile:
         bot.send_message(chat_id=user.user_id,
-                         text=error_msg_save_image)
+                         reply_to_message_id=user_message.message_id,
+                         text=error_msg_link_is_blocked)
+    else:
+        try:
+            fetch_insta_post_content_files(insta_post)
+            send_to_user_insta_post_media_content(bot, insta_post, user)
+        except:
+            logger.error(u"{}: {}".format(error_msg_save_image, insta_post))
+            bot.send_message(chat_id=user.user_id,
+                             reply_to_message_id=user_message.message_id,
+                             text=error_msg_save_image)
 
 
-def sent_map_location(bot, user, message):
+def send_map_location(bot, user, message):
     wait_message = bot.send_message(chat_id=user.user_id,
                                     reply_to_message_id=message.message_id,
                                     text="Data processing may take up to 15 seconds. Please wait.")

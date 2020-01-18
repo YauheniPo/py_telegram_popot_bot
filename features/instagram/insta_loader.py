@@ -28,8 +28,12 @@ def get_insta_post_with_content_data(insta_post_media_content_json, insta_post: 
 def get_insta_post_data(post_content, insta_post):
     insta_post_private_data_script_xpath = "//script[@type='text/javascript'][contains(text(),'window.__additionalDataLoaded(')]//text()"
 
-    insta_post_html_script_content = re.search(
-        json_data_regex, find_elements(post_content, insta_post_private_data_script_xpath)[0]).group(0)
+    post_content_elements = find_elements(post_content, insta_post_private_data_script_xpath)
+    if not post_content_elements:
+        insta_post.is_blocked_profile = True
+        return insta_post
+
+    insta_post_html_script_content = re.search(json_data_regex, post_content_elements[0]).group(0)
 
     insta_post_data_json = json.loads(insta_post_html_script_content)
     insta_post_media_content_json = list(insta_post_data_json['graphql'].values())[0]
@@ -47,8 +51,8 @@ def get_insta_post_data(post_content, insta_post):
 
 
 @dispatch(str)
-def get_insta_post_data(post_url):
-    insta_post = InstaPost(post_url=post_url)
+def get_insta_post_data(user_message):
+    insta_post = InstaPost(post_url=user_message.text, message_id=user_message.message_id)
     site_content = get_site_request_content(url=insta_post.post_url.replace('https', 'http'),
                                             cookies=browser_cookie3.firefox())
     return get_insta_post_data(site_content, insta_post)

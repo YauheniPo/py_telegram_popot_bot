@@ -26,3 +26,4 @@ Please copy/share Instagram post link and paste/ move to bot."""
 instagram_warning_unknown_content_type = "Unknown content type."
 
 error_msg_save_image = 'Save Instagram media ERROR.'
+error_msg_link_is_blocked = 'I can’t get the data from this link.'

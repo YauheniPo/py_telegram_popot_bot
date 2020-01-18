@@ -30,7 +30,7 @@ buttons_football_leagues = [{'UEFA Champions League': football_ucl_path},
 dict_buttons_football = dict((key, d[key]) for d in buttons_football_leagues for key in d)
 
 
-instagram_link_regexp = "https?:\/\/www\.instagram\.com[a-zA-Z0-9\.\&\/\?\:@\-_=#]*$"
+instagram_link_regexp = "https?:\/\/www\.instagram\.com\/p\/[a-zA-Z0-9\.\&\/\?\:@\-_=#]*$"
 instagram_url_media_name_regexp = "[^\/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))"
 instagram_post_content_folder = os.path.join("features", "instagram", "post_content")
 instagram_image_type = "GraphImage"
