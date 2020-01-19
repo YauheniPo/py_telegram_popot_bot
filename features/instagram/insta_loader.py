@@ -4,6 +4,7 @@ import re
 
 import browser_cookie3
 from multipledispatch import dispatch
+from telebot.types import Message
 
 from config import *
 from features.instagram.insta_post import InstaPost
@@ -50,7 +51,7 @@ def get_insta_post_data(post_content, insta_post):
     return insta_post
 
 
-@dispatch(str)
+@dispatch(Message)
 def get_insta_post_data(user_message):
     insta_post = InstaPost(post_url=user_message.text, message_id=user_message.message_id)
     site_content = get_site_request_content(url=insta_post.post_url.replace('https', 'http'),

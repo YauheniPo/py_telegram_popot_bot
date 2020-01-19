@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import telebot
 from telebot import types
-from telebot.types import Message
 from telegram import ParseMode
 
 from base.bot_script import send_currency_rate, get_message_keyboard, send_instagram_media, send_map_location
@@ -189,6 +188,13 @@ def send_football_calendar(call):
                      reply_markup=get_message_keyboard(actual_buttons_football),
                      parse_mode=ParseMode.HTML)
 
+
+# if __name__ == "__main__":
+#     for i in range(0, 5):
+#         try:
+#             bot.polling(none_stop=True)
+#         except Exception as e:
+#             logger.error(e)
 
 # bot.set_webhook("https://{}.pythonanywhere.com/{}".format(os.environ.get('username'), TELEGRAM_BOT_TOKEN))
 
