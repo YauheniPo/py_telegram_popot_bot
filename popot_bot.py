@@ -16,7 +16,7 @@ from util.util_parsing import is_match_by_regexp
 from util.util_request import get_site_request_content
 
 TELEGRAM_BOT_TOKEN = os.environ.get('bot_token')
-bot = telebot.TeleBot(token=TELEGRAM_BOT_TOKEN)
+bot = telebot.TeleBot(token=TELEGRAM_BOT_TOKEN, threaded=False)
 
 base_cmd_start = '/start'
 base_cmd_currency = '/currency'
@@ -190,7 +190,7 @@ def send_football_calendar(call):
                      parse_mode=ParseMode.HTML)
 
 
-bot.set_webhook("https://{}.pythonanywhere.com/{}".format(os.environ.get('username'), TELEGRAM_BOT_TOKEN))
+# bot.set_webhook("https://{}.pythonanywhere.com/{}".format(os.environ.get('username'), TELEGRAM_BOT_TOKEN))
 
 # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
 
