@@ -10,3 +10,5 @@ multipledispatch==0.6.0
 browser-cookie3==0.9.1
 webdriver-manager==2.3.0
 selenium==3.141.0
+Flask==1.1.1
+Flask-SSLify==0.1.5
