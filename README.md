@@ -9,7 +9,7 @@ Functions:
     _/instagram_ - save Instagram post content by link
     _/geo_ - location of the nearest ATMs
 
-![Alt Text](https://github.com/YauheniPo/py_telegram_popot_bot/media/ezgif.com-video-to-gif.gif)
+![popot_bot](https://github.com/YauheniPo/py_telegram_popot_bot/blob/master/media/ezgif.com-video-to-gif.gif)
 
 pip install -r requirements.txt (Python 2)
 pip3 install -r requirements.txt (Python 3)
