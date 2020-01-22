@@ -1,5 +1,16 @@
 # py_telegram_popot_bot
 
+Telegram Bot **@popot_bot**
+Functions:
+    _/start_ - HELP - telegram bot functionals
+    _/currency_ - $ / € / RUR - currency data and graph
+    _/cinema_ - cinema posters
+    _/football_ - football calendar
+    _/instagram_ - save Instagram post content by link
+    _/geo_ - location of the nearest ATMs
+
+![Alt Text](https://github.com/YauheniPo/py_telegram_popot_bot/media/ezgif.com-video-to-gif.gif)
+
 pip install -r requirements.txt (Python 2)
 pip3 install -r requirements.txt (Python 3)
 
