@@ -1,18 +1,17 @@
 # py_telegram_popot_bot
 
 Telegram Bot **@popot_bot**
+
 Functions:
-    _/start_ - HELP - telegram bot functionals
+
+```/start - HELP - telegram bot functionals
+ /currency - $ / € / RUR - currency data and graph
+ /cinema - cinema posters
+ /football - football calendar
+ /instagram - save Instagram post content by link
+ /geo - location of the nearest ATMs
+```
     
-    _/currency_ - $ / € / RUR - currency data and graph
-    
-    _/cinema_ - cinema posters
-    
-    _/football_ - football calendar
-    
-    _/instagram_ - save Instagram post content by link
-    
-    _/geo_ - location of the nearest ATMs
 
 ![popot_bot](https://github.com/YauheniPo/py_telegram_popot_bot/blob/master/media/ezgif.com-video-to-gif.gif)
 
