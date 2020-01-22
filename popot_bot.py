@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import telebot
 from telebot import types
-from telebot.types import Message
 from telegram import ParseMode
 
 from base.bot_script import send_currency_rate, get_message_keyboard, send_instagram_media, send_map_location
@@ -15,7 +14,8 @@ from features.instagram.insta_loader import *
 from util.util_parsing import is_match_by_regexp
 from util.util_request import get_site_request_content
 
-bot = telebot.TeleBot(token=os.environ.get('bot_token'))
+TELEGRAM_BOT_TOKEN = os.environ.get('bot_token')
+bot = telebot.TeleBot(token=TELEGRAM_BOT_TOKEN, threaded=False)
 
 base_cmd_start = '/start'
 base_cmd_currency = '/currency'
@@ -189,12 +189,14 @@ def send_football_calendar(call):
                      parse_mode=ParseMode.HTML)
 
 
-if __name__ == "__main__":
-    for i in range(0, 5):
-        try:
-            bot.polling(none_stop=True)
-        except Exception as e:
-            logger.error(e)
+# if __name__ == "__main__":
+#     for i in range(0, 5):
+#         try:
+#             bot.polling(none_stop=True)
+#         except Exception as e:
+#             logger.error(e)
+
+# bot.set_webhook("https://{}.pythonanywhere.com/{}".format(os.environ.get('username'), TELEGRAM_BOT_TOKEN))
 
 # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
 
