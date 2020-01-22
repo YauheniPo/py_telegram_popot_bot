@@ -2,7 +2,7 @@
 import logging
 
 from features.football.match import Match
-from base.msg_context import football_bot_text
+from constants_bot import MSG_FOOTBALL_BOT
 from util.util_parsing import get_tree_html_content
 
 logger = logging.getLogger(__name__)
@@ -29,5 +29,5 @@ def get_matches(site_content):
 
 def get_football_data_message(matches):
     return "\n".join(
-        [football_bot_text.format(date=match.date, host_team=match.host_team, guest_team=match.guest_team)
+        [MSG_FOOTBALL_BOT.format(date=match.date, host_team=match.host_team, guest_team=match.guest_team)
          for match in matches])

@@ -2,7 +2,7 @@ import logging
 
 from telegram import ParseMode
 
-from base.msg_context import *
+from constants_bot import *
 from config import *
 from features.currency.currency_api import fetch_currency_list, get_currency_response_json, get_currency_data_message
 from features.instagram.insta_loader import get_insta_post_data, fetch_insta_post_content_files
@@ -25,7 +25,7 @@ def send_currency_rate(bot, user, actual_currency: int):
     del actual_buttons_currency_selection[current_currency]
 
     bot.send_message(chat_id=user.user_id,
-                     text=currency_bot_text.format(
+                     text=MSG_CURRENCY_BOT.format(
                          currency=current_currency,
                          currency_past_days=currency_response_past_days,
                          currency_current_day=currency_response_current_day),
@@ -47,7 +47,7 @@ def send_to_user_insta_post_media_content(bot, insta_post, user):
         else:
             bot.send_message(chat_id=user.user_id,
                              reply_to_message_id=insta_post.message_id,
-                             text=instagram_warning_unknown_content_type)
+                             text=MSG_WARNING_INSTAGRAM_UNKNOWN_CONTENT_TYPE)
 
     if insta_post.post_description:
         bot.send_message(chat_id=user.user_id,
@@ -65,16 +65,16 @@ def send_instagram_media(bot, user_message, user):
     if insta_post.is_blocked_profile:
         bot.send_message(chat_id=user.user_id,
                          reply_to_message_id=user_message.message_id,
-                         text=error_msg_link_is_blocked)
+                         text=MSG_ERROR_LINK_IS_BLOCKED)
     else:
         try:
             fetch_insta_post_content_files(insta_post)
             send_to_user_insta_post_media_content(bot, insta_post, user)
         except:
-            logger.error(u"{}: {}".format(error_msg_save_image, insta_post))
+            logger.error(u"{}: {}".format(MSG_ERROR_MSG_SAVE_IMAGE, insta_post))
             bot.send_message(chat_id=user.user_id,
                              reply_to_message_id=user_message.message_id,
-                             text=error_msg_save_image)
+                             text=MSG_ERROR_MSG_SAVE_IMAGE)
 
 
 def send_map_location(bot, user, message):
