@@ -4,8 +4,8 @@ from telebot import types
 from telegram import ParseMode
 
 from base.bot_script import send_currency_rate, get_message_keyboard, send_instagram_media, send_map_location
-from base.msg_context import *
 from base.user import User
+from constants_bot import *
 from features.cinema.cinema_site_parser import *
 from features.currency.currency_api import *
 from features.currency.currency_graph_generator import fetch_currency_graph
@@ -16,13 +16,6 @@ from util.util_request import get_site_request_content
 
 TELEGRAM_BOT_TOKEN = os.environ.get('bot_token')
 bot = telebot.TeleBot(token=TELEGRAM_BOT_TOKEN, threaded=False)
-
-base_cmd_start = '/start'
-base_cmd_currency = '/currency'
-base_cmd_cinema = '/cinema'
-base_cmd_football = '/football'
-base_cmd_instagram = '/instagram'
-base_cmd_geo = '/geo'
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='log.log',
@@ -44,21 +37,21 @@ def get_user(user_id=None, chat=None):
     return users[user_id]
 
 
-@bot.message_handler(regexp='^\{start}'.format(start=base_cmd_start))
+@bot.message_handler(regexp='^\{start}'.format(start=BASE_CMD_START))
 def start(message):
     user = User(chat=message.chat)
     users[user.user_id] = user
 
     bot.send_message(chat_id=user.user_id,
-                     text=start_base_cmd_text.format(start=base_cmd_start,
-                                                     currency=base_cmd_currency,
-                                                     cinema=base_cmd_cinema,
-                                                     football=base_cmd_football,
-                                                     instagram=base_cmd_instagram,
-                                                     geo=base_cmd_geo))
+                     text=MSG_START_CMD_BASE.format(start=BASE_CMD_START,
+                                                    currency=BASE_CMD_CURRENCY,
+                                                    cinema=BASE_CMD_CINEMA,
+                                                    football=BASE_CMD_FOOTBALL,
+                                                    instagram=BASE_CMD_INSTAGRAM,
+                                                    geo=BASE_CMD_GEO))
 
 
-@bot.message_handler(regexp='^\{command}'.format(command=base_cmd_currency))
+@bot.message_handler(regexp='^\{command}'.format(command=BASE_CMD_CURRENCY))
 @bot.callback_query_handler(func=lambda call: call.data in currency_list)
 def currency(message):
     if type(message) == Message:
@@ -73,7 +66,7 @@ def currency(message):
     send_currency_rate(bot, user, actual_currency)
 
 
-@bot.message_handler(regexp='^\{cinema}'.format(cinema=base_cmd_cinema))
+@bot.message_handler(regexp='^\{cinema}'.format(cinema=BASE_CMD_CINEMA))
 def cinema(message):
     user = get_user(chat=message.chat)
 
@@ -85,24 +78,24 @@ def cinema(message):
                      parse_mode=ParseMode.HTML)
 
 
-@bot.message_handler(regexp='^\{football}'.format(football=base_cmd_football))
+@bot.message_handler(regexp='^\{football}'.format(football=BASE_CMD_FOOTBALL))
 def football(message):
     user = get_user(chat=message.chat)
 
     bot.send_message(chat_id=user.user_id,
-                     text=football_base_cmd_text,
+                     text=MSG_FOOTBALL_BASE_CMD,
                      reply_markup=get_message_keyboard(buttons_football_leagues[0], buttons_football_leagues[1]))
 
 
-@bot.message_handler(regexp='^\{instagram}'.format(instagram=base_cmd_instagram))
+@bot.message_handler(regexp='^\{instagram}'.format(instagram=BASE_CMD_INSTAGRAM))
 def instagram(message):
     user = get_user(chat=message.chat)
 
     bot.send_message(chat_id=user.user_id,
-                     text=instagram_bot_text)
+                     text=MSG_INSTAGRAM_BOT)
 
 
-@bot.message_handler(regexp='^\{geo}'.format(geo=base_cmd_geo))
+@bot.message_handler(regexp='^\{geo}'.format(geo=BASE_CMD_GEO))
 def geo(message):
     user = get_user(chat=message.chat)
 
@@ -189,12 +182,12 @@ def send_football_calendar(call):
                      parse_mode=ParseMode.HTML)
 
 
-# if __name__ == "__main__":
-#     for i in range(0, 5):
-#         try:
-#             bot.polling(none_stop=True)
-#         except Exception as e:
-#             logger.error(e)
+if __name__ == "__main__":
+    for i in range(0, 5):
+        try:
+            bot.polling(none_stop=True)
+        except Exception as e:
+            logger.error(e)
 
 # bot.set_webhook("https://{}.pythonanywhere.com/{}".format(os.environ.get('username'), TELEGRAM_BOT_TOKEN))
 

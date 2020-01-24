@@ -7,7 +7,7 @@ from selenium.webdriver.firefox.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
-from features.location.map_page import MapPage, what_here_context_item
+from features.location.map_page import MapPage, WHAT_HERE_CONTEXT_ITEM
 from util.webdriver_helper import is_visible, wait_for_ajax
 
 logger = logging.getLogger(__name__)
@@ -25,8 +25,8 @@ def fetch_map(geo):
         driver.get(geo.geo_map_url)
         map_page = MapPage(driver)
         map_page.right_mouse_click_on_map()
-        if is_visible(driver, map_page.context_menu_xpath):
-            map_page.select_context_menu_item(what_here_context_item)
+        if is_visible(driver, map_page.CONTEXT_MENU_XPATH):
+            map_page.select_context_menu_item(WHAT_HERE_CONTEXT_ITEM)
         # wait_for_ajax(driver)
         # if is_visible(driver, map_page.ad_close_button_xpath):
         #     map_page.close_ad()
