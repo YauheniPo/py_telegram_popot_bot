@@ -87,7 +87,7 @@ def football(message):
 
     bot.send_message(chat_id=user.user_id,
                      text=MSG_FOOTBALL_BASE_CMD,
-                     reply_markup=get_message_keyboard(buttons_football_leagues[0], buttons_football_leagues[1]))
+                     reply_markup=get_message_keyboard(*[{k: v} for (k, v) in buttons_football_leagues.items()]))
 
 
 @bot.message_handler(regexp='^\{instagram}'.format(instagram=BASE_CMD_INSTAGRAM))
@@ -141,10 +141,10 @@ def send_currency_graph(call):
     user = get_user(call.from_user.id)
 
     actual_currency = list(
-        set(buttons_currency_selection.keys()) -
-        set([currency_data['text'] for currency_data in call.message.json['reply_markup']['inline_keyboard'][1]]))[0]
+        set(currency_ids) - set([currency_data['callback_data']
+                                 for currency_data in call.message.json['reply_markup']['inline_keyboard'][1]]))[0]
 
-    currency_data_bot = fetch_currency_list(get_currency_response_json(buttons_currency_selection[actual_currency]))
+    currency_data_bot = fetch_currency_list(get_currency_response_json(actual_currency))
     fetch_currency_graph(currency_data_bot)
 
     actual_buttons_currency_selection = dict(buttons_currency_selection)
@@ -167,17 +167,16 @@ def send_cinema_soon(call):
                      parse_mode=ParseMode.HTML)
 
 
-@bot.callback_query_handler(func=lambda call: call.data in dict_buttons_football.values())
+@bot.callback_query_handler(func=lambda call: call.data in football_leagues_cmd)
 def send_football_calendar(call):
     logger.info("Button '{}'".format(call.data))
     user = get_user(call.from_user.id)
 
     matches = get_matches(get_site_request_content(
         url=bot_config.football_url + call.data + bot_config.football_url_path_calendar))
-    football_message_title = [key for key, value in dict_buttons_football.items() if value == call.data][0]
 
-    actual_buttons_football = dict(dict_buttons_football)
-    del actual_buttons_football[football_message_title]
+    actual_buttons_football = dict(buttons_football_leagues)
+    football_message_title = actual_buttons_football.pop(call.data)
 
     bot.send_message(chat_id=user.user_id,
                      text="<b>{}</b>\n\n".format(football_message_title) + get_football_data_message(matches),
@@ -185,13 +184,13 @@ def send_football_calendar(call):
                      parse_mode=ParseMode.HTML)
 
 
-if __name__ == "__main__":
-    for i in range(0, 5):
-        time.sleep(0.1)
-        try:
-            bot.polling(none_stop=True)
-        except Exception as e:
-            logger.error(e)
+# if __name__ == "__main__":
+#     for i in range(0, 5):
+#         time.sleep(0.1)
+#         try:
+#             bot.polling(none_stop=True)
+#         except Exception as e:
+#             logger.error(e)
 
 # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
 

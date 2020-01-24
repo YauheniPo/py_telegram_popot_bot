@@ -19,10 +19,9 @@ def send_currency_rate(bot, user, actual_currency: int):
     currency_response_past_days = get_currency_data_message(currency_list[-10:-1])
     currency_response_current_day = get_currency_data_message([currency_list[-1]])
 
-    current_currency = list(buttons_currency_selection.keys())[
-        list(buttons_currency_selection.values()).index(actual_currency)]
+    current_currency = buttons_currency_selection[actual_currency]
     actual_buttons_currency_selection = dict(buttons_currency_selection)
-    del actual_buttons_currency_selection[current_currency]
+    del actual_buttons_currency_selection[actual_currency]
 
     bot.send_message(chat_id=user.user_id,
                      text=MSG_CURRENCY_BOT.format(

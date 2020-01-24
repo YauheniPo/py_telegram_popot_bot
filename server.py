@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
+import os
+import time
 
 import flask
 import telebot
@@ -23,7 +25,7 @@ def index():
 
 
 @app.route('/deleteWebhook', methods=["GET"])
-def index():
+def deleteWebhook():
     bot.remove_webhook()
     return "Remove Webhook!", 200
 

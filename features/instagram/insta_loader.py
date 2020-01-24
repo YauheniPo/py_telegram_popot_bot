@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import re
+from functools import singledispatch
 
 import browser_cookie3
 from multipledispatch import dispatch
