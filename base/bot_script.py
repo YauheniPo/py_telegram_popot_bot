@@ -2,8 +2,8 @@ import logging
 
 from telegram import ParseMode
 
-from constants_bot import *
-from config import *
+from bot_constants import *
+from bot_config import *
 from features.currency.currency_api import fetch_currency_list, get_currency_response_json, get_currency_data_message
 from features.instagram.insta_loader import get_insta_post_data, fetch_insta_post_content_files
 from features.location.geo import Geo

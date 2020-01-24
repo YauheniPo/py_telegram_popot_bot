@@ -2,7 +2,7 @@
 import logging
 import os
 
-from config import location_folder, location_url
+from bot_config import location_folder, location_url
 
 logger = logging.getLogger(__name__)
 

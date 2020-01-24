@@ -6,7 +6,7 @@ import browser_cookie3
 from multipledispatch import dispatch
 from telebot.types import Message
 
-from config import *
+from bot_config import *
 from features.instagram.insta_post import InstaPost
 from util.util_parsing import json_data_regex, find_elements
 from util.util_request import *
@@ -43,8 +43,8 @@ def get_insta_post_data(post_content, insta_post):
     insta_post.set_description(insta_post_description)
     if insta_post_media_content_json['__typename'] == instagram_side_type:
         side_type_media_data_list = insta_post_media_content_json['edge_sidecar_to_children']['edges']
-        for side_media_data in side_type_media_data_list:
-            get_insta_post_with_content_data(side_media_data['node'], insta_post)
+        [get_insta_post_with_content_data(side_media_data['node'], insta_post)
+         for side_media_data in side_type_media_data_list]
     else:
         get_insta_post_with_content_data(insta_post_media_content_json, insta_post)
 

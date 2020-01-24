@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 
-from config import *
+from bot_config import *
 
 
 class InstaPost:

@@ -7,7 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-from config import currency_graph_path, currency_graph_folder
+from bot_config import currency_graph_path, currency_graph_folder
 
 logger = logging.getLogger(__name__)
 
