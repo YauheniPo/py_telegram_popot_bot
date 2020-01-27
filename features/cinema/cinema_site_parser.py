@@ -2,7 +2,7 @@
 import logging
 
 from features.cinema.cinema import Cinema
-from constants_bot import MSG_CINEMA_BOT
+from bot_constants import MSG_CINEMA_BOT
 from util.util_parsing import get_tree_html_content
 
 logger = logging.getLogger(__name__)

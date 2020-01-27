@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+import time
+
 import telebot
 from telebot import types
 from telegram import ParseMode
 
 from base.bot_script import send_currency_rate, get_message_keyboard, send_instagram_media, send_map_location
 from base.user import User
-from constants_bot import *
+from bot_constants import *
 from features.cinema.cinema_site_parser import *
 from features.currency.currency_api import *
 from features.currency.currency_graph_generator import fetch_currency_graph
@@ -14,7 +16,8 @@ from features.instagram.insta_loader import *
 from util.util_parsing import is_match_by_regexp
 from util.util_request import get_site_request_content
 
-TELEGRAM_BOT_TOKEN = os.environ.get('bot_token')
+TELEGRAM_BOT_TOKEN = os.environ.get('BOT_TOKEN')
+TELEGRAM_BOT_NAME = os.environ.get('BOT_NAME')
 bot = telebot.TeleBot(token=TELEGRAM_BOT_TOKEN, threaded=False)
 
 logger = logging.getLogger(__name__)
@@ -52,11 +55,11 @@ def start(message):
 
 
 @bot.message_handler(regexp='^\{command}'.format(command=BASE_CMD_CURRENCY))
-@bot.callback_query_handler(func=lambda call: call.data in currency_list)
+@bot.callback_query_handler(func=lambda call: call.data in currency_ids)
 def currency(message):
     if type(message) == Message:
         chat = message.chat
-        actual_currency = config.currency_dollar_id
+        actual_currency = bot_config.currency_dollar_id
     else:
         chat = message.message.chat
         actual_currency = message.data
@@ -70,7 +73,7 @@ def currency(message):
 def cinema(message):
     user = get_user(chat=message.chat)
 
-    movies = get_movies(get_site_request_content(config.cinema_url + config.cinema_url_path_today))
+    movies = get_movies(get_site_request_content(bot_config.cinema_url + bot_config.cinema_url_path_today))
 
     bot.send_message(chat_id=user.user_id,
                      text=get_cinema_data_message(movies),
@@ -84,7 +87,7 @@ def football(message):
 
     bot.send_message(chat_id=user.user_id,
                      text=MSG_FOOTBALL_BASE_CMD,
-                     reply_markup=get_message_keyboard(buttons_football_leagues[0], buttons_football_leagues[1]))
+                     reply_markup=get_message_keyboard(*[{k: v} for (k, v) in buttons_football_leagues.items()]))
 
 
 @bot.message_handler(regexp='^\{instagram}'.format(instagram=BASE_CMD_INSTAGRAM))
@@ -138,10 +141,10 @@ def send_currency_graph(call):
     user = get_user(call.from_user.id)
 
     actual_currency = list(
-        set(buttons_currency_selection.keys()) -
-        set([currency_data['text'] for currency_data in call.message.json['reply_markup']['inline_keyboard'][1]]))[0]
+        set(currency_ids) - set([currency_data['callback_data']
+                                 for currency_data in call.message.json['reply_markup']['inline_keyboard'][1]]))[0]
 
-    currency_data_bot = fetch_currency_list(get_currency_response_json(buttons_currency_selection[actual_currency]))
+    currency_data_bot = fetch_currency_list(get_currency_response_json(actual_currency))
     fetch_currency_graph(currency_data_bot)
 
     actual_buttons_currency_selection = dict(buttons_currency_selection)
@@ -157,24 +160,23 @@ def send_cinema_soon(call):
     logger.info("Button '{}'".format(call.data))
     user = get_user(call.from_user.id)
 
-    movies = get_movies(get_site_request_content(url=config.cinema_url + config.cinema_url_path_soon,
+    movies = get_movies(get_site_request_content(url=bot_config.cinema_url + bot_config.cinema_url_path_soon,
                                                  params=cinema_soon_params))
     bot.send_message(chat_id=user.user_id,
                      text=get_cinema_data_message(movies),
                      parse_mode=ParseMode.HTML)
 
 
-@bot.callback_query_handler(func=lambda call: call.data in dict_buttons_football.values())
+@bot.callback_query_handler(func=lambda call: call.data in football_leagues_cmd)
 def send_football_calendar(call):
     logger.info("Button '{}'".format(call.data))
     user = get_user(call.from_user.id)
 
     matches = get_matches(get_site_request_content(
-        url=config.football_url + call.data + config.football_url_path_calendar))
-    football_message_title = [key for key, value in dict_buttons_football.items() if value == call.data][0]
+        url=bot_config.football_url + call.data + bot_config.football_url_path_calendar))
 
-    actual_buttons_football = dict(dict_buttons_football)
-    del actual_buttons_football[football_message_title]
+    actual_buttons_football = dict(buttons_football_leagues)
+    football_message_title = actual_buttons_football.pop(call.data)
 
     bot.send_message(chat_id=user.user_id,
                      text="<b>{}</b>\n\n".format(football_message_title) + get_football_data_message(matches),
@@ -182,14 +184,13 @@ def send_football_calendar(call):
                      parse_mode=ParseMode.HTML)
 
 
-if __name__ == "__main__":
-    for i in range(0, 5):
-        try:
-            bot.polling(none_stop=True)
-        except Exception as e:
-            logger.error(e)
-
-# bot.set_webhook("https://{}.pythonanywhere.com/{}".format(os.environ.get('username'), TELEGRAM_BOT_TOKEN))
+# if __name__ == "__main__":
+#     for i in range(0, 5):
+#         time.sleep(0.1)
+#         try:
+#             bot.polling(none_stop=True)
+#         except Exception as e:
+#             logger.error(e)
 
 # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
 

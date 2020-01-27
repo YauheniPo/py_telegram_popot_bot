@@ -4,7 +4,7 @@ import logging
 
 import requests
 
-import config
+import bot_config
 from features.currency.сurrency import Currency
 from util.util_parsing import date_format_d_m, date_format_Y_m_d
 
@@ -19,7 +19,7 @@ def get_currency_response_json(currency_id):
     logger.info("Get currency data")
 
     end_date = datetime.datetime.now().strftime(date_format_Y_m_d)
-    start_date = (datetime.datetime.now() - datetime.timedelta(days=config.currency_graph_days)) \
+    start_date = (datetime.datetime.now() - datetime.timedelta(days=bot_config.currency_graph_days)) \
         .strftime(date_format_Y_m_d)
 
     parameters = {
@@ -28,7 +28,7 @@ def get_currency_response_json(currency_id):
     }
 
     response = requests.get(
-        url="{currency_api_url}/{currency_id}".format(currency_api_url=config.currency_api_url,
+        url="{currency_api_url}/{currency_id}".format(currency_api_url=bot_config.currency_api_url,
                                                       currency_id=currency_id),
         params=parameters)
 
