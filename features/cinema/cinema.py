@@ -2,12 +2,8 @@
 
 
 class Cinema:
-    title: str
-    media: str
-    info: str
-    ticket_link: str
 
-    def __init__(self, title, media, info, ticket_link):
+    def __init__(self, title: str, media: str, info: str, ticket_link: str):
         self.title = title
         self.media = media
         self.info = info

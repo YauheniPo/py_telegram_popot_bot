@@ -10,7 +10,7 @@ class Currency:
     Cur_ID: int
     Cur_OfficialRate: float
 
-    def __init__(self, Cur_ID, Date, Cur_OfficialRate, *args, **kwargs):
+    def __init__(self, Cur_ID, Date, Cur_OfficialRate):
         self.Cur_ID = Cur_ID
         self.Date = datetime.datetime.strptime(Date, date_format_iso)
         self.Cur_OfficialRate = Cur_OfficialRate
