@@ -23,5 +23,11 @@ jobs:
           pip install -r requirements.txt
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
+      - name: Black Code Formatter
+        uses: lgeiger/black-action@v1.0.1
+      - name: Python Syntax Checker
+        uses: cclauss/Find-Python-syntax-errors-action@0.1.1
+      - name: Python style check
+        uses: bulv1ne/python-style-check@v0.3
       - name: Python Style Checker
         uses: andymckay/pycodestyle-action@0.1.3
