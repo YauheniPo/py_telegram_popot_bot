@@ -4,7 +4,7 @@ python-telegram-bot==12.4.2
 lxml==4.5.0
 apiai==1.2.3
 requests==2.22.0
-pyowm==2.10.0
+pyowm==2.9.0
 matplotlib==3.0.3
 multipledispatch==0.6.0
 browser-cookie3==0.10.2
