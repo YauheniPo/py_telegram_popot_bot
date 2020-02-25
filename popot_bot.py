@@ -31,9 +31,7 @@ logging.basicConfig(filename='log.log',
 
 def get_user(user_id=None, chat=None):
     from base.user import User
-    if user_id is None:
-        return User(chat=chat)
-    return User(user_id=user_id)
+    return User(chat=chat, user_id=user_id)
 
 
 @bot.message_handler(regexp='^\{start}'.format(start=BASE_CMD_START))

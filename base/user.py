@@ -20,8 +20,14 @@ class User:
         else:
             self.user_id = user_id
 
-        if not users_table.search(users.id == self.user_id):
+        user = users_table.search(users.id == self.user_id)
+        if not user:
             users_table.insert({'id': self.user_id, 'username': self.username,
                                 'first_name': self.first_name, 'last_name': self.last_name})
+        else:
+            user[0]['username'] = self.username if user[0]['username'] is None else None
+            user[0]['first_name'] = self.first_name if user[0]['first_name'] is None else None
+            user[0]['last_name'] = self.last_name if user[0]['last_name'] is None else None
+            users_table.write_back(user)
 
         logger.info(">>>>>>>>>--User--<<<<<<<<< " + str(self.__dict__))
