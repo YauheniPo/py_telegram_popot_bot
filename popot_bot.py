@@ -4,9 +4,9 @@ import time
 import telebot
 from telebot import types
 from telegram import ParseMode
+from tinydb import TinyDB, Query
 
 from base.bot_script import send_currency_rate, get_message_keyboard, send_instagram_media, send_map_location
-from base.user import User
 from bot_constants import *
 from features.cinema.cinema_site_parser import *
 from features.currency.currency_api import *
@@ -19,31 +19,26 @@ from util.util_request import get_site_request_content
 TELEGRAM_BOT_TOKEN = os.environ.get('BOT_TOKEN')
 TELEGRAM_BOT_NAME = os.environ.get('BOT_NAME')
 bot = telebot.TeleBot(token=TELEGRAM_BOT_TOKEN, threaded=False)
-
+db = TinyDB('db/db.json')
+users_table = db.table('users')
+users = Query()
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='log.log',
                     datefmt='%d/%m/%Y %I:%M:%S %p',
                     format=u'%(asctime)s %(levelname)-8s %(name)-45s %(message)s',
                     level=logging.INFO)
 
-users = dict()
-
 
 def get_user(user_id=None, chat=None):
-    if bool(os.environ.get('demo')):
-        if user_id is None:
-            return User(chat=chat)
-        return User(user_id=user_id)
-
+    from base.user import User
     if user_id is None:
-        return users[chat.from_user.id]
-    return users[user_id]
+        return User(chat=chat)
+    return User(user_id=user_id)
 
 
 @bot.message_handler(regexp='^\{start}'.format(start=BASE_CMD_START))
 def start(message):
-    user = User(chat=message.chat)
-    users[user.user_id] = user
+    user = get_user(chat=message.chat)
 
     bot.send_message(chat_id=user.user_id,
                      text=MSG_START_CMD_BASE.format(start=BASE_CMD_START,
@@ -184,13 +179,13 @@ def send_football_calendar(call):
                      parse_mode=ParseMode.HTML)
 
 
-# if __name__ == "__main__":
-#     for i in range(0, 5):
-#         time.sleep(0.1)
-#         try:
-#             bot.polling(none_stop=True)
-#         except Exception as e:
-#             logger.error(e)
+if __name__ == "__main__":
+    for i in range(0, 5):
+        time.sleep(0.1)
+        try:
+            bot.polling(none_stop=True)
+        except Exception as e:
+            logger.error(e)
 
 # bot.register_next_step_handler(message, func) #следующий шаг – функция func(message)
 
