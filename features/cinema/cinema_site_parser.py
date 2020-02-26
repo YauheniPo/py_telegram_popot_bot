@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
-import logging
-
-from features.cinema.cinema import Cinema
 from bot_constants import MSG_CINEMA_BOT
+from features.cinema.cinema import Cinema
+from logger import logger
 from util.util_parsing import get_tree_html_content
-
-logger = logging.getLogger(__name__)
 
 
 def get_movies(site_content):
-    logger.info("Get movies")
+    logger().info("Get movies")
 
     MOVIES_TREE_XPATH = "//div[contains(@class, 'events')]/ul//li"
     MOVIE_TITLE_XPATH = ".//a[@class='name']"

@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
-import logging
 import os
 
 import matplotlib
+
+from logger import logger
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from bot_config import currency_graph_path, currency_graph_folder
 
-logger = logging.getLogger(__name__)
-
 
 def fetch_currency_graph(currency_data):
-    logger.info("Fetch currency data graph")
+    logger().info("Fetch currency data graph")
 
     x = [currency_day.Date for currency_day in currency_data]
     y = [currency_day.Cur_OfficialRate for currency_day in currency_data]

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-import logging
 import re
 
 from lxml import html
 
-logger = logging.getLogger(__name__)
+from logger import logger
 
 date_format_Y_m_d = '%Y-%m-%d'
 date_format_iso = '%Y-%m-%dT%H:%M:%S'
@@ -22,6 +21,6 @@ def find_elements(site_content, xpath):
 
 
 def is_match_by_regexp(string, regexp):
-    logger.info("String matching '{}'".format(string))
+    logger().info("String matching '{}'".format(string))
     pattern = re.compile(regexp)
     return bool(pattern.match(string))

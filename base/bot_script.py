@@ -1,16 +1,13 @@
-import logging
-
 from telegram import ParseMode
 
-from bot_constants import *
 from bot_config import *
+from bot_constants import *
 from features.currency.currency_api import fetch_currency_list, get_currency_response_json, get_currency_data_message
 from features.instagram.insta_loader import get_insta_post_data, fetch_insta_post_content_files
 from features.location.geo import Geo
 from features.location.map_fetcher import fetch_map
+from logger import logger
 from util.bot_helper import get_message_keyboard
-
-logger = logging.getLogger(__name__)
 
 
 def send_currency_rate(bot, user, actual_currency: int):
@@ -34,7 +31,7 @@ def send_currency_rate(bot, user, actual_currency: int):
 
 def send_to_user_insta_post_media_content(bot, insta_post, user):
     for content_type, content_path in zip(insta_post.media_types, insta_post.media_content_paths):
-        logger.info("Send media '{}'".format(content_path))
+        logger().info("Send media '{}'".format(content_path))
         if content_type == instagram_video_type:
             bot.send_video(chat_id=user.user_id,
                            reply_to_message_id=insta_post.message_id,
@@ -56,10 +53,10 @@ def send_to_user_insta_post_media_content(bot, insta_post, user):
 
 
 def send_instagram_media(bot, user_message, user):
-    logger.info("Instagram link '{}'".format(user_message.text))
+    logger().info("Instagram link '{}'".format(user_message.text))
     insta_post = get_insta_post_data(user_message)
 
-    logger.info(("--Instagram instance-- '{}'".format(insta_post.__dict__)).encode("utf-8"))
+    logger().info(("--Instagram instance-- '{}'".format(insta_post.__dict__)).encode("utf-8"))
 
     if insta_post.is_blocked_profile:
         bot.send_message(chat_id=user.user_id,
@@ -70,7 +67,7 @@ def send_instagram_media(bot, user_message, user):
             fetch_insta_post_content_files(insta_post)
             send_to_user_insta_post_media_content(bot, insta_post, user)
         except:
-            logger.error(u"{}: {}".format(MSG_ERROR_MSG_SAVE_IMAGE, insta_post))
+            logger().error(u"{}: {}".format(MSG_ERROR_MSG_SAVE_IMAGE, insta_post))
             bot.send_message(chat_id=user.user_id,
                              reply_to_message_id=user_message.message_id,
                              text=MSG_ERROR_MSG_SAVE_IMAGE)

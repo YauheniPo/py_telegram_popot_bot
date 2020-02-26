@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 import datetime
-import logging
 
 import requests
 
 import bot_config
 from features.currency.сurrency import Currency
+from logger import logger
 from util.util_parsing import date_format_d_m, date_format_Y_m_d
-
-logger = logging.getLogger(__name__)
 
 
 def fetch_currency_list(json_data):
@@ -16,7 +14,7 @@ def fetch_currency_list(json_data):
 
 
 def get_currency_response_json(currency_id):
-    logger.info("Get currency data")
+    logger().info("Get currency data")
 
     end_date = datetime.datetime.now().strftime(date_format_Y_m_d)
     start_date = (datetime.datetime.now() - datetime.timedelta(days=bot_config.currency_graph_days)) \

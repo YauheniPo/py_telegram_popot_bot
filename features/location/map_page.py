@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from selenium.webdriver import ActionChains
 
-logger = logging.getLogger(__name__)
+from logger import logger
 
 WHAT_HERE_CONTEXT_ITEM = "Что здесь?"
 
@@ -17,7 +15,7 @@ class MapPage:
 
     def __init__(self, driver):
         self.web_driver = driver
-        logger.info("Driver init.")
+        logger().info("Driver init.")
 
     def collapse_searching_list(self):
         self.web_driver.find_element_by_xpath(self.SEARCH_DATA_COLLAPSE_BUTTON_XPATH).click()

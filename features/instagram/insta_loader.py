@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 import re
-from functools import singledispatch
 
 import browser_cookie3
 from multipledispatch import dispatch
@@ -12,7 +11,6 @@ from features.instagram.insta_post import InstaPost
 from util.util_parsing import json_data_regex, find_elements
 from util.util_request import *
 
-logger = logging.getLogger(__name__)
 
 insta_post_json_type_media_url_dict = {instagram_image_type: 'display_url',
                                        instagram_video_type: 'video_url'}
