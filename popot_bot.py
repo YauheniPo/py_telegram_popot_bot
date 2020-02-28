@@ -6,8 +6,8 @@ from telebot import types
 from telegram import ParseMode
 
 from base.bot_script import send_currency_rate, get_message_keyboard, send_instagram_media, send_map_location
+from base.user import fetch_user, get_user
 from bot_constants import *
-from db.db_connection import users_table, users
 from features.cinema.cinema_site_parser import *
 from features.currency.currency_api import *
 from features.currency.currency_graph_generator import fetch_currency_graph
@@ -19,28 +19,6 @@ from util.util_request import get_site_request_content
 TELEGRAM_BOT_TOKEN = os.environ.get('BOT_TOKEN')
 TELEGRAM_BOT_NAME = os.environ.get('BOT_NAME')
 bot = telebot.TeleBot(token=TELEGRAM_BOT_TOKEN, threaded=False)
-
-
-def get_db_user(user_id):
-    db_users = users_table.search(users.id == user_id)
-    return db_users[0] if db_users else []
-
-
-from base.user import User
-
-
-def get_user(user_id):
-    user = User(user_db=get_db_user(user_id=user_id))
-    logger().info("***** {} *****".format(user.__dict__))
-    return user
-
-
-def fetch_user(chat):
-    user = get_db_user(chat.id)
-    if not user:
-        users_table.insert({'id': chat.id, 'username': chat.username,
-                            'first_name': chat.first_name, 'last_name': chat.last_name})
-    return get_user(user_id=chat.id)
 
 
 @bot.message_handler(regexp='^\{start}'.format(start=BASE_CMD_START))
