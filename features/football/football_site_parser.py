@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
-import logging
-
-from features.football.match import Match
 from bot_constants import MSG_FOOTBALL_BOT
+from features.football.match import Match
+from logger import logger
 from util.util_parsing import get_tree_html_content
-
-logger = logging.getLogger(__name__)
 
 
 def get_matches(site_content):
-    logger.info("Get matches")
+    logger().info("Get matches")
 
     matches_tree_xpath = "//div[contains(@class, 'statistics-table')]//tr//td[contains(text(), '-:-')]/ancestor::tr"
     match_host_team_xpath = ".//div[contains(@class, 'team_left')]//span"

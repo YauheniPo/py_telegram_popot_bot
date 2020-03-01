@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
-
 import selenium.webdriver.support.expected_conditions as EC
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -10,7 +8,7 @@ from selenium.webdriver.support import ui
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.firefox import GeckoDriverManager
 
-logger = logging.getLogger(__name__)
+from logger import logger
 
 
 class WebDriverFactory():
@@ -20,7 +18,7 @@ class WebDriverFactory():
         self.driver = None
 
     def get_webdriver_instance(self, options=None, timeout=3):
-        logger.info("Initialization of {browser}.".format(browser=self.browser))
+        logger().info("Initialization of {browser}.".format(browser=self.browser))
         if self.browser == 'FIREFOX':
             self.driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
         self.driver.implicitly_wait(timeout)
@@ -34,7 +32,7 @@ def wait_for_ajax(driver):
         wait.until(lambda driver: driver.execute_script('return jQuery.active') == 0)
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     except Exception as e:
-        logger.error(e)
+        logger().error(e)
 
 
 def is_visible(driver, locator: str, timeout=3) -> bool:

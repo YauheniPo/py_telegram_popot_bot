@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from bot_config import browser
 from features.location.map_page import MapPage, WHAT_HERE_CONTEXT_ITEM
 from util.webdriver_helper import is_visible, wait_for_ajax, get_firefox_options, WebDriverFactory
-
-logger = logging.getLogger(__name__)
 
 
 def fetch_map(geo):
