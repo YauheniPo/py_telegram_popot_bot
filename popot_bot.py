@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import time
 
-import telebot
 from telebot import types
 from telegram import ParseMode
 
 from base.bot_script import send_currency_rate, get_message_keyboard, send_instagram_media, send_map_location
 from base.user import fetch_user, get_user
+from bot import bot
 from bot_constants import *
+from db.db_connection import insert_analytics
 from features.cinema.cinema_site_parser import *
 from features.currency.currency_api import *
 from features.currency.currency_graph_generator import fetch_currency_graph
@@ -15,10 +16,6 @@ from features.football.football_site_parser import *
 from features.instagram.insta_loader import *
 from util.util_parsing import is_match_by_regexp
 from util.util_request import get_site_request_content
-
-TELEGRAM_BOT_TOKEN = os.environ.get('BOT_TOKEN')
-TELEGRAM_BOT_NAME = os.environ.get('BOT_NAME')
-bot = telebot.TeleBot(token=TELEGRAM_BOT_TOKEN, threaded=False)
 
 
 @bot.message_handler(regexp='^\{start}'.format(start=BASE_CMD_START))
@@ -32,6 +29,7 @@ def start(message):
                                                     football=BASE_CMD_FOOTBALL,
                                                     instagram=BASE_CMD_INSTAGRAM,
                                                     geo=BASE_CMD_GEO))
+    insert_analytics(user, message.text)
 
 
 @bot.message_handler(regexp='^\{command}'.format(command=BASE_CMD_CURRENCY))
@@ -47,6 +45,7 @@ def currency(message):
     user = get_user(user_id=chat.id)
 
     send_currency_rate(bot, user, actual_currency)
+    insert_analytics(user, message.text)
 
 
 @bot.message_handler(regexp='^\{cinema}'.format(cinema=BASE_CMD_CINEMA))
@@ -59,6 +58,7 @@ def cinema(message):
                      text=get_cinema_data_message(movies),
                      reply_markup=get_message_keyboard(button_cinema_soon),
                      parse_mode=ParseMode.HTML)
+    insert_analytics(user, message.text)
 
 
 @bot.message_handler(regexp='^\{football}'.format(football=BASE_CMD_FOOTBALL))
@@ -68,6 +68,7 @@ def football(message):
     bot.send_message(chat_id=user.user_id,
                      text=MSG_FOOTBALL_BASE_CMD,
                      reply_markup=get_message_keyboard(*[{k: v} for (k, v) in buttons_football_leagues.items()]))
+    insert_analytics(user, message.text)
 
 
 @bot.message_handler(regexp='^\{instagram}'.format(instagram=BASE_CMD_INSTAGRAM))
@@ -76,6 +77,7 @@ def instagram(message):
 
     bot.send_message(chat_id=user.user_id,
                      text=MSG_INSTAGRAM_BOT)
+    insert_analytics(user, message.text)
 
 
 @bot.message_handler(regexp='^\{geo}'.format(geo=BASE_CMD_GEO))
@@ -86,6 +88,7 @@ def geo(message):
     button_geo = types.KeyboardButton(text="Send location", request_location=True)
     keyboard.add(button_geo)
     bot.send_message(user.user_id, "Hello! Click on the button and give me your location.", reply_markup=keyboard)
+    insert_analytics(user, message.text)
 
 
 @bot.message_handler(content_types=['location'])
@@ -94,6 +97,7 @@ def location(message):
 
     if message.location is not None:
         send_map_location(bot, user, message)
+    insert_analytics(user, message.text)
 
 
 @bot.message_handler(
@@ -105,6 +109,7 @@ def send_instagram_post_content(message):
     logger().info("User message: '{}'".format(user_message))
 
     send_instagram_media(bot, message, user)
+    insert_analytics(user, 'insta_link')
 
 
 @bot.message_handler(content_types=['text', 'document'], func=lambda message: True)
@@ -133,6 +138,7 @@ def send_currency_graph(call):
     bot.send_photo(chat_id=user.user_id,
                    reply_markup=get_message_keyboard(actual_buttons_currency_selection),
                    photo=open(currency_graph_path, 'rb'))
+    insert_analytics(user, currency_graph)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == cinema_soon)
@@ -145,6 +151,7 @@ def send_cinema_soon(call):
     bot.send_message(chat_id=user.user_id,
                      text=get_cinema_data_message(movies),
                      parse_mode=ParseMode.HTML)
+    insert_analytics(user, call.data)
 
 
 @bot.callback_query_handler(func=lambda call: call.data in football_leagues_cmd)
@@ -162,6 +169,7 @@ def send_football_calendar(call):
                      text="<b>{}</b>\n\n".format(football_message_title) + get_football_data_message(matches),
                      reply_markup=get_message_keyboard(actual_buttons_football),
                      parse_mode=ParseMode.HTML)
+    insert_analytics(user, call.data)
 
 
 if __name__ == "__main__":

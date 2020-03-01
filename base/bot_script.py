@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 from telegram import ParseMode
 
 from bot_config import *
 from bot_constants import *
-from features.currency.currency_api import fetch_currency_list, get_currency_response_json, get_currency_data_message
+from features.currency.currency_api import get_currency_message
 from features.instagram.insta_loader import get_insta_post_data, fetch_insta_post_content_files
 from features.location.geo import Geo
 from features.location.map_fetcher import fetch_map
@@ -10,21 +11,12 @@ from logger import logger
 from util.bot_helper import get_message_keyboard
 
 
-def send_currency_rate(bot, user, actual_currency: int):
-    currency_list = fetch_currency_list(get_currency_response_json(actual_currency))
-
-    currency_response_past_days = get_currency_data_message(currency_list[-10:-1])
-    currency_response_current_day = get_currency_data_message([currency_list[-1]])
-
-    current_currency = buttons_currency_selection[actual_currency]
+def send_currency_rate(bot, user, currency_id: int):
     actual_buttons_currency_selection = dict(buttons_currency_selection)
-    del actual_buttons_currency_selection[actual_currency]
+    del actual_buttons_currency_selection[currency_id]
 
     bot.send_message(chat_id=user.user_id,
-                     text=MSG_CURRENCY_BOT.format(
-                         currency=current_currency,
-                         currency_past_days=currency_response_past_days,
-                         currency_current_day=currency_response_current_day),
+                     text=get_currency_message(currency_id),
                      reply_markup=get_message_keyboard(button_currency_graph, actual_buttons_currency_selection),
                      parse_mode=ParseMode.HTML)
 
