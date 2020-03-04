@@ -40,3 +40,5 @@ instagram_video_type = "GraphVideo"
 location_url = "https://yandex.by/maps/157/minsk/search/{item}/?l=sat%2Cskl&ll={longitude}%2C{latitude}&sll={longitude}%2C{latitude}&sspn=0.01%2C0.004&z=16"
 location_atm = "Банкомат"
 location_folder = os.path.join("features", "location", "map")
+
+belavia_offers = 'https://vandrouki.by/tag/belavia/'
