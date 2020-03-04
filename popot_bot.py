@@ -8,7 +8,7 @@ from base.bot_script import send_currency_rate, get_message_keyboard, send_insta
 from base.user import fetch_user, get_user
 from bot import bot
 from bot_constants import *
-from db.db_connection import insert_analytics
+from db.db_connection import insert_analytics, insert_currency_alarm
 from features.cinema.cinema_site_parser import *
 from features.currency.currency_api import *
 from features.currency.currency_graph_generator import fetch_currency_graph
@@ -46,6 +46,15 @@ def currency(message):
 
     send_currency_rate(bot, user, actual_currency)
     insert_analytics(user, message.text)
+
+
+@bot.callback_query_handler(func=lambda call: call.data in currency_alarm)
+def currency(call):
+    logger().info("Button '{}'".format(call.data))
+    user = get_user(user_id=call.from_user.id)
+
+    bot.send_message(chat_id=user.user_id,
+                     text='Please set a trackable dollar rate (e.g. 2.4 / 3.0 / 3) in the next your message.')
 
 
 @bot.message_handler(regexp='^\{cinema}'.format(cinema=BASE_CMD_CINEMA))
@@ -115,8 +124,16 @@ def send_instagram_post_content(message):
 @bot.message_handler(content_types=['text', 'document'], func=lambda message: True)
 def echo_all(message):
     user = get_user(user_id=message.chat.id)
-
     user_message = message.text
+
+    try:
+        currency_alarm_rate = float(user_message)
+        insert_currency_alarm(user, currency_alarm_rate)
+        bot.send_message(user.user_id, "Your rate is accepted.")
+        insert_analytics(user, currency_alarm)
+    except ValueError:
+        ...
+
     logger().info("User message: '{}'".format(user_message))
 
 

@@ -10,10 +10,12 @@ currency_graph_days = 300
 currency_graph_folder = os.path.join("features", "currency", "graphs")
 currency_graph_path = os.path.join(currency_graph_folder, "graph.png")
 currency_graph = "currency_graph"
-currency_symbpls = ['$', '€', 'RUR']
+currency_symbols = ['$', '€', 'RUR']
 currency_ids = [currency_dollar_id, currency_euro_id, currency_rur_id]
-buttons_currency_selection = dict(zip(currency_ids, currency_symbpls))
+buttons_currency_selection = dict(zip(currency_ids, currency_symbols))
 button_currency_graph = {currency_graph: 'Currency Graph'}
+currency_alarm = "currency_alarm"
+button_currency_alarm = {currency_alarm: 'Currency Alarm'}
 
 cinema_url = "https://afisha.tut.by"
 cinema_url_path_today = "/film"
