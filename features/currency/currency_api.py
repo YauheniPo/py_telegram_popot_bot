@@ -15,8 +15,6 @@ def fetch_currency_list(json_data):
 
 
 def get_currency_response_json(currency_id):
-    logger().info("Get currency data")
-
     end_date = datetime.datetime.now().strftime(date_format_Y_m_d)
     start_date = (datetime.datetime.now() - datetime.timedelta(days=bot_config.currency_graph_days)) \
         .strftime(date_format_Y_m_d)
@@ -42,6 +40,8 @@ def get_currency_data_message(currency_data_list):
 
 
 def get_currency_message(currency_id):
+    logger().info("Get currency data")
+
     currency_list = fetch_currency_list(get_currency_response_json(currency_id))
 
     currency_response_past_days = get_currency_data_message(currency_list[-10:-1])

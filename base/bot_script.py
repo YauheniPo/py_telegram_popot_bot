@@ -15,9 +15,13 @@ def send_currency_rate(bot, user, currency_id: int):
     actual_buttons_currency_selection = dict(buttons_currency_selection)
     del actual_buttons_currency_selection[currency_id]
 
+    buttons = [button_currency_graph, actual_buttons_currency_selection]
+    if currency_id == currency_dollar_id:
+        buttons.append(button_currency_alarm)
+
     bot.send_message(chat_id=user.user_id,
                      text=get_currency_message(currency_id),
-                     reply_markup=get_message_keyboard(button_currency_graph, actual_buttons_currency_selection),
+                     reply_markup=get_message_keyboard(*buttons),
                      parse_mode=ParseMode.HTML)
 
 
