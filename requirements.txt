@@ -5,7 +5,7 @@ lxml==4.5.0
 apiai==1.2.3
 requests==2.23.0
 pyowm==2.10.0
-matplotlib==3.1.3
+matplotlib
 multipledispatch==0.6.0
 browser-cookie3==0.10.2
 webdriver-manager==2.3.0
