@@ -3,7 +3,6 @@ pyTelegramBotAPI==3.6.7
 python-telegram-bot==12.4.2
 lxml==4.5.0
 apiai==1.2.3
-requests
 pyowm==2.10.0
 matplotlib
 multipledispatch==0.6.0
