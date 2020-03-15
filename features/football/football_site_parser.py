@@ -17,14 +17,25 @@ def get_matches(site_content):
 
     xpath_get_text = "{xpath}//text()"
     for match in get_tree_html_content(site_content).xpath(matches_tree_xpath):
-        match_host_team = match.xpath(xpath_get_text.format(xpath=match_host_team_xpath))[0]
-        match_guest_team = match.xpath(xpath_get_text.format(xpath=match_guest_team_xpath))[0]
-        match_date = str(match.xpath(xpath_get_text.format(xpath=match_date_xpath))[0]).strip()
-        matches.append(Match(host_team=match_host_team, guest_team=match_guest_team, date=match_date))
+        match_host_team = match.xpath(
+            xpath_get_text.format(
+                xpath=match_host_team_xpath))[0]
+        match_guest_team = match.xpath(
+            xpath_get_text.format(
+                xpath=match_guest_team_xpath))[0]
+        match_date = str(
+            match.xpath(
+                xpath_get_text.format(
+                    xpath=match_date_xpath))[0]).strip()
+        matches.append(
+            Match(
+                host_team=match_host_team,
+                guest_team=match_guest_team,
+                date=match_date))
     return matches
 
 
 def get_football_data_message(matches):
-    return "\n".join(
-        [MSG_FOOTBALL_BOT.format(date=match.date, host_team=match.host_team, guest_team=match.guest_team)
-         for match in matches])
+    return "\n".join([MSG_FOOTBALL_BOT.format(date=match.date,
+                                              host_team=match.host_team,
+                                              guest_team=match.guest_team) for match in matches])

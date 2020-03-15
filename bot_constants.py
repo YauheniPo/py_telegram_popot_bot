@@ -27,7 +27,7 @@ MSG_FOOTBALL_BOT = "<i>{date}</i>   <b>{host_team} -:- {guest_team}</b>"
 
 MSG_INSTAGRAM_BOT = """
 You will receive a post file from Instagram by sending a link to this post to the bot.
-                     
+
 Please copy/share Instagram post link and paste/ move to bot."""
 MSG_WARNING_INSTAGRAM_UNKNOWN_CONTENT_TYPE = "Unknown content type."
 
