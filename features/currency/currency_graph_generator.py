@@ -8,7 +8,7 @@ from logger import logger
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-from bot_config import currency_graph_path, currency_graph_folder
+from bot_config import currency_graph_folder, currency_graph_path
 
 
 def fetch_currency_graph(currency_data):

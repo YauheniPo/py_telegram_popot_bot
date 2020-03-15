@@ -4,7 +4,8 @@ from telegram import ParseMode
 from bot_config import *
 from bot_constants import *
 from features.currency.currency_api import get_currency_message
-from features.instagram.insta_loader import get_insta_post_data, fetch_insta_post_content_files
+from features.instagram.insta_loader import (fetch_insta_post_content_files,
+                                             get_insta_post_data)
 from features.location.geo import Geo
 from features.location.map_fetcher import fetch_map
 from logger import logger

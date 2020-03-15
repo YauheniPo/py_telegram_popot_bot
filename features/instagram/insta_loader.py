@@ -8,9 +8,8 @@ from telebot.types import Message
 
 from bot_config import *
 from features.instagram.insta_post import InstaPost
-from util.util_parsing import json_data_regex, find_elements
+from util.util_parsing import find_elements, json_data_regex
 from util.util_request import *
-
 
 insta_post_json_type_media_url_dict = {instagram_image_type: 'display_url',
                                        instagram_video_type: 'video_url'}
