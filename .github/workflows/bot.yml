@@ -23,5 +23,3 @@ jobs:
           pip install -r requirements.txt
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
-      - name: Python style check
-        uses: bulv1ne/python-style-check@v0.3
