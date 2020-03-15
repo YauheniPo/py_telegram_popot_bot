@@ -49,7 +49,7 @@ def currency(message):
 
 
 @bot.callback_query_handler(func=lambda call: call.data in currency_alarm)
-def currency(call):
+def alarm_currency(call):
     logger().info("Button '{}'".format(call.data))
     user = get_user(user_id=call.from_user.id)
 

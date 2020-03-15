@@ -15,7 +15,7 @@ def fetch_currency_list(json_data):
 
 
 def get_currency_response_json(currency_id):
-    end_date = datetime.datetime.now().strftime(date_format_Y_m_d)
+    end_date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime(date_format_Y_m_d)
     start_date = (datetime.datetime.now() - datetime.timedelta(days=bot_config.currency_graph_days)) \
         .strftime(date_format_Y_m_d)
 

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import time
-from datetime import datetime
 
 import schedule
 from telegram import ParseMode
@@ -30,9 +29,7 @@ def job():
 
 
 def weekday_job(x, alert_time=None):
-    week = datetime.today().weekday()
-    if alert_time is not None and week < 5:
-        schedule.every().day.at(alert_time).do(x)
+    schedule.every().monday.thursday.wednesday.tuesday.friday.at(alert_time).do(x)
 
 
 weekday_job(job, '01:08')
