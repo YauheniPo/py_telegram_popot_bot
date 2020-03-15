@@ -2,13 +2,12 @@
 import os
 
 import matplotlib
-
-from logger import logger
-
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from bot_config import currency_graph_folder, currency_graph_path
+from logger import logger
+
+matplotlib.use('Agg')
 
 
 def fetch_currency_graph(currency_data):

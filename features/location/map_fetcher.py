@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from bot_config import browser
-from features.location.map_page import MapPage, WHAT_HERE_CONTEXT_ITEM
+from features.location.map_page import WHAT_HERE_CONTEXT_ITEM, MapPage
 from util.webdriver_helper import (WebDriverFactory, get_firefox_options,
                                    is_visible, wait_for_ajax)
 
