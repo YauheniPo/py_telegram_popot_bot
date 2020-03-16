@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from tinydb import TinyDB, Query
+from tinydb import Query, TinyDB
 
 from logger import logger
 

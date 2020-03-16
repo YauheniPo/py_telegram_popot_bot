@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from bot_config import browser
-from features.location.map_page import MapPage, WHAT_HERE_CONTEXT_ITEM
-from util.webdriver_helper import is_visible, wait_for_ajax, get_firefox_options, WebDriverFactory
+from features.location.map_page import WHAT_HERE_CONTEXT_ITEM, MapPage
+from util.webdriver_helper import (WebDriverFactory, get_firefox_options,
+                                   is_visible, wait_for_ajax)
 
 
 def fetch_map(geo):
@@ -9,7 +10,8 @@ def fetch_map(geo):
         driver.get(geo.geo_map_url)
         map_page = MapPage(driver)
         map_page.right_mouse_click_on_map()
-        map_page.select_context_menu_item(WHAT_HERE_CONTEXT_ITEM) if is_visible(driver, map_page.CONTEXT_MENU_XPATH) else ...
+        map_page.select_context_menu_item(WHAT_HERE_CONTEXT_ITEM) if is_visible(driver,
+                                                                                map_page.CONTEXT_MENU_XPATH) else ...
         wait_for_ajax(driver)
         map_page.collapse_searching_list()
         wait_for_ajax(driver)

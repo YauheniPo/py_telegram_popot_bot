@@ -6,7 +6,9 @@ from telegram import ParseMode
 
 from bot import bot
 from db.db_connection import get_users_alarm_currency_rate
-from features.currency.currency_api import get_currency_message, fetch_currency_list, get_currency_response_json
+from features.currency.currency_api import (fetch_currency_list,
+                                            get_currency_message,
+                                            get_currency_response_json)
 from features.instagram.insta_loader import *
 from util.bot_helper import get_message_keyboard
 

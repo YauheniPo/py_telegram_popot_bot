@@ -4,7 +4,8 @@ import time
 from telebot import types
 from telegram import ParseMode
 
-from base.bot_script import send_currency_rate, get_message_keyboard, send_instagram_media, send_map_location
+from base.bot_script import (get_message_keyboard, send_currency_rate,
+                             send_instagram_media, send_map_location)
 from base.user import fetch_user, get_user
 from bot import bot
 from bot_constants import *
