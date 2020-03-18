@@ -27,7 +27,8 @@ def send_currency_rate(bot, user, currency_id: int):
 
 
 def send_to_user_insta_post_media_content(bot, insta_post, user):
-    for content_type, content_path in zip(insta_post.media_types, insta_post.media_content_paths):
+    for content_type, content_path in zip(
+            insta_post.media_types, insta_post.media_content_paths):
         logger().info("Send media '{}'".format(content_path))
         if content_type == instagram_video_type:
             bot.send_video(chat_id=user.user_id,
@@ -43,10 +44,12 @@ def send_to_user_insta_post_media_content(bot, insta_post, user):
                              text=MSG_WARNING_INSTAGRAM_UNKNOWN_CONTENT_TYPE)
 
     if insta_post.post_description:
-        bot.send_message(chat_id=user.user_id,
-                         reply_to_message_id=insta_post.message_id,
-                         text="<b>Post description</b>\n\n" + insta_post.post_description[0]['node']['text'],
-                         parse_mode=ParseMode.HTML)
+        bot.send_message(
+            chat_id=user.user_id,
+            reply_to_message_id=insta_post.message_id,
+            text="<b>Post description</b>\n\n" +
+            insta_post.post_description[0]['node']['text'],
+            parse_mode=ParseMode.HTML)
 
 
 def send_instagram_media(bot, user_message, user):
@@ -63,7 +66,7 @@ def send_instagram_media(bot, user_message, user):
         try:
             fetch_insta_post_content_files(insta_post)
             send_to_user_insta_post_media_content(bot, insta_post, user)
-        except:
+        except BaseException:
             logger().error(u"{}: {}".format(MSG_ERROR_MSG_SAVE_IMAGE, insta_post))
             bot.send_message(chat_id=user.user_id,
                              reply_to_message_id=user_message.message_id,
@@ -71,11 +74,15 @@ def send_instagram_media(bot, user_message, user):
 
 
 def send_map_location(bot, user, message):
-    wait_message = bot.send_message(chat_id=user.user_id,
-                                    reply_to_message_id=message.message_id,
-                                    text="Data processing may take up to 15 seconds. Please wait.")
+    wait_message = bot.send_message(
+        chat_id=user.user_id,
+        reply_to_message_id=message.message_id,
+        text="Data processing may take up to 15 seconds. Please wait.")
 
-    geo = Geo(message.location.latitude, message.location.longitude, location_atm)
+    geo = Geo(
+        message.location.latitude,
+        message.location.longitude,
+        location_atm)
     fetch_map(geo)
 
     map_message = bot.send_photo(chat_id=user.user_id,
@@ -83,7 +90,9 @@ def send_map_location(bot, user, message):
                                  photo=open(geo.screen_path, 'rb'))
     bot.delete_message(chat_id=user.user_id,
                        message_id=wait_message.message_id)
-    bot.send_message(chat_id=user.user_id,
-                     reply_to_message_id=map_message.message_id,
-                     text="<a href='{link}'>GO to Yandex map.\nClick here!</a>".format(link=geo.geo_map_url),
-                     parse_mode=ParseMode.HTML)
+    bot.send_message(
+        chat_id=user.user_id,
+        reply_to_message_id=map_message.message_id,
+        text="<a href='{link}'>GO to Yandex map.\nClick here!</a>".format(
+            link=geo.geo_map_url),
+        parse_mode=ParseMode.HTML)
