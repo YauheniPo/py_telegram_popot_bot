@@ -24,3 +24,7 @@ def is_match_by_regexp(string, regexp):
     logger().info("String matching '{}'".format(string))
     pattern = re.compile(regexp)
     return bool(pattern.match(string))
+
+
+def find_all_by_regexp(text, regexp):
+    return re.findall(regexp, text)
