@@ -21,7 +21,8 @@ WEBHOOK_URL_PATH = "/{}".format(TELEGRAM_BOT_TOKEN)
 def index():
     bot.remove_webhook()
     time.sleep(0.1)
-    bot.set_webhook(url="https://{}.herokuapp.com/{}".format(TELEGRAM_BOT_NAME, TELEGRAM_BOT_TOKEN))
+    bot.set_webhook(
+        url="https://{}.herokuapp.com/{}".format(TELEGRAM_BOT_NAME, TELEGRAM_BOT_TOKEN))
     return "Set Webhook!", 200
 
 

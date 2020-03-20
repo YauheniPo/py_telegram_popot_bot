@@ -24,7 +24,10 @@ cinema_url = "https://afisha.tut.by"
 cinema_url_path_today = "/film"
 cinema_url_path_soon = "/movie-premiere"
 cinema_soon = "cinema_soon"
-cinema_soon_params = {'utm_source': cinema_url, 'utm_medium': 'films', 'utm_campaign': 'premiere_block'}
+cinema_soon_params = {
+    'utm_source': cinema_url,
+    'utm_medium': 'films',
+    'utm_campaign': 'premiere_block'}
 button_cinema_soon = {cinema_soon: 'Upcoming New Movies'}
 
 football_url = "https://matchtv.ru/football"
@@ -35,9 +38,10 @@ football_leagues = ['UEFA Champions League', 'UEFA Europa League']
 football_leagues_cmd = [football_ucl_path, football_le_path]
 buttons_football_leagues = dict(zip(football_leagues_cmd, football_leagues))
 
-instagram_link_regexp = "https?:\/\/www\.instagram\.com\/p\/[a-zA-Z0-9\.\&\/\?\:@\-_=#]*$"
-instagram_url_media_name_regexp = "[^\/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))"
-instagram_post_content_folder = os.path.join("features", "instagram", "post_content")
+instagram_link_regexp = r"https?:\/\/www\.instagram\.com\/p\/[a-zA-Z0-9\.\&\/\?\:@\-_=#]*$"
+instagram_url_media_name_regexp = r"[^\/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))"
+instagram_post_content_folder = os.path.join(
+    "features", "instagram", "post_content")
 instagram_image_type = "GraphImage"
 instagram_side_type = "GraphSidecar"
 instagram_video_type = "GraphVideo"

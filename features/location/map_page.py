@@ -18,10 +18,12 @@ class MapPage:
         logger().info("Driver init.")
 
     def collapse_searching_list(self):
-        self.web_driver.find_element_by_xpath(self.SEARCH_DATA_COLLAPSE_BUTTON_XPATH).click()
+        self.web_driver.find_element_by_xpath(
+            self.SEARCH_DATA_COLLAPSE_BUTTON_XPATH).click()
 
     def close_ad(self):
-        self.web_driver.find_element_by_xpath(self.AD_CLOSE_BUTTON_XPATH).click()
+        self.web_driver.find_element_by_xpath(
+            self.AD_CLOSE_BUTTON_XPATH).click()
 
     def right_mouse_click_on_map(self):
         map = self.web_driver.find_element_by_xpath(self.MAP_CONTAINER_XPATH)
@@ -29,4 +31,5 @@ class MapPage:
         actionChains.context_click(map).perform()
 
     def select_context_menu_item(self, item_name):
-        self.web_driver.find_element_by_xpath(self.CONTEXT_MENU_XPATH_ITEM.format(item_name)).click()
+        self.web_driver.find_element_by_xpath(
+            self.CONTEXT_MENU_XPATH_ITEM.format(item_name)).click()

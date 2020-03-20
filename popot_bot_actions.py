@@ -16,18 +16,24 @@ from util.bot_helper import get_message_keyboard
 def job():
     users = get_users_alarm_currency_rate()
     for user in users:
-        currency_list = fetch_currency_list(get_currency_response_json(currency_dollar_id))
+        currency_list = fetch_currency_list(
+            get_currency_response_json(currency_dollar_id))
         today_currency_rate = currency_list[-1].Cur_OfficialRate
 
         if today_currency_rate >= user['alarm_rate']:
-            actual_buttons_currency_selection = dict(buttons_currency_selection)
+            actual_buttons_currency_selection = dict(
+                buttons_currency_selection)
             del actual_buttons_currency_selection[currency_dollar_id]
 
-            bot.send_message(chat_id=user['id'],
-                             text='<b>Currency Alarm</b>\n' + get_currency_message(currency_dollar_id),
-                             reply_markup=get_message_keyboard(button_currency_graph, actual_buttons_currency_selection,
-                                                               button_currency_alarm),
-                             parse_mode=ParseMode.HTML)
+            bot.send_message(
+                chat_id=user['id'],
+                text='<b>Currency Alarm</b>\n' +
+                get_currency_message(currency_dollar_id),
+                reply_markup=get_message_keyboard(
+                    button_currency_graph,
+                    actual_buttons_currency_selection,
+                    button_currency_alarm),
+                parse_mode=ParseMode.HTML)
 
 
 def weekday_job(x, alert_time=None):
