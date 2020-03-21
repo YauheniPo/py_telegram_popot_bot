@@ -20,6 +20,12 @@ MSG_CURRENCY_BOT = """
 
 <b>{currency_current_day}</b>"""
 
+MSG_CURRENCY_ALARM_BOT = """The last rate is <b>{today_rate}</b>
+
+Please set your $ rate for notification.
+
+<b>{around_today_rate}</b>"""
+
 MSG_CINEMA_BOT = "<a href='{link}'>{title}</a> <i>{media} | {info}</i>"
 
 MSG_FOOTBALL_BASE_CMD = "Please select a section."

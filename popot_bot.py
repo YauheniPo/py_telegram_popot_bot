@@ -15,7 +15,7 @@ from features.currency.currency_api import *
 from features.currency.currency_graph_generator import fetch_currency_graph
 from features.football.football_site_parser import *
 from features.instagram.insta_loader import *
-from util.util_parsing import is_match_by_regexp
+from util.util_parsing import is_match_by_regexp, find_all_by_regexp
 from util.util_request import get_site_request_content
 
 
@@ -56,9 +56,34 @@ def alarm_currency(call):
     logger().info("Button '{}'".format(call.data))
     user = get_user(user_id=call.from_user.id)
 
-    bot.send_message(
-        chat_id=user.user_id,
-        text='Please set a trackable dollar rate (e.g. 2.4 / 3.0 / 3) in the next your message.')
+    currency_list = fetch_currency_list(get_currency_response_json(currency_dollar_id))
+    today_currency_rate = currency_list[-1].Cur_OfficialRate
+    around_today_currency_rate = round(today_currency_rate, 1)
+
+    bot.send_message(chat_id=user.user_id,
+                     text=MSG_CURRENCY_ALARM_BOT.format(today_rate=today_currency_rate,
+                                                        around_today_rate=around_today_currency_rate),
+                     reply_markup=get_message_keyboard(buttons_currency_alarm_rate),
+                     parse_mode=ParseMode.HTML)
+    insert_currency_alarm(user, around_today_currency_rate)
+
+
+@bot.callback_query_handler(
+    func=lambda call: call.data is not None and is_match_by_regexp(call.data, currency_alarm_rate_button_regexp))
+def update_currency_alarm_rate(call):
+    user = get_user(user_id=call.from_user.id)
+
+    currency_alarm_rate = find_all_by_regexp(call.message.text, currency_alarm_rate_regexp)[0]
+    new_currency_alarm_rate = round(eval(currency_alarm_rate + call.data), 1)
+    new_currency_alarm_rate_for_replace = "<b>{}</b>".format(new_currency_alarm_rate)
+    message = re.sub(currency_alarm_rate_regexp, new_currency_alarm_rate_for_replace, call.message.text)
+
+    bot.edit_message_text(chat_id=call.message.chat.id,
+                          message_id=call.message.message_id,
+                          text=message,
+                          reply_markup=get_message_keyboard(buttons_currency_alarm_rate),
+                          parse_mode=ParseMode.HTML)
+    insert_currency_alarm(user, new_currency_alarm_rate)
 
 
 @bot.message_handler(regexp=r'^\{cinema}'.format(cinema=BASE_CMD_CINEMA))
@@ -144,14 +169,6 @@ def send_instagram_post_content(message):
 def echo_all(message):
     user = get_user(user_id=message.chat.id)
     user_message = message.text
-
-    try:
-        currency_alarm_rate = float(user_message)
-        insert_currency_alarm(user, currency_alarm_rate)
-        bot.send_message(user.user_id, "Your rate is accepted.")
-        insert_analytics(user, currency_alarm)
-    except ValueError:
-        ...
 
     logger().info("User message: '{}'".format(user_message))
 
