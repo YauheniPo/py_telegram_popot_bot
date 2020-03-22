@@ -18,16 +18,33 @@ def get_movies(site_content):
 
     xpath_get_text = "{xpath}//text()"
     for movie in get_tree_html_content(site_content).xpath(MOVIES_TREE_XPATH):
-        movie_title = movie.xpath(xpath_get_text.format(xpath=MOVIE_TITLE_XPATH))[0]
-        movie_media = str(''.join(movie.xpath(xpath_get_text.format(xpath=MOVIE_MEDIA_XPATH)))).strip()
-        movie_info_list = movie.xpath(xpath_get_text.format(xpath=MOVIE_INFO_XPATH))
+        movie_title = movie.xpath(
+            xpath_get_text.format(
+                xpath=MOVIE_TITLE_XPATH))[0]
+        movie_media = str(
+            ''.join(
+                movie.xpath(
+                    xpath_get_text.format(
+                        xpath=MOVIE_MEDIA_XPATH)))).strip()
+        movie_info_list = movie.xpath(
+            xpath_get_text.format(
+                xpath=MOVIE_INFO_XPATH))
         movie_info = movie_info_list[0] if movie_info_list else ""
         movie_ticket_link = movie.xpath(MOVIE_TICKET_XPATH)[0].get("href")
-        movies.append(Cinema(title=movie_title, media=movie_media, info=movie_info, ticket_link=movie_ticket_link))
+        movies.append(
+            Cinema(
+                title=movie_title,
+                media=movie_media,
+                info=movie_info,
+                ticket_link=movie_ticket_link))
     return movies
 
 
 def get_cinema_data_message(movies):
     return "\n".join(
-        [MSG_CINEMA_BOT.format(link=movie.ticket_link, title=movie.title, info=movie.info, media=movie.media)
-         for movie in movies])
+        [
+            MSG_CINEMA_BOT.format(
+                link=movie.ticket_link,
+                title=movie.title,
+                info=movie.info,
+                media=movie.media) for movie in movies])

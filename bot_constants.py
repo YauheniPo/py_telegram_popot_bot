@@ -20,6 +20,12 @@ MSG_CURRENCY_BOT = """
 
 <b>{currency_current_day}</b>"""
 
+MSG_CURRENCY_ALARM_BOT = """The last rate is <b>{today_rate}</b>
+
+Please set your $ rate for notification.
+
+<b>{around_today_rate}</b>"""
+
 MSG_CINEMA_BOT = "<a href='{link}'>{title}</a> <i>{media} | {info}</i>"
 
 MSG_FOOTBALL_BASE_CMD = "Please select a section."
@@ -27,7 +33,7 @@ MSG_FOOTBALL_BOT = "<i>{date}</i>   <b>{host_team} -:- {guest_team}</b>"
 
 MSG_INSTAGRAM_BOT = """
 You will receive a post file from Instagram by sending a link to this post to the bot.
-                     
+
 Please copy/share Instagram post link and paste/ move to bot."""
 MSG_WARNING_INSTAGRAM_UNKNOWN_CONTENT_TYPE = "Unknown content type."
 

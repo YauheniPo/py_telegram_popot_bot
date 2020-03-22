@@ -9,19 +9,25 @@ currency_rur_id = '298'
 currency_graph_days = 300
 currency_graph_folder = os.path.join("features", "currency", "graphs")
 currency_graph_path = os.path.join(currency_graph_folder, "graph.png")
-currency_graph = "currency_graph"
 currency_symbols = ['$', '€', 'RUR']
 currency_ids = [currency_dollar_id, currency_euro_id, currency_rur_id]
 buttons_currency_selection = dict(zip(currency_ids, currency_symbols))
+currency_graph = "currency_graph"
 button_currency_graph = {currency_graph: 'Currency Graph'}
 currency_alarm = "currency_alarm"
 button_currency_alarm = {currency_alarm: 'Currency Alarm'}
+buttons_currency_alarm_rate = {"- 0.1": "- 0.1", "+ 0.1": "+ 0.1"}
+currency_alarm_rate_button_regexp = "(\+|-) 0.1"
+currency_alarm_rate_regexp = r"\d\.\d$"
 
 cinema_url = "https://afisha.tut.by"
 cinema_url_path_today = "/film"
 cinema_url_path_soon = "/movie-premiere"
 cinema_soon = "cinema_soon"
-cinema_soon_params = {'utm_source': cinema_url, 'utm_medium': 'films', 'utm_campaign': 'premiere_block'}
+cinema_soon_params = {
+    'utm_source': cinema_url,
+    'utm_medium': 'films',
+    'utm_campaign': 'premiere_block'}
 button_cinema_soon = {cinema_soon: 'Upcoming New Movies'}
 
 football_url = "https://matchtv.ru/football"
@@ -32,9 +38,10 @@ football_leagues = ['UEFA Champions League', 'UEFA Europa League']
 football_leagues_cmd = [football_ucl_path, football_le_path]
 buttons_football_leagues = dict(zip(football_leagues_cmd, football_leagues))
 
-instagram_link_regexp = "https?:\/\/www\.instagram\.com\/p\/[a-zA-Z0-9\.\&\/\?\:@\-_=#]*$"
-instagram_url_media_name_regexp = "[^\/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))"
-instagram_post_content_folder = os.path.join("features", "instagram", "post_content")
+instagram_link_regexp = r"https?:\/\/www\.instagram\.com\/p\/[a-zA-Z0-9\.\&\/\?\:@\-_=#]*$"
+instagram_url_media_name_regexp = r"[^\/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))"
+instagram_post_content_folder = os.path.join(
+    "features", "instagram", "post_content")
 instagram_image_type = "GraphImage"
 instagram_side_type = "GraphSidecar"
 instagram_video_type = "GraphVideo"
