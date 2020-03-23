@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+import json
 import os
 
 from tinydb import Query, TinyDB
 
 from logger import logger
 
-db = TinyDB('db{}db.json'.format(os.path.sep))
+db_data_json_file = 'db{}db.json'.format(os.path.sep)
+db = TinyDB(db_data_json_file)
 users_table = db.table('users')
 cmd_table = db.table('commands')
 currency_alarm_table = db.table('currency_alarm')
@@ -58,3 +60,8 @@ def insert_currency_alarm(user, alarm_rate):
     else:
         currency_alarm_table.insert(
             {'id': user.user_id, 'alarm_rate': alarm_rate})
+
+
+def get_db_data():
+    with open(db_data_json_file, "rb") as fin:
+        return json.load(fin)
