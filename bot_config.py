@@ -17,7 +17,7 @@ button_currency_graph = {currency_graph: 'Currency Graph'}
 currency_alarm = "currency_alarm"
 button_currency_alarm = {currency_alarm: 'Currency Alarm'}
 buttons_currency_alarm_rate = {"- 0.1": "- 0.1", "+ 0.1": "+ 0.1"}
-currency_alarm_rate_button_regexp = "(\+|-) 0.1"
+currency_alarm_rate_button_regexp = r"(\+|-) 0.1"
 currency_alarm_rate_regexp = r"\d\.\d$"
 
 cinema_url = "https://afisha.tut.by"

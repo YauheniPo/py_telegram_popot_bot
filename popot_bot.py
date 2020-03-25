@@ -9,7 +9,7 @@ from base.bot_script import (get_message_keyboard, send_currency_rate,
 from base.user import fetch_user, get_user
 from bot import bot
 from bot_constants import *
-from db.db_connection import insert_analytics, insert_currency_alarm
+from db.db_connection import get_db_data, insert_analytics, insert_currency_alarm
 from features.cinema.cinema_site_parser import *
 from features.currency.currency_api import *
 from features.currency.currency_graph_generator import fetch_currency_graph
@@ -51,38 +51,62 @@ def currency(message):
     insert_analytics(user, message.text)
 
 
+@bot.message_handler(regexp=r'^\{log}'.format(log=DB_LOG_CMD))
+def db_log(message):
+    user = get_user(user_id=message.chat.id)
+
+    db_all_data = get_db_data()
+    bot.send_message(chat_id=user.user_id,
+                     text=str(db_all_data))
+    insert_analytics(user, message.text)
+
+
 @bot.callback_query_handler(func=lambda call: call.data in currency_alarm)
 def alarm_currency(call):
     logger().info("Button '{}'".format(call.data))
     user = get_user(user_id=call.from_user.id)
 
-    currency_list = fetch_currency_list(get_currency_response_json(currency_dollar_id))
+    currency_list = fetch_currency_list(
+        get_currency_response_json(currency_dollar_id))
     today_currency_rate = currency_list[-1].Cur_OfficialRate
     around_today_currency_rate = round(today_currency_rate, 1)
 
-    bot.send_message(chat_id=user.user_id,
-                     text=MSG_CURRENCY_ALARM_BOT.format(today_rate=today_currency_rate,
-                                                        around_today_rate=around_today_currency_rate),
-                     reply_markup=get_message_keyboard(buttons_currency_alarm_rate),
-                     parse_mode=ParseMode.HTML)
+    bot.send_message(
+        chat_id=user.user_id,
+        text=MSG_CURRENCY_ALARM_BOT.format(
+            today_rate=today_currency_rate,
+            around_today_rate=around_today_currency_rate),
+        reply_markup=get_message_keyboard(buttons_currency_alarm_rate),
+        parse_mode=ParseMode.HTML)
     insert_currency_alarm(user, around_today_currency_rate)
 
 
 @bot.callback_query_handler(
-    func=lambda call: call.data is not None and is_match_by_regexp(call.data, currency_alarm_rate_button_regexp))
+    func=lambda call: call.data is not None and is_match_by_regexp(
+        call.data, currency_alarm_rate_button_regexp))
 def update_currency_alarm_rate(call):
     user = get_user(user_id=call.from_user.id)
 
-    currency_alarm_rate = find_all_by_regexp(call.message.text, currency_alarm_rate_regexp)[0]
+    call_message = call.message.text.strip()
+    currency_alarm_rate = find_all_by_regexp(
+        call_message, currency_alarm_rate_regexp)[0]
     new_currency_alarm_rate = round(eval(currency_alarm_rate + call.data), 1)
-    new_currency_alarm_rate_for_replace = "<b>{}</b>".format(new_currency_alarm_rate)
-    message = re.sub(currency_alarm_rate_regexp, new_currency_alarm_rate_for_replace, call.message.text)
+    new_currency_alarm_rate_for_replace = "<b>{}</b>".format(
+        new_currency_alarm_rate)
+    message = re.sub(
+        currency_alarm_rate_regexp,
+        new_currency_alarm_rate_for_replace,
+        call_message)
 
-    bot.edit_message_text(chat_id=call.message.chat.id,
-                          message_id=call.message.message_id,
-                          text=message,
-                          reply_markup=get_message_keyboard(buttons_currency_alarm_rate),
-                          parse_mode=ParseMode.HTML)
+    def send_currency_alarm_message(message):
+        bot.edit_message_text(
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+            text=message,
+            reply_markup=get_message_keyboard(buttons_currency_alarm_rate),
+            parse_mode=ParseMode.HTML)
+
+    send_currency_alarm_message(message)
     insert_currency_alarm(user, new_currency_alarm_rate)
 
 
@@ -201,8 +225,7 @@ def send_cinema_soon(call):
 
     movies = get_movies(
         get_site_request_content(
-            url=bot_config.cinema_url +
-            bot_config.cinema_url_path_soon,
+            url=bot_config.cinema_url + bot_config.cinema_url_path_soon,
             params=cinema_soon_params))
     bot.send_message(chat_id=user.user_id,
                      text=get_cinema_data_message(movies),
