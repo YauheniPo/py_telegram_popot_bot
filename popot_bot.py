@@ -5,7 +5,7 @@ from telebot import types
 from telegram import ParseMode
 
 from base.bot_script import (get_message_keyboard, send_currency_rate,
-                             send_instagram_media, send_map_location)
+                             send_instagram_post_media, send_map_location)
 from base.user import fetch_user, get_user
 from bot import bot
 from bot_constants import *
@@ -148,6 +148,20 @@ def instagram(message):
     insert_analytics(user, message.text)
 
 
+@bot.message_handler(
+    func=lambda message: message.text is not None and is_match_by_regexp(
+        message.text, instagram_link_regexp))
+def send_instagram_post_content(message):
+    user = get_user(user_id=message.chat.id)
+
+    insta_post_model = InstaPost(
+        post_url=message.text,
+        message_id=message.message_id)
+    fetch_insta_post_data(insta_post_model)
+    send_instagram_post_media(user, insta_post_model)
+    insert_analytics(user, 'insta_link')
+
+
 @bot.message_handler(regexp=r'^\{geo}'.format(geo=BASE_CMD_GEO))
 def geo(message):
     user = get_user(user_id=message.chat.id)
@@ -170,19 +184,6 @@ def location(message):
     if message.location is not None:
         send_map_location(bot, user, message)
     insert_analytics(user, message.text)
-
-
-@bot.message_handler(
-    func=lambda message: message.text is not None and is_match_by_regexp(
-        message.text, instagram_link_regexp))
-def send_instagram_post_content(message):
-    user = get_user(user_id=message.chat.id)
-
-    user_message = message.text
-    logger().info("User message: '{}'".format(user_message))
-
-    send_instagram_media(bot, message, user)
-    insert_analytics(user, 'insta_link')
 
 
 @bot.message_handler(

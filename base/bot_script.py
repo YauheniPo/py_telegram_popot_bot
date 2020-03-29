@@ -52,8 +52,8 @@ def send_to_user_insta_post_media_content(bot, insta_post, user):
             parse_mode=ParseMode.HTML)
 
 
-def send_instagram_media(bot, user_message, user):
-    logger().info("Instagram link '{}'".format(user_message.text))
+def send_instagram_post_media(bot, user_message, user):
+    logger().info("Instagram post link '{}'".format(user_message.text))
     insta_post = get_insta_post_data(user_message)
 
     logger().info(("--Instagram instance-- '{}'".format(insta_post.__dict__)).encode("utf-8"))
