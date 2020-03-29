@@ -36,11 +36,9 @@ def job():
                 parse_mode=ParseMode.HTML)
 
 
-def weekday_job(x, alert_time=None):
-    schedule.every().monday.thursday.wednesday.tuesday.friday.at(alert_time).do(x)
+# schedule.every().monday.thursday.wednesday.tuesday.friday.at("18:58").do(job)
+schedule.every().days.at("13:05").do(job)
 
-
-weekday_job(job, '01:08')
 
 # schedule.every(12).seconds.do(job)
 # schedule.every().hour.do(job)
@@ -56,6 +54,6 @@ if __name__ == "__main__":
         try:
             while True:
                 schedule.run_pending()
-                time.sleep(20)
+                time.sleep(15)
         except Exception as e:
             logger().error(e)
