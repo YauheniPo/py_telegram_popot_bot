@@ -39,9 +39,5 @@ MSG_INSTAGRAM_BOT = """
 You will receive a post file from Instagram by sending a link to this post to the bot.
 
 Please copy/share Instagram post link and paste/ move to bot."""
-MSG_WARNING_INSTAGRAM_UNKNOWN_CONTENT_TYPE = "Unknown content type."
-
-MSG_ERROR_MSG_SAVE_IMAGE = 'Save Instagram media ERROR.'
-MSG_ERROR_LINK_IS_BLOCKED = 'I can’t get the data from this link.'
 
 DB_LOG_CMD = '/{}'.format(os.environ.get('LOG'))

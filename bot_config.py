@@ -1,6 +1,6 @@
 import os
 
-browser = 'firefox'
+browser = 'chrome'
 
 currency_api_url = "http://www.nbrb.by/API/ExRates/Rates/Dynamics"
 currency_dollar_id = '145'
@@ -40,11 +40,9 @@ buttons_football_leagues = dict(zip(football_leagues_cmd, football_leagues))
 
 instagram_link_regexp = r"https?:\/\/www\.instagram\.com\/p\/[a-zA-Z0-9\.\&\/\?\:@\-_=#]*$"
 instagram_url_media_name_regexp = r"[^\/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))"
+instagram_save_content_service = "https://savefrom.net/"
 instagram_post_content_folder = os.path.join(
     "features", "instagram", "post_content")
-instagram_image_type = "GraphImage"
-instagram_side_type = "GraphSidecar"
-instagram_video_type = "GraphVideo"
 
 location_url = "https://yandex.by/maps/157/minsk/search/{item}/?l=sat%2Cskl&ll={longitude}%2C{latitude}&sll={longitude}%2C{latitude}&sspn=0.01%2C0.004&z=16"
 location_atm = "Банкомат"
