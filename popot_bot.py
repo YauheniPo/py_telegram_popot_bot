@@ -6,8 +6,11 @@ from telebot import types
 from telebot.types import Message
 from telegram import ParseMode
 
-from base.bot_script import (get_message_keyboard, send_currency_rate,
-                             send_map_location, send_to_user_insta_post_media_content)
+from base.bot_script import (
+    get_message_keyboard,
+    send_currency_rate,
+    send_map_location,
+    send_to_user_insta_post_media_content)
 from base.user import fetch_user, get_user
 from bot import bot
 from bot_constants import *
@@ -245,8 +248,8 @@ def send_football_calendar(call):
     matches = get_matches(
         get_site_request_content(
             url=bot_config.football_url +
-                call.data +
-                bot_config.football_url_path_calendar))
+            call.data +
+            bot_config.football_url_path_calendar))
 
     actual_buttons_football = dict(buttons_football_leagues)
     football_message_title = actual_buttons_football.pop(call.data)
