@@ -3,6 +3,7 @@ from telegram import ParseMode
 
 from bot import bot
 from bot_config import *
+from bot_constants import MSG_INSTAGRAM_POST_CONTENT, MSG_HTML_LINK, MSG_LOCATION_MAP
 from features.currency.currency_api import get_currency_message
 from features.instagram.insta_loader import fetch_insta_post_data
 from features.location.geo import Geo
@@ -30,7 +31,13 @@ def send_to_user_insta_post_media_content(insta_post, user):
     bot.send_message(
         chat_id=user.user_id,
         reply_to_message_id=insta_post.message_id,
-        text="<b>Post description</b>\n\n{}\n\n{}".format(insta_post.post_description, "\n\n".join(insta_post.media_urls)),
+        text=MSG_INSTAGRAM_POST_CONTENT.format(insta_post.post_description,
+                                               "\n".join([MSG_HTML_LINK.format(
+                                                   link=link,
+                                                   title="Media {}".format(title))
+                                                   for title, link in
+                                                   zip(range(1, len(insta_post.media_urls) + 1),
+                                                       insta_post.media_urls)])),
         parse_mode=ParseMode.HTML)
 
 
@@ -54,6 +61,5 @@ def send_map_location(bot, user, message):
     bot.send_message(
         chat_id=user.user_id,
         reply_to_message_id=map_message.message_id,
-        text="<a href='{link}'>GO to Yandex map.\nClick here!</a>".format(
-            link=geo.geo_map_url),
+        text=MSG_LOCATION_MAP.format(link=geo.geo_map_url),
         parse_mode=ParseMode.HTML)

@@ -43,12 +43,15 @@ def wait_for_ajax(driver):
         logger().error(e)
 
 
-def is_visible(driver, locator: str, timeout=3) -> bool:
+def wait_visibility(is_visible: bool, driver, locator: str, timeout=3) -> bool:
+    action = EC.visibility_of_element_located(
+        (By.XPATH, locator))
+    if not is_visible:
+        action = EC.invisibility_of_element_located(
+            (By.XPATH, locator))
     try:
         ui.WebDriverWait(
-            driver, timeout).until(
-            EC.visibility_of_element_located(
-                (By.XPATH, locator)))
+            driver, timeout).until(action)
         return True
     except TimeoutException:
         return False
