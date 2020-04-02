@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 from telegram import ParseMode
 
+from bot import bot
 from bot_config import *
-from bot_constants import *
+from bot_constants import MSG_INSTAGRAM_POST_CONTENT, MSG_HTML_LINK, MSG_LOCATION_MAP
 from features.currency.currency_api import get_currency_message
-from features.instagram.insta_loader import (fetch_insta_post_content_files,
-                                             get_insta_post_data)
+from features.instagram.insta_loader import fetch_insta_post_data
 from features.location.geo import Geo
 from features.location.map_fetcher import fetch_map
-from logger import logger
 from util.bot_helper import get_message_keyboard
 
 
@@ -26,51 +25,20 @@ def send_currency_rate(bot, user, currency_id: int):
                      parse_mode=ParseMode.HTML)
 
 
-def send_to_user_insta_post_media_content(bot, insta_post, user):
-    for content_type, content_path in zip(
-            insta_post.media_types, insta_post.media_content_paths):
-        logger().info("Send media '{}'".format(content_path))
-        if content_type == instagram_video_type:
-            bot.send_video(chat_id=user.user_id,
-                           reply_to_message_id=insta_post.message_id,
-                           data=open(content_path, 'rb'))
-        elif content_type == instagram_image_type:
-            bot.send_photo(chat_id=user.user_id,
-                           reply_to_message_id=insta_post.message_id,
-                           photo=open(content_path, 'rb'))
-        else:
-            bot.send_message(chat_id=user.user_id,
-                             reply_to_message_id=insta_post.message_id,
-                             text=MSG_WARNING_INSTAGRAM_UNKNOWN_CONTENT_TYPE)
+def send_to_user_insta_post_media_content(insta_post, user):
+    fetch_insta_post_data(insta_post)
 
-    if insta_post.post_description:
-        bot.send_message(
-            chat_id=user.user_id,
-            reply_to_message_id=insta_post.message_id,
-            text="<b>Post description</b>\n\n" +
-            insta_post.post_description[0]['node']['text'],
-            parse_mode=ParseMode.HTML)
-
-
-def send_instagram_post_media(bot, user_message, user):
-    logger().info("Instagram post link '{}'".format(user_message.text))
-    insta_post = get_insta_post_data(user_message)
-
-    logger().info(("--Instagram instance-- '{}'".format(insta_post.__dict__)).encode("utf-8"))
-
-    if insta_post.is_blocked_profile:
-        bot.send_message(chat_id=user.user_id,
-                         reply_to_message_id=user_message.message_id,
-                         text=MSG_ERROR_LINK_IS_BLOCKED)
-    else:
-        try:
-            fetch_insta_post_content_files(insta_post)
-            send_to_user_insta_post_media_content(bot, insta_post, user)
-        except BaseException:
-            logger().error(u"{}: {}".format(MSG_ERROR_MSG_SAVE_IMAGE, insta_post))
-            bot.send_message(chat_id=user.user_id,
-                             reply_to_message_id=user_message.message_id,
-                             text=MSG_ERROR_MSG_SAVE_IMAGE)
+    bot.send_message(
+        chat_id=user.user_id,
+        reply_to_message_id=insta_post.message_id,
+        text=MSG_INSTAGRAM_POST_CONTENT.format(insta_post.post_description,
+                                               "\n".join([MSG_HTML_LINK.format(
+                                                   link=link,
+                                                   title="Media {}".format(title))
+                                                   for title, link in
+                                                   zip(range(1, len(insta_post.media_urls) + 1),
+                                                       insta_post.media_urls)])),
+        parse_mode=ParseMode.HTML)
 
 
 def send_map_location(bot, user, message):
@@ -93,6 +61,5 @@ def send_map_location(bot, user, message):
     bot.send_message(
         chat_id=user.user_id,
         reply_to_message_id=map_message.message_id,
-        text="<a href='{link}'>GO to Yandex map.\nClick here!</a>".format(
-            link=geo.geo_map_url),
+        text=MSG_LOCATION_MAP.format(link=geo.geo_map_url),
         parse_mode=ParseMode.HTML)

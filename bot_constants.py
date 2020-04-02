@@ -29,8 +29,9 @@ Please set your $ rate for notification.
 <b>{around_today_rate}</b>"""
 
 MSG_SUCCESS = "Success!"
+MSG_HTML_LINK = "<a href='{link}'>{title}</a>"
 
-MSG_CINEMA_BOT = "<a href='{link}'>{title}</a> <i>{media} | {info}</i>"
+MSG_CINEMA_BOT = MSG_HTML_LINK + " <i>{media} | {info}</i>"
 
 MSG_FOOTBALL_BASE_CMD = "Please select a section."
 MSG_FOOTBALL_BOT = "<i>{date}</i>   <b>{host_team} -:- {guest_team}</b>"
@@ -38,10 +39,9 @@ MSG_FOOTBALL_BOT = "<i>{date}</i>   <b>{host_team} -:- {guest_team}</b>"
 MSG_INSTAGRAM_BOT = """
 You will receive a post file from Instagram by sending a link to this post to the bot.
 
-Please copy/share Instagram post link and paste/ move to bot."""
-MSG_WARNING_INSTAGRAM_UNKNOWN_CONTENT_TYPE = "Unknown content type."
+Please copy/share Instagram post link and paste/move to bot."""
+MSG_INSTAGRAM_POST_CONTENT = "<b>Post description:</b>\n{}\n\n<b>Post media:</b>\n{}"
 
-MSG_ERROR_MSG_SAVE_IMAGE = 'Save Instagram media ERROR.'
-MSG_ERROR_LINK_IS_BLOCKED = 'I can’t get the data from this link.'
+MSG_LOCATION_MAP = "<a href='{link}'>GO to Yandex map.\nClick here!</a>"
 
 DB_LOG_CMD = '/{}'.format(os.environ.get('LOG'))

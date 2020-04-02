@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
+import re
 import time
 
 from telebot import types
+from telebot.types import Message
 from telegram import ParseMode
 
-from base.bot_script import (get_message_keyboard, send_currency_rate,
-                             send_instagram_post_media, send_map_location)
+from base.bot_script import (
+    get_message_keyboard,
+    send_currency_rate,
+    send_map_location,
+    send_to_user_insta_post_media_content)
 from base.user import fetch_user, get_user
 from bot import bot
 from bot_constants import *
@@ -15,6 +20,7 @@ from features.currency.currency_api import *
 from features.currency.currency_graph_generator import fetch_currency_graph
 from features.football.football_site_parser import *
 from features.instagram.insta_loader import *
+from features.instagram.insta_post import InstaPost
 from util.util_parsing import is_match_by_regexp, find_all_by_regexp
 from util.util_request import get_site_request_content
 
@@ -157,8 +163,7 @@ def send_instagram_post_content(message):
     insta_post_model = InstaPost(
         post_url=message.text,
         message_id=message.message_id)
-    fetch_insta_post_data(insta_post_model)
-    send_instagram_post_media(user, insta_post_model)
+    send_to_user_insta_post_media_content(insta_post_model, user)
     insert_analytics(user, 'insta_link')
 
 
@@ -252,7 +257,7 @@ def send_football_calendar(call):
     bot.send_message(
         chat_id=user.user_id,
         text="<b>{}</b>\n\n".format(football_message_title) +
-        get_football_data_message(matches),
+             get_football_data_message(matches),
         reply_markup=get_message_keyboard(actual_buttons_football),
         parse_mode=ParseMode.HTML)
     insert_analytics(user, call.data)

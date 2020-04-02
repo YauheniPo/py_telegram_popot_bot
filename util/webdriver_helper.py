@@ -3,9 +3,9 @@ import selenium.webdriver.support.expected_conditions as EC
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import ui
 from selenium.webdriver.support.wait import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 from logger import logger
@@ -24,6 +24,9 @@ class WebDriverFactory():
         if self.browser == 'FIREFOX':
             self.driver = webdriver.Firefox(
                 executable_path=GeckoDriverManager().install(), options=options)
+        if self.browser == 'CHROME':
+            self.driver = webdriver.Chrome(
+                executable_path=ChromeDriverManager().install(), options=options)
         self.driver.implicitly_wait(timeout)
         self.driver.maximize_window()
         return self.driver
@@ -40,18 +43,31 @@ def wait_for_ajax(driver):
         logger().error(e)
 
 
-def is_visible(driver, locator: str, timeout=3) -> bool:
+def wait_visibility(is_visible: bool, driver, locator: str, timeout=3) -> bool:
+    action = EC.visibility_of_element_located(
+        (By.XPATH, locator))
+    if not is_visible:
+        action = EC.invisibility_of_element_located(
+            (By.XPATH, locator))
     try:
         ui.WebDriverWait(
-            driver, timeout).until(
-            EC.visibility_of_element_located(
-                (By.XPATH, locator)))
+            driver, timeout).until(action)
         return True
     except TimeoutException:
         return False
 
 
 def get_firefox_options():
+    from selenium.webdriver.firefox.options import Options
+
+    options = Options()
+    options.headless = True
+    return options
+
+
+def get_chrome_options():
+    from selenium.webdriver.chrome.options import Options
+
     options = Options()
     options.headless = True
     return options
