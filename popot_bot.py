@@ -21,7 +21,8 @@ from features.currency.currency_graph_generator import fetch_currency_graph
 from features.football.football_site_parser import *
 from features.instagram.insta_loader import *
 from features.instagram.insta_post import InstaPost
-from util.util_parsing import is_match_by_regexp, find_all_by_regexp
+from features.virus.covid19 import fetch_covid_graph
+from util.util_data import is_match_by_regexp, find_all_by_regexp
 from util.util_request import get_site_request_content
 
 
@@ -170,6 +171,24 @@ def send_instagram_post_content(message):
 @bot.message_handler(regexp=r'^\{geo}'.format(geo=BASE_CMD_GEO))
 def geo(message):
     user = get_user(user_id=message.chat.id)
+
+    keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+    button_geo = types.KeyboardButton(
+        text="Send location", request_location=True)
+    keyboard.add(button_geo)
+    bot.send_message(
+        user.user_id,
+        "Hello! Click on the button and give me your location.",
+        reply_markup=keyboard)
+    insert_analytics(user, message.text)
+
+
+@bot.message_handler(regexp=r'^\{virus}'.format(virus=BASE_CMD_VIRUS))
+def virus(message):
+    user = get_user(user_id=message.chat.id)
+
+    fetch_covid_graph('Belarus')
+
 
     keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
     button_geo = types.KeyboardButton(

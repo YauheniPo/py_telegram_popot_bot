@@ -3,62 +3,57 @@ import json
 
 import pandas as pd
 import requests
+from lxml import html
+from overload import overload
+from systemtools import number
 
 from bot_config import virus_covid_data_site_url, virus_covid_data_api_url
 from logger import logger
-from util.util_parsing import get_tree_html_content
+from util.util_data import get_current_date
 from util.util_request import get_site_request_content
 
 
-covid_site_content = get_site_request_content(url=virus_covid_data_site_url)
-covid_tree_html_content = get_tree_html_content(covid_site_content)
+def get_last_virus_covid_dir(location, table_data_xpath):
+    covid_site_content = get_site_request_content(url=virus_covid_data_site_url)
+    covid_tree_html_content = html.fromstring(covid_site_content)
+
+    location_data = covid_tree_html_content.xpath(table_data_xpath)
+    location_cases = number.parseNumber(location_data[-4].text_content().replace(',', ''))
+    location_deaths = number.parseNumber(location_data[-3].text_content().replace(',', ''))
+    location_recov = number.parseNumber(location_data[-2].text_content().replace(',', ''))
+    return {'country': location, 'dates': [str(get_current_date())], 'cases': [location_cases], 'deaths': [location_deaths],
+            'recov.': [location_recov]}
 
 
-def fetch_covid_graph(virus_data):
-    pass
-
-
+@overload
 def get_last_world_virus_covid_data_dir():
-    pass
+    return get_last_virus_covid_dir('World', "//tbody[.//*[@class='covid-sticky']]//th[@class]")
 
 
-def get_last_virus_covid_data_dir(country):
-    logger().info("Get matches")
-
-    matches_tree_xpath = "//div[contains(@class, 'statistics-table')]//tr//td[contains(text(), '-:-')]/ancestor::tr"
-    match_host_team_xpath = ".//div[contains(@class, 'team_left')]//span"
-    match_guest_team_xpath = ".//div[contains(@class, 'team_right')]//span"
-    match_date_xpath = ".//span[contains(@class, 'date') and contains(@class, 'desktop')]"
-
-    matches = []
-
-    xpath_get_text = "{xpath}//text()"
-    for match in get_tree_html_content(site_content).xpath(matches_tree_xpath):
-        match_host_team = match.xpath(
-            xpath_get_text.format(
-                xpath=match_host_team_xpath))[0]
-        match_guest_team = match.xpath(
-            xpath_get_text.format(
-                xpath=match_guest_team_xpath))[0]
-        match_date = str(
-            match.xpath(
-                xpath_get_text.format(
-                    xpath=match_date_xpath))[0]).strip()
-        matches.append(
-            Match(
-                host_team=match_host_team,
-                guest_team=match_guest_team,
-                date=match_date))
-    return {'country': '', 'dates': [], 'cases': [], 'deaths': [], 'recov.': []}
+@get_last_world_virus_covid_data_dir.add
+def get_last_virus_covid_data_dir(country: str):
+    return get_last_virus_covid_dir(country, "//tr[.//a[@href][text()='Belarus']][.//img]/*")
 
 
 def get_all_virus_covid_data_dir(country):
-    response = requests.post(url=virus_covid_data_api_url, data=json.dumps({'country': country})) # or {'code': 'BY'}
+    response = requests.post(url=virus_covid_data_api_url, data=json.dumps({'country': country}))  # or {'code': 'BY'}
 
     # Convert to data frame
     df = pd.DataFrame.from_dict(json.loads(response.text))
-    return {'country': '', 'dates': [], 'cases': [], 'deaths': [], 'recov.': []}
+    return {'country': country, 'dates': df.date.values.tolist(), 'cases': df.cases_cum.values.tolist(),
+            'deaths': df.deaths_cum.values.tolist(), 'recov.': df.cases_cum.values.tolist()}
 
+
+def fetch_covid_graph(country):
+    logger().info("Get virus data for country '{}'".format(country))
+
+    country_actual_data_virus = get_last_world_virus_covid_data_dir(country)
+    country_all_data_virus = get_all_virus_covid_data_dir(country)
+    world_actual_data_virus = get_last_world_virus_covid_data_dir()
+
+
+
+    pass
 
 # matplotlib.use('Agg')
 #

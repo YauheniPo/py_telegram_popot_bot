@@ -7,6 +7,7 @@ BASE_CMD_CINEMA = '/cinema'
 BASE_CMD_FOOTBALL = '/football'
 BASE_CMD_INSTAGRAM = '/instagram'
 BASE_CMD_GEO = '/geo'
+BASE_CMD_VIRUS = '/virus'
 
 MSG_START_CMD_BASE = """
 {start} - HELP - telegram bot functionals
@@ -14,7 +15,8 @@ MSG_START_CMD_BASE = """
 {cinema} - cinema posters
 {football} - football calendar
 {instagram} - save Instagram post content by link
-{geo} - location of the nearest ATMs"""
+{geo} - location of the nearest ATMs
+{virus} - """
 
 MSG_CURRENCY_BOT = """
 <b>{currency}</b>
