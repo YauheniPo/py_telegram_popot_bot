@@ -21,35 +21,48 @@ def get_last_virus_covid_dir(location, table_data_xpath):
     location_cases = number.parseNumber(location_data[-4].text_content().replace(',', ''))
     location_deaths = number.parseNumber(location_data[-3].text_content().replace(',', ''))
     location_recov = number.parseNumber(location_data[-2].text_content().replace(',', ''))
-    return {'country': location, 'dates': [str(get_current_date())], 'cases': [location_cases], 'deaths': [location_deaths],
+    return {'country': location,
+            'dates': [str(get_current_date())],
+            'cases': [location_cases],
+            'deaths': [location_deaths],
             'recov.': [location_recov]}
 
 
 @overload
-def get_last_world_virus_covid_data_dir():
+def get_last_location_virus_covid_data_dir():
     return get_last_virus_covid_dir('World', "//tbody[.//*[@class='covid-sticky']]//th[@class]")
 
 
-@get_last_world_virus_covid_data_dir.add
+@get_last_location_virus_covid_data_dir.add
 def get_last_virus_covid_data_dir(country: str):
-    return get_last_virus_covid_dir(country, "//tr[.//a[@href][text()='Belarus']][.//img]/*")
+    return get_last_virus_covid_dir(country, "//tr[.//a[@href][text()='{}']][.//img]/*".format(country))
 
 
-def get_all_virus_covid_data_dir(country):
+def get_all_location_virus_covid_data_dir(country):
     response = requests.post(url=virus_covid_data_api_url, data=json.dumps({'country': country}))  # or {'code': 'BY'}
 
     # Convert to data frame
     df = pd.DataFrame.from_dict(json.loads(response.text))
-    return {'country': country, 'dates': df.date.values.tolist(), 'cases': df.cases_cum.values.tolist(),
-            'deaths': df.deaths_cum.values.tolist(), 'recov.': df.cases_cum.values.tolist()}
+    return {'country': country,
+            'dates': df.date.values.tolist(),
+            'cases': df.cases_cum.values.tolist(),
+            'deaths': df.deaths_cum.values.tolist()}
 
 
 def fetch_covid_graph(country):
     logger().info("Get virus data for country '{}'".format(country))
 
-    country_actual_data_virus = get_last_world_virus_covid_data_dir(country)
-    country_all_data_virus = get_all_virus_covid_data_dir(country)
-    world_actual_data_virus = get_last_world_virus_covid_data_dir()
+    country_actual_data_virus = get_last_location_virus_covid_data_dir(country)
+    country_all_data_virus = get_all_location_virus_covid_data_dir(country)
+    world_actual_data_virus = get_last_location_virus_covid_data_dir()
+
+    if country_actual_data_virus['cases'][0] not in country_all_data_virus['cases']:
+        country_all_data_virus['cases'].pop(0)
+        country_all_data_virus['cases'].append(country_actual_data_virus['cases'][0])
+    if country_actual_data_virus['deaths'][0] not in country_all_data_virus['deaths']:
+        country_all_data_virus['deaths'].pop(0)
+        country_all_data_virus['deaths'].append(country_actual_data_virus['deaths'][0])
+
 
 
 
