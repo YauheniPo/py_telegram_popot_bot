@@ -199,7 +199,9 @@ def virus(message):
     bot.send_photo(chat_id=user.user_id, photo=open(covid_graph_path, 'rb'))
     bot.send_message(
         user.user_id,
-        get_covid_virus_msg_content(country_actual_data_virus, world_actual_data_virus))
+        get_covid_virus_msg_content(
+            country_actual_data_virus,
+            world_actual_data_virus))
     insert_analytics(user, message.text)
 
 
