@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from datetime import datetime
 
 import pandas as pd
 import requests
@@ -7,9 +8,9 @@ from lxml import html
 from overload import overload
 from systemtools import number
 
-from bot_config import virus_covid_data_site_url, virus_covid_data_api_url
-from logger import logger
+from bot_config import virus_covid_data_site_url, virus_covid_data_api_url, covid_graph_folder, covid_graph_path
 from util.util_data import get_current_date
+from util.util_graph import fetch_plot_graph_image
 from util.util_request import get_site_request_content
 
 
@@ -49,13 +50,7 @@ def get_all_location_virus_covid_data_dir(country):
             'deaths': df.deaths_cum.values.tolist()}
 
 
-def fetch_covid_graph(country):
-    logger().info("Get virus data for country '{}'".format(country))
-
-    country_actual_data_virus = get_last_location_virus_covid_data_dir(country)
-    country_all_data_virus = get_all_location_virus_covid_data_dir(country)
-    world_actual_data_virus = get_last_location_virus_covid_data_dir()
-
+def fetch_covid_graph(country_all_data_virus, country_actual_data_virus):
     if country_actual_data_virus['cases'][0] not in country_all_data_virus['cases']:
         country_all_data_virus['cases'].pop(0)
         country_all_data_virus['cases'].append(country_actual_data_virus['cases'][0])
@@ -63,10 +58,20 @@ def fetch_covid_graph(country):
         country_all_data_virus['deaths'].pop(0)
         country_all_data_virus['deaths'].append(country_actual_data_virus['deaths'][0])
 
+    x_axis_dates = [datetime.strptime(date, '%Y-%m-%d') for date in country_all_data_virus['dates']]
+    y_axis_cases = country_all_data_virus['cases']
+
+    fetch_plot_graph_image(x_axis_dates, y_axis_cases, covid_graph_folder, covid_graph_path,
+                           '{} for today ({})'.format(y_axis_cases[-1], x_axis_dates[-1].strftime("%d/%m/%Y")), 'o')
 
 
-
-    pass
+def get_covid_virus_msg_content(*args):
+    msg_content = ["""{}:
+Cases: {}
+Deaths: {}
+Recov: {}""".format(virus_data['country'], virus_data['cases'][0],
+                    virus_data['deaths'][0], virus_data['recov.'][0]) for virus_data in args]
+    return "\n\n".join(msg_content)
 
 # matplotlib.use('Agg')
 #

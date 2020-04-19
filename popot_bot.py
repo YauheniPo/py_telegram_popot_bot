@@ -21,7 +21,8 @@ from features.currency.currency_graph_generator import fetch_currency_graph
 from features.football.football_site_parser import *
 from features.instagram.insta_loader import *
 from features.instagram.insta_post import InstaPost
-from features.virus.covid19 import fetch_covid_graph
+from features.virus.covid19 import fetch_covid_graph, get_last_location_virus_covid_data_dir, \
+    get_all_location_virus_covid_data_dir, get_covid_virus_msg_content
 from util.util_data import is_match_by_regexp, find_all_by_regexp
 from util.util_request import get_site_request_content
 
@@ -187,17 +188,18 @@ def geo(message):
 def virus(message):
     user = get_user(user_id=message.chat.id)
 
-    fetch_covid_graph('Belarus')
+    country = 'Belarus'
+    logger().info("Get virus data for country '{}'".format(country))
 
+    country_actual_data_virus = get_last_location_virus_covid_data_dir(country)
+    country_all_data_virus = get_all_location_virus_covid_data_dir(country)
+    world_actual_data_virus = get_last_location_virus_covid_data_dir()
 
-    keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
-    button_geo = types.KeyboardButton(
-        text="Send location", request_location=True)
-    keyboard.add(button_geo)
+    fetch_covid_graph(country_all_data_virus, country_actual_data_virus)
+    bot.send_photo(chat_id=user.user_id, photo=open(covid_graph_path, 'rb'))
     bot.send_message(
         user.user_id,
-        "Hello! Click on the button and give me your location.",
-        reply_markup=keyboard)
+        get_covid_virus_msg_content(country_actual_data_virus, world_actual_data_virus))
     insert_analytics(user, message.text)
 
 

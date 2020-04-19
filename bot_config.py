@@ -52,5 +52,5 @@ belavia_offers = 'https://vandrouki.by/tag/belavia/'
 
 virus_covid_data_site_url = 'https://en.wikipedia.org/wiki/Template:2019%E2%80%9320_coronavirus_pandemic_data'
 virus_covid_data_api_url = 'https://api.statworx.com/covid'
-covid_graph_folder = "graphs"
+covid_graph_folder = os.path.join("features", "virus", "graphs")
 covid_graph_path = os.path.join(covid_graph_folder, "covid.png")
