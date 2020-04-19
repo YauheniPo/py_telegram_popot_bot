@@ -46,4 +46,9 @@ MSG_INSTAGRAM_POST_CONTENT = "<b>Post description:</b>\n{}\n\n<b>Post media:</b>
 
 MSG_LOCATION_MAP = "<a href='{link}'>GO to Yandex map.\nClick here!</a>"
 
+MSG_VIRUS_COVID_DATA = """{}:
+Cases: {}
+Deaths: {}
+Recov: {}"""
+
 DB_LOG_CMD = '/{}'.format(os.environ.get('LOG'))

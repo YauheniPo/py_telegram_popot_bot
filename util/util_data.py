@@ -5,6 +5,7 @@ from datetime import datetime
 from logger import logger
 
 date_format_Y_m_d = '%Y-%m-%d'
+date_format_d_m_Y = '%d/%m/%Y'
 date_format_iso = '%Y-%m-%dT%H:%M:%S'
 date_format_d_m = '%d.%m'
 
