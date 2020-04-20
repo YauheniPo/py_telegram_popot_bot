@@ -2,7 +2,7 @@
 import datetime
 from dataclasses import dataclass
 
-from util.util_parsing import date_format_iso
+from util.util_data import date_format_iso
 
 
 @dataclass

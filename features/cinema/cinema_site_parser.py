@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+from lxml import html
+
 from bot_constants import MSG_CINEMA_BOT
 from features.cinema.cinema import Cinema
 from logger import logger
-from util.util_parsing import get_tree_html_content
 
 
 def get_movies(site_content):
@@ -17,7 +18,7 @@ def get_movies(site_content):
     movies = []
 
     xpath_get_text = "{xpath}//text()"
-    for movie in get_tree_html_content(site_content).xpath(MOVIES_TREE_XPATH):
+    for movie in html.fromstring(site_content).xpath(MOVIES_TREE_XPATH):
         movie_title = movie.xpath(
             xpath_get_text.format(
                 xpath=MOVIE_TITLE_XPATH))[0]

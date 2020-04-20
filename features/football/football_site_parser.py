@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+from lxml import html
+
 from bot_constants import MSG_FOOTBALL_BOT
 from features.football.match import Match
 from logger import logger
-from util.util_parsing import get_tree_html_content
 
 
 def get_matches(site_content):
@@ -16,7 +17,7 @@ def get_matches(site_content):
     matches = []
 
     xpath_get_text = "{xpath}//text()"
-    for match in get_tree_html_content(site_content).xpath(matches_tree_xpath):
+    for match in html.fromstring(site_content).xpath(matches_tree_xpath):
         match_host_team = match.xpath(
             xpath_get_text.format(
                 xpath=match_host_team_xpath))[0]
