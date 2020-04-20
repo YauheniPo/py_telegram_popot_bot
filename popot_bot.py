@@ -40,7 +40,8 @@ def start(message):
             cinema=BASE_CMD_CINEMA,
             football=BASE_CMD_FOOTBALL,
             instagram=BASE_CMD_INSTAGRAM,
-            geo=BASE_CMD_GEO))
+            geo=BASE_CMD_GEO,
+            virus=BASE_CMD_VIRUS))
     insert_analytics(user, message.text)
 
 
