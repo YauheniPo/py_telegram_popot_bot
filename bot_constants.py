@@ -16,7 +16,7 @@ MSG_START_CMD_BASE = """
 {football} - football calendar
 {instagram} - save Instagram post content by link
 {geo} - location of the nearest ATMs
-{virus} - """
+{virus} - COVID-19 virus statistics"""
 
 MSG_CURRENCY_BOT = """
 <b>{currency}</b>

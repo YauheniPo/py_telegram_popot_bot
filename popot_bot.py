@@ -21,8 +21,9 @@ from features.currency.currency_graph_generator import fetch_currency_graph
 from features.football.football_site_parser import *
 from features.instagram.insta_loader import *
 from features.instagram.insta_post import InstaPost
-from features.virus.covid19 import fetch_covid_graph, get_last_location_virus_covid_data_dir, \
-    get_all_location_virus_covid_data_dir, get_covid_virus_msg_content
+from features.virus.covid19 import fetch_covid_graph, \
+    get_covid_virus_msg_content, get_last_virus_covid_data_dir, \
+    get_location_all_virus_covid_data_dir
 from util.util_data import is_match_by_regexp, find_all_by_regexp
 from util.util_request import get_site_request_content
 
@@ -191,9 +192,9 @@ def virus(message):
     country = 'Belarus'
     logger().info("Get virus data for country '{}'".format(country))
 
-    country_actual_data_virus = get_last_location_virus_covid_data_dir(country)
-    country_all_data_virus = get_all_location_virus_covid_data_dir(country)
-    world_actual_data_virus = get_last_location_virus_covid_data_dir()
+    country_actual_data_virus = get_last_virus_covid_data_dir(country)
+    country_all_data_virus = get_location_all_virus_covid_data_dir(country)
+    world_actual_data_virus = get_last_virus_covid_data_dir()
 
     fetch_covid_graph(country_all_data_virus, country_actual_data_virus)
     bot.send_photo(chat_id=user.user_id, photo=open(covid_graph_path, 'rb'))
@@ -269,8 +270,8 @@ def send_football_calendar(call):
     matches = get_matches(
         get_site_request_content(
             url=bot_config.football_url +
-            call.data +
-            bot_config.football_url_path_calendar))
+                call.data +
+                bot_config.football_url_path_calendar))
 
     actual_buttons_football = dict(buttons_football_leagues)
     football_message_title = actual_buttons_football.pop(call.data)

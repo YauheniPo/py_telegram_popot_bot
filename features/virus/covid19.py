@@ -8,22 +8,43 @@ from lxml import html
 from overload import overload
 from systemtools import number
 
-from bot_config import virus_covid_data_site_url, virus_covid_data_api_url, covid_graph_folder, covid_graph_path
+from bot_config import virus_covid_data_api_url, covid_graph_folder, covid_graph_path, \
+    virus_covid_data_wikipedia_site_url, virus_covid_data_tutby_site_url
 from bot_constants import MSG_VIRUS_COVID_DATA
 from util.util_data import get_current_date, date_format_d_m_Y
 from util.util_graph import fetch_plot_graph_image
 from util.util_request import get_site_request_content
 
 
+def get_tutby_last_virus_covid_dir(location):
+    virus_covid_data_xpath = "//div[@id='tab-{location}']//div[@class='statistic-item'][{{index}}]/*[@class='total']".format(
+        location=location.lower())
+
+    covid_site_content = get_site_request_content(url=virus_covid_data_tutby_site_url)
+    covid_tree_html_content = html.fromstring(covid_site_content)
+
+    location_cases = number.parseNumber(
+        covid_tree_html_content.xpath(virus_covid_data_xpath.format(index=1))[0].text_content())
+    location_deaths = number.parseNumber(
+        covid_tree_html_content.xpath(virus_covid_data_xpath.format(index=3))[0].text_content())
+    location_recov = number.parseNumber(
+        covid_tree_html_content.xpath(virus_covid_data_xpath.format(index=2))[0].text_content())
+    return {'country': location.upper(),
+            'dates': [str(get_current_date())],
+            'cases': [location_cases],
+            'deaths': [location_deaths],
+            'recov.': [location_recov]}
+
+
 def get_last_virus_covid_dir(location, table_data_xpath):
-    covid_site_content = get_site_request_content(url=virus_covid_data_site_url)
+    covid_site_content = get_site_request_content(url=virus_covid_data_wikipedia_site_url)
     covid_tree_html_content = html.fromstring(covid_site_content)
 
     location_data = covid_tree_html_content.xpath(table_data_xpath)
     location_cases = number.parseNumber(location_data[-4].text_content().replace(',', ''))
     location_deaths = number.parseNumber(location_data[-3].text_content().replace(',', ''))
     location_recov = number.parseNumber(location_data[-2].text_content().replace(',', ''))
-    return {'country': location,
+    return {'country': location.upper(),
             'dates': [str(get_current_date())],
             'cases': [location_cases],
             'deaths': [location_deaths],
@@ -31,16 +52,16 @@ def get_last_virus_covid_dir(location, table_data_xpath):
 
 
 @overload
-def get_last_location_virus_covid_data_dir():
+def get_last_virus_covid_data_dir():
     return get_last_virus_covid_dir('World', "//tbody[.//*[@class='covid-sticky']]//th[@class]")
 
 
-@get_last_location_virus_covid_data_dir.add
+@get_last_virus_covid_data_dir.add
 def get_last_virus_covid_data_dir(country: str):
-    return get_last_virus_covid_dir(country, "//tr[.//a[@href][text()='{}']][.//img]/*".format(country))
+    return get_tutby_last_virus_covid_dir(country)
 
 
-def get_all_location_virus_covid_data_dir(country):
+def get_location_all_virus_covid_data_dir(country):
     response = requests.post(url=virus_covid_data_api_url, data=json.dumps({'country': country}))  # or {'code': 'BY'}
 
     # Convert to data frame
