@@ -201,7 +201,9 @@ def virus(message):
     bot.send_photo(chat_id=user.user_id, photo=open(covid_graph_path, 'rb'))
     bot.send_message(
         user.user_id,
-        get_covid_virus_msg_content(country_actual_data_virus, world_actual_data_virus))
+        get_covid_virus_msg_content(
+            country_actual_data_virus,
+            world_actual_data_virus))
     insert_analytics(user, message.text)
 
 
@@ -271,8 +273,8 @@ def send_football_calendar(call):
     matches = get_matches(
         get_site_request_content(
             url=bot_config.football_url +
-                call.data +
-                bot_config.football_url_path_calendar))
+            call.data +
+            bot_config.football_url_path_calendar))
 
     actual_buttons_football = dict(buttons_football_leagues)
     football_message_title = actual_buttons_football.pop(call.data)
