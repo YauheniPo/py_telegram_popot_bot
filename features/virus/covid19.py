@@ -53,7 +53,7 @@ def get_last_virus_covid_dir(location, table_data_xpath):
 
 @overload
 def get_last_virus_covid_data_dir():
-    return get_last_virus_covid_dir('World', "//tbody[.//*[@class='covid-sticky']]//th[@class]")
+    return get_last_virus_covid_dir('World', "//tbody[.//*[@class='covid-sticky']]//tr[@class='sorttop']/th")
 
 
 @get_last_virus_covid_data_dir.add
