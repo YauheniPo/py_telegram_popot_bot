@@ -2,7 +2,7 @@
 import re
 from datetime import datetime
 
-from logger import logger
+from util.logger import logger
 
 date_format_Y_m_d = '%Y-%m-%d'
 date_format_d_m_Y = '%d/%m/%Y'

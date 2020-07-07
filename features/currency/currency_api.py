@@ -6,7 +6,7 @@ import requests
 import bot_config
 from bot_constants import MSG_CURRENCY_BOT
 from features.currency.сurrency import Currency
-from logger import logger
+from util.logger import logger
 from util.util_data import date_format_d_m, date_format_Y_m_d
 
 

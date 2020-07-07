@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from selenium.webdriver import ActionChains
 
-from logger import logger
+from util.logger import logger
 
 WHAT_HERE_CONTEXT_ITEM = "Что здесь?"
 

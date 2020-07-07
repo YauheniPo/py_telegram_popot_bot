@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from bot_config import currency_graph_folder, currency_graph_path
-from logger import logger
+from util.logger import logger
 from util.util_graph import fetch_plot_graph_image
 
 

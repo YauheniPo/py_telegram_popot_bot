@@ -4,7 +4,7 @@ import os
 
 from tinydb import Query, TinyDB
 
-from logger import logger
+from util.logger import logger
 
 db_data_json_file = 'db{}db.json'.format(os.path.sep)
 db = TinyDB(db_data_json_file)

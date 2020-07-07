@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from db.db_connection import get_db_user, insert_user
-from logger import logger
+from util.logger import logger
 
 
 class User:
