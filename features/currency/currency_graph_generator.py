@@ -17,4 +17,4 @@ def fetch_currency_graph(currency_data):
         y_axis_rate,
         currency_graph_folder,
         currency_graph_path,
-        y_axis_rate[0])
+        y_axis_rate[-1])

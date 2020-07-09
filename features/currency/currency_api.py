@@ -61,3 +61,10 @@ def get_currency_message(currency_id):
         currency=current_currency,
         currency_past_days=currency_response_past_days,
         currency_current_day=currency_response_current_day)
+
+
+def get_today_currency_rate():
+    currency_list = fetch_currency_list(
+        get_currency_response_json(bot_config.currency_dollar_id))
+    today_currency_rate = currency_list[-1].Cur_OfficialRate
+    return [today_currency_rate, round(today_currency_rate, 1)]

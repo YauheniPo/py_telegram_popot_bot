@@ -1,63 +1,45 @@
 # -*- coding: utf-8 -*-
-import re
-import time
-
 from telebot import types
-from telebot.types import Message
 from telegram import ParseMode
 
-from base.bot_script import (
-    get_message_keyboard,
-    send_currency_rate,
-    send_map_location,
-    send_to_user_insta_post_media_content)
+from base.bot_step import start_step
 from base.user import fetch_user, get_user
 from bot import bot
 from bot_constants import *
 from db.db_connection import get_db_data, insert_analytics, insert_currency_alarm
 from features.cinema.cinema_site_parser import *
+from features.currency.bot_step import send_currency_rate, send_msg_alarm_currency, set_currency_alarm_rate_and_get_new_rate
 from features.currency.currency_api import *
 from features.currency.currency_graph_generator import fetch_currency_graph
 from features.football.football_site_parser import *
+from features.instagram.bot_step import send_to_user_insta_post_media_content
 from features.instagram.insta_loader import *
 from features.instagram.insta_post import InstaPost
-from features.virus.covid19 import fetch_covid_graph, \
-    get_covid_virus_msg_content, get_last_virus_covid_data_dir, \
-    get_location_all_virus_covid_data_dir
-from util.util_data import is_match_by_regexp, find_all_by_regexp
+from features.location.bot_step import send_map_location
+from features.virus.bot_step import sent_virus_data
+from util.bot_helper import get_message_keyboard
+from util.util_data import is_match_by_regexp
 from util.util_request import get_site_request_content
+
+__author__ = "Yauheni Papovich"
+__email__ = "ip.popovich.1990@gmail.com"
 
 
 @bot.message_handler(regexp=r'^\{start}'.format(start=BASE_CMD_START))
 def start(message):
     user = fetch_user(chat=message.chat)
 
-    bot.send_message(
-        chat_id=user.user_id,
-        text=MSG_START_CMD_BASE.format(
-            start=BASE_CMD_START,
-            currency=BASE_CMD_CURRENCY,
-            cinema=BASE_CMD_CINEMA,
-            football=BASE_CMD_FOOTBALL,
-            instagram=BASE_CMD_INSTAGRAM,
-            geo=BASE_CMD_GEO,
-            virus=BASE_CMD_VIRUS))
+    start_step(user)
     insert_analytics(user, message.text)
 
 
 @bot.message_handler(regexp=r'^\{command}'.format(command=BASE_CMD_CURRENCY))
 @bot.callback_query_handler(func=lambda call: call.data in currency_ids)
 def currency(message):
-    if isinstance(message, Message):
-        chat = message.chat
-        actual_currency = bot_config.currency_dollar_id
-    else:
-        chat = message.message.chat
-        actual_currency = message.data
+    user = get_user(message=message)
 
-    user = get_user(user_id=chat.id)
-
-    send_currency_rate(bot, user, actual_currency)
+    actual_currency = getattr(message, 'data', bot_config.currency_dollar_id)
+    send_currency_rate(user, actual_currency)
     insert_analytics(user, message.text)
 
 
@@ -65,9 +47,7 @@ def currency(message):
 def db_log(message):
     user = get_user(user_id=message.chat.id)
 
-    db_all_data = get_db_data()
-    bot.send_message(chat_id=user.user_id,
-                     text=str(db_all_data))
+    bot.send_message(user.user_id, str(get_db_data()))
     insert_analytics(user, message.text)
 
 
@@ -76,19 +56,8 @@ def alarm_currency(call):
     logger().info("Button '{}'".format(call.data))
     user = get_user(user_id=call.from_user.id)
 
-    currency_list = fetch_currency_list(
-        get_currency_response_json(currency_dollar_id))
-    today_currency_rate = currency_list[-1].Cur_OfficialRate
-    around_today_currency_rate = round(today_currency_rate, 1)
-
-    bot.send_message(
-        chat_id=user.user_id,
-        text=MSG_CURRENCY_ALARM_BOT.format(
-            today_rate=today_currency_rate,
-            around_today_rate=around_today_currency_rate),
-        reply_markup=get_message_keyboard(buttons_currency_alarm_rate),
-        parse_mode=ParseMode.HTML)
-    insert_currency_alarm(user, around_today_currency_rate)
+    today_currency_rate, around_today_currency_rate = get_today_currency_rate()
+    send_msg_alarm_currency(user, today_currency_rate, around_today_currency_rate)
 
 
 @bot.callback_query_handler(
@@ -98,25 +67,7 @@ def update_currency_alarm_rate(call):
     user = get_user(user_id=call.from_user.id)
 
     call_message = call.message.text.strip()
-    currency_alarm_rate = find_all_by_regexp(
-        call_message, currency_alarm_rate_regexp)[0]
-    new_currency_alarm_rate = round(eval(currency_alarm_rate + call.data), 1)
-    new_currency_alarm_rate_for_replace = "<b>{}</b>".format(
-        new_currency_alarm_rate)
-    message = re.sub(
-        currency_alarm_rate_regexp,
-        new_currency_alarm_rate_for_replace,
-        call_message)
-
-    def send_currency_alarm_message(message):
-        bot.edit_message_text(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-            text=message,
-            reply_markup=get_message_keyboard(buttons_currency_alarm_rate),
-            parse_mode=ParseMode.HTML)
-
-    send_currency_alarm_message(message)
+    new_currency_alarm_rate = set_currency_alarm_rate_and_get_new_rate(call_message)
     insert_currency_alarm(user, new_currency_alarm_rate)
 
 
@@ -153,8 +104,7 @@ def football(message):
 def instagram(message):
     user = get_user(user_id=message.chat.id)
 
-    bot.send_message(chat_id=user.user_id,
-                     text=MSG_INSTAGRAM_BOT)
+    bot.send_message(user.user_id, MSG_INSTAGRAM_BOT)
     insert_analytics(user, message.text)
 
 
@@ -164,10 +114,9 @@ def instagram(message):
 def send_instagram_post_content(message):
     user = get_user(user_id=message.chat.id)
 
-    insta_post_model = InstaPost(
+    send_to_user_insta_post_media_content(InstaPost(
         post_url=message.text,
-        message_id=message.message_id)
-    send_to_user_insta_post_media_content(insta_post_model, user)
+        message_id=message.message_id), user)
     insert_analytics(user, 'insta_link')
 
 
@@ -190,20 +139,7 @@ def geo(message):
 def virus(message):
     user = get_user(user_id=message.chat.id)
 
-    country = 'Belarus'
-    logger().info("Get virus data for country '{}'".format(country))
-
-    country_actual_data_virus = get_last_virus_covid_data_dir(country)
-    country_all_data_virus = get_location_all_virus_covid_data_dir(country)
-    world_actual_data_virus = get_last_virus_covid_data_dir()
-
-    fetch_covid_graph(country_all_data_virus, country_actual_data_virus)
-    bot.send_photo(chat_id=user.user_id, photo=open(covid_graph_path, 'rb'))
-    bot.send_message(
-        user.user_id,
-        get_covid_virus_msg_content(
-            country_actual_data_virus,
-            world_actual_data_virus))
+    sent_virus_data(user)
     insert_analytics(user, message.text)
 
 
@@ -273,8 +209,8 @@ def send_football_calendar(call):
     matches = get_matches(
         get_site_request_content(
             url=bot_config.football_url +
-            call.data +
-            bot_config.football_url_path_calendar))
+                call.data +
+                bot_config.football_url_path_calendar))
 
     actual_buttons_football = dict(buttons_football_leagues)
     football_message_title = actual_buttons_football.pop(call.data)
@@ -289,12 +225,10 @@ def send_football_calendar(call):
 
 
 if __name__ == "__main__":
-    for i in range(0, 5):
-        time.sleep(0.1)
-        try:
-            bot.infinity_polling()
-        except Exception as e:
-            logger().error(e)
+    try:
+        bot.infinity_polling()
+    except Exception as e:
+        logger().error(e)
 
 # bot.register_next_step_handler(message, func) #следующий шаг – функция
 # func(message)
