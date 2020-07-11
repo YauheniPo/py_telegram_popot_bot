@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from bot_config import *
+from base.bot.bot_config import *
 from util.util_request import *
 from util.webdriver_helper import get_chrome_options, WebDriverFactory, wait_for_ajax, wait_visibility
 

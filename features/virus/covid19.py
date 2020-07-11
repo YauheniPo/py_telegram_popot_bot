@@ -8,9 +8,9 @@ from lxml import html
 from overload import overload
 from systemtools import number
 
-from bot_config import virus_covid_data_api_url, covid_graph_folder, covid_graph_path, \
+from base.bot.bot_config import virus_covid_data_api_url, covid_graph_folder, covid_graph_path, \
     virus_covid_data_wikipedia_site_url, virus_covid_data_tutby_site_url
-from bot_constants import MSG_VIRUS_COVID_DATA
+from base.bot.bot_constants import MSG_VIRUS_COVID_DATA
 from util.util_data import get_current_date, date_format_d_m_Y
 from util.util_graph import fetch_plot_graph_image
 from util.util_request import get_site_request_content

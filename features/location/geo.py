@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from bot_config import location_folder, location_url
+from base.bot.bot_config import location_folder, location_url
 from util.logger import logger
 
 

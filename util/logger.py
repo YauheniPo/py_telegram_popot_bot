@@ -2,31 +2,9 @@
 import logging.config
 import sys
 
-logging.config.dictConfig({
-    "version": 1,
-    "formatters": {
-        "default": {
-            "format": "%(asctime)s %(levelname)s %(name)s %(message)s"
-        },
-    },
-    "handlers": {
-        "console": {
-            "level": 'DEBUG',
-            "class": "logging.StreamHandler",
-            "stream": "ext://sys.stdout"
-        },
-        "fileHandler": {
-            "class": "logging.FileHandler",
-            "filename": "log.log"
-        }
-    },
-    "loggers": {
-        "": {
-            "level": "INFO",
-            "handlers": ["console", "fileHandler"]
-        }
-    }
-})
+LOGGING_CONFIG_FILE = "logging_config.ini"
+
+logging.config.fileConfig(LOGGING_CONFIG_FILE)
 
 
 def logger():

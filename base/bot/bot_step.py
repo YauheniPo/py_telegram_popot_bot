@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from bot import bot
-from bot_constants import *
+from base.bot.bot import bot
+from base.bot.bot_constants import *
 
 
 def start_step(user):

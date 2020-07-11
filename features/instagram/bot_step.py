@@ -1,7 +1,7 @@
 from telegram import ParseMode
 
-from bot import bot
-from bot_constants import MSG_INSTAGRAM_POST_CONTENT, MSG_HTML_LINK
+from base.bot.bot import bot
+from base.bot.bot_constants import MSG_INSTAGRAM_POST_CONTENT, MSG_HTML_LINK
 from features.instagram.insta_loader import fetch_insta_post_data
 
 

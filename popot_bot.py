@@ -2,13 +2,14 @@
 from telebot import types
 from telegram import ParseMode
 
-from base.bot_step import start_step
-from base.user import fetch_user, get_user
-from bot import bot
-from bot_constants import *
+from base.bot.bot import bot
+from base.bot.bot_constants import *
+from base.bot.bot_step import start_step
+from base.models.user import fetch_user, get_user
 from db.db_connection import get_db_data, insert_analytics, insert_currency_alarm
 from features.cinema.cinema_site_parser import *
-from features.currency.bot_step import send_currency_rate, send_msg_alarm_currency, set_currency_alarm_rate_and_get_new_rate
+from features.currency.bot_step import send_currency_rate, send_msg_alarm_currency, \
+    set_currency_alarm_rate_and_get_new_rate
 from features.currency.currency_api import *
 from features.currency.currency_graph_generator import fetch_currency_graph
 from features.football.football_site_parser import *
@@ -23,6 +24,25 @@ from util.util_request import get_site_request_content
 
 __author__ = "Yauheni Papovich"
 __email__ = "ip.popovich.1990@gmail.com"
+
+_all_ = [
+    'alarm_currency',
+    'cinema',
+    'currency',
+    'db_log',
+    'echo_all',
+    'football',
+    'geo',
+    'instagram',
+    'location',
+    'send_cinema_soon',
+    'send_currency_graph',
+    'send_football_calendar',
+    'send_instagram_post_content',
+    'start',
+    'update_currency_alarm_rate',
+    'virus'
+]
 
 
 @bot.message_handler(regexp=r'^\{start}'.format(start=BASE_CMD_START))

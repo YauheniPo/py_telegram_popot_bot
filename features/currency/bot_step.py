@@ -2,10 +2,10 @@ import re
 
 from telegram import ParseMode
 
-from bot import bot
-from bot_config import buttons_currency_selection, button_currency_graph, currency_dollar_id, button_currency_alarm, \
+from base.bot.bot import bot
+from base.bot.bot_config import buttons_currency_selection, button_currency_graph, currency_dollar_id, button_currency_alarm, \
     buttons_currency_alarm_rate, currency_alarm_rate_regexp
-from bot_constants import MSG_CURRENCY_ALARM_BOT
+from base.bot.bot_constants import MSG_CURRENCY_ALARM_BOT
 from features.currency.currency_api import get_currency_message
 from util.bot_helper import get_message_keyboard
 from util.util_data import find_all_by_regexp
