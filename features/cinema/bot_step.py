@@ -13,10 +13,12 @@ def send_cinema_list(user):
             bot_config.cinema_url +
             bot_config.cinema_url_path_today))
 
-    bot.send_message(chat_id=user.user_id,
-                     text=get_cinema_data_message(movies),
-                     reply_markup=get_message_keyboard(bot_config.button_cinema_soon),
-                     parse_mode=ParseMode.HTML)
+    bot.send_message(
+        chat_id=user.user_id,
+        text=get_cinema_data_message(movies),
+        reply_markup=get_message_keyboard(
+            bot_config.button_cinema_soon),
+        parse_mode=ParseMode.HTML)
 
 
 def send_cinema_soon_list(user):
