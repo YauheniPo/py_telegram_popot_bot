@@ -4,12 +4,10 @@ from datetime import datetime
 
 from util.logger import logger
 
-date_format_Y_m_d = '%Y-%m-%d'
-date_format_d_m_Y = '%d/%m/%Y'
-date_format_iso = '%Y-%m-%dT%H:%M:%S'
-date_format_d_m = '%d.%m'
-
-json_data_regex = "{(.*)}"
+DATE_FORMAT_Y_M_D = '%Y-%m-%d'
+DATE_FORMAT_D_M_Y = '%d/%m/%Y'
+DATE_FORMAT_ISO = '%Y-%m-%dT%H:%M:%S'
+DATE_FORMAT_D_M = '%d.%m'
 
 
 def is_match_by_regexp(string, regexp):

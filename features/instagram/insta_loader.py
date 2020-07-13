@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from base.bot.bot_config import *
+from bot_config import *
 from util.util_request import *
 from util.webdriver_helper import get_chrome_options, WebDriverFactory, wait_for_ajax, wait_visibility
 
@@ -7,7 +7,7 @@ from util.webdriver_helper import get_chrome_options, WebDriverFactory, wait_for
 def fetch_insta_post_data(insta_post_model):
     results_xpath = "//div[@class='result-box video']"
     insta_media_description_xpath = "//div[@class='row title']"
-    downloader_spinner = "//div[contains(@class, 'downloader-2-part2')]"
+    downloader_spinner = "//div[@id='sf_indicator']"
 
     with WebDriverFactory(browser).get_webdriver_instance(options=get_chrome_options()) as driver:
         driver.get(instagram_save_content_service + insta_post_model.post_url)

@@ -1,5 +1,5 @@
 from base.bot.bot import bot
-from base.bot.bot_config import covid_graph_path
+from bot_config import covid_graph_path
 from features.virus.covid19 import get_last_virus_covid_data_dir, get_location_all_virus_covid_data_dir, \
     fetch_covid_graph, get_covid_virus_msg_content
 from util.logger import logger

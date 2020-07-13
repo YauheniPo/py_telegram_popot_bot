@@ -1,7 +1,7 @@
 from telegram import ParseMode
 
-from base.bot.bot_config import location_atm
-from base.bot.bot_constants import MSG_LOCATION_MAP
+from bot_config import location_atm
+from base.constants import MSG_LOCATION_MAP
 from features.location.geo import Geo
 from features.location.map_fetcher import fetch_map
 

@@ -30,7 +30,6 @@ Please set your $ rate for notification.
 
 <b>{around_today_rate}</b>"""
 
-MSG_SUCCESS = "Success!"
 MSG_HTML_LINK = "<a href='{link}'>{title}</a>"
 
 MSG_CINEMA_BOT = MSG_HTML_LINK + " <i>{media} | {info}</i>"
@@ -46,9 +45,10 @@ MSG_INSTAGRAM_POST_CONTENT = "<b>Post description:</b>\n{}\n\n<b>Post media:</b>
 
 MSG_LOCATION_MAP = "<a href='{link}'>GO to Yandex map.\nClick here!</a>"
 
-MSG_VIRUS_COVID_DATA = """{}:
-Cases: {}
-Deaths: {}
-Recov: {}"""
+MSG_VIRUS_COVID_DATA = """
+{base_country_statistics}:
+Cases: {world_cases_statistics}
+Deaths: {world_deaths_statistics}
+Recov: {world_recov_statistics}"""
 
 DB_LOG_CMD = '/{}'.format(os.environ.get('LOG'))

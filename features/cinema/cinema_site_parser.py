@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from lxml import html
 
-from base.bot.bot_constants import MSG_CINEMA_BOT
+from base.constants import MSG_CINEMA_BOT
 from features.cinema.cinema import Cinema
 from util.logger import logger
 
