@@ -26,7 +26,10 @@ def send_currency_rate(user, currency_id: int):
                      parse_mode=ParseMode.HTML)
 
 
-def send_msg_alarm_currency(user, today_currency_rate, around_today_currency_rate):
+def send_msg_alarm_currency(
+        user,
+        today_currency_rate,
+        around_today_currency_rate):
     bot.send_message(
         chat_id=user.user_id,
         text=MSG_CURRENCY_ALARM_BOT.format(

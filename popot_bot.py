@@ -78,7 +78,10 @@ def alarm_currency(call):
     user = get_user(user_id=call.from_user.id)
 
     today_currency_rate, around_today_currency_rate = get_today_currency_rate()
-    send_msg_alarm_currency(user, today_currency_rate, around_today_currency_rate)
+    send_msg_alarm_currency(
+        user,
+        today_currency_rate,
+        around_today_currency_rate)
 
 
 @bot.callback_query_handler(
@@ -89,7 +92,8 @@ def update_currency_alarm_rate(call):
     user = get_user(user_id=call.from_user.id)
 
     call_message = call.message.text.strip()
-    new_currency_alarm_rate = set_currency_alarm_rate_and_get_new_rate(call_message)
+    new_currency_alarm_rate = set_currency_alarm_rate_and_get_new_rate(
+        call_message)
     insert_currency_alarm(user, new_currency_alarm_rate)
 
 
