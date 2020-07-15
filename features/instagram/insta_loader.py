@@ -13,7 +13,8 @@ def fetch_insta_post_data(insta_post_model):
         wait_visibility(True, driver, results_for_download)
         wait_for_ajax(driver)
         insta_post_items = driver.find_elements_by_xpath(results_for_download)
-        post_media_urls = [media.get_attribute("href") for media in insta_post_items]
+        post_media_urls = [media.get_attribute(
+            "href") for media in insta_post_items]
         insta_post_model.media_urls = post_media_urls
         insta_post_description = driver.find_element_by_xpath(
             insta_media_description_xpath).text

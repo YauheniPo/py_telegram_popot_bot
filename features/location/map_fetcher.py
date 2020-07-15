@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from bot_config import browser
 from features.location.map_page import WHAT_HERE_CONTEXT_ITEM, MapPage
-from util.webdriver_helper import (WebDriverFactory, wait_visibility, wait_for_ajax)
+from util.webdriver_helper import (
+    WebDriverFactory,
+    wait_visibility,
+    wait_for_ajax)
 
 
 def fetch_map(geo):
