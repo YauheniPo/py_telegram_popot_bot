@@ -6,7 +6,7 @@ from tinydb import Query, TinyDB
 
 from util.logger import logger
 
-db_data_json_file = 'db{}db.json'.format(os.path.sep)
+db_data_json_file = f'db{os.path.sep}db.json'
 db = TinyDB(db_data_json_file)
 users_table = db.table('users')
 cmd_table = db.table('commands')

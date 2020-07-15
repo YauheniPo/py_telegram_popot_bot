@@ -17,12 +17,11 @@ button_currency_graph = {currency_graph: 'Currency Graph'}
 currency_alarm = "currency_alarm"
 button_currency_alarm = {currency_alarm: 'Currency Alarm'}
 currency_alarm_rate_delay = 0.1
-currency_alarm_rate_delay_selectors = ("- {delay}".format(delay=currency_alarm_rate_delay),
-                                       "+ {delay}".format(delay=currency_alarm_rate_delay))
+currency_alarm_rate_delay_selectors = (f'- {currency_alarm_rate_delay}',
+                                       f'+ {currency_alarm_rate_delay}')
 buttons_currency_alarm_rate = dict(zip(currency_alarm_rate_delay_selectors,
                                        currency_alarm_rate_delay_selectors))
-currency_alarm_rate_button_regexp = r"(\+|-) {delay}".format(
-    delay=currency_alarm_rate_delay)
+currency_alarm_rate_button_regexp = rF'(\+|-) {currency_alarm_rate_delay}'
 currency_alarm_rate_regexp = r"\d\.\d$"
 
 cinema_url = "https://afisha.tut.by"

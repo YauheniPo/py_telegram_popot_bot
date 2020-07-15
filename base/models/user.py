@@ -18,7 +18,7 @@ class User:
 @overload
 def get_user(user_id: int):
     user_db = get_db_user(user_id=user_id)
-    logger().info("***** {} *****".format(user_db))
+    logger().info(f"***** {user_db} *****")
     return User(user_db=user_db)
 
 

@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
 from bot_config import *
 from util.util_request import *
-from util.webdriver_helper import get_chrome_options, WebDriverFactory, wait_for_ajax, wait_visibility
+from util.webdriver_helper import WebDriverFactory, wait_for_ajax, wait_visibility
 
 
 def fetch_insta_post_data(insta_post_model):
-    results_xpath = "//div[@class='result-box video']"
     insta_media_description_xpath = "//div[@class='row title']"
-    downloader_spinner = "//div[@id='sf_indicator']"
+    results_for_download = "//div[@id='sf_result']//a[@download]"
 
-    with WebDriverFactory(browser).get_webdriver_instance(options=get_chrome_options()) as driver:
+    with WebDriverFactory(browser).get_webdriver_instance() as driver:
         driver.get(instagram_save_content_service + insta_post_model.post_url)
+        wait_visibility(True, driver, results_for_download)
         wait_for_ajax(driver)
-        wait_visibility(False, driver, downloader_spinner)
-        insta_post_items = driver.find_elements_by_xpath(results_xpath)
-        post_media_urls = [media.find_element_by_xpath(
-            ".//img").get_attribute("src") for media in insta_post_items]
+        insta_post_items = driver.find_elements_by_xpath(results_for_download)
+        post_media_urls = [media.get_attribute("href") for media in insta_post_items]
         insta_post_model.media_urls = post_media_urls
         insta_post_description = driver.find_element_by_xpath(
             insta_media_description_xpath).text

@@ -23,7 +23,7 @@ __author__ = "Yauheni Papovich"
 __email__ = "ip.popovich.1990@gmail.com"
 
 __all__ = [
-    'alarm_currency',
+    'currency_alarm_call',
     'cinema',
     'currency',
     'db_log',
@@ -32,8 +32,8 @@ __all__ = [
     'geo_start',
     'instagram_start',
     'location',
-    'cinema_soon',
-    'currency_graph',
+    'cinema_soon_call',
+    'currency_graph_call',
     'football_calendar',
     'instagram_post_content',
     'start',
@@ -59,7 +59,7 @@ def currency(message):
 
     actual_currency = getattr(message, 'data', bot_config.currency_dollar_id)
     send_currency_rate(user, actual_currency)
-    insert_analytics(user, message.text)
+    insert_analytics(user, BASE_CMD_CURRENCY)
 
 
 @bot.message_handler(regexp=r'^\{log}'.format(log=DB_LOG_CMD))
@@ -73,7 +73,7 @@ def db_log(message):
 
 @bot.callback_query_handler(func=lambda call: call.data in currency_alarm)
 @catch_bot_handler_error
-def alarm_currency(call):
+def currency_alarm_call(call):
     logger().info("Button '{}'".format(call.data))
     user = get_user(user_id=call.from_user.id)
 
@@ -91,9 +91,7 @@ def alarm_currency(call):
 def update_currency_alarm_rate(call):
     user = get_user(user_id=call.from_user.id)
 
-    call_message = call.message.text.strip()
-    new_currency_alarm_rate = set_currency_alarm_rate_and_get_new_rate(
-        call_message)
+    new_currency_alarm_rate = set_currency_alarm_rate_and_get_new_rate(call)
     insert_currency_alarm(user, new_currency_alarm_rate)
 
 
@@ -192,7 +190,7 @@ def echo_all(message):
 
 @bot.callback_query_handler(func=lambda call: call.data == currency_graph)
 @catch_bot_handler_error
-def currency_graph(call):
+def currency_graph_call(call):
     logger().info("Button '{}'".format(call.data))
     user = get_user(user_id=call.from_user.id)
 
@@ -202,7 +200,7 @@ def currency_graph(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == cinema_soon)
 @catch_bot_handler_error
-def cinema_soon(call):
+def cinema_soon_call(call):
     logger().info("Button '{}'".format(call.data))
     user = get_user(user_id=call.from_user.id)
 

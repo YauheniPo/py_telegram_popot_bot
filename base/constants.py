@@ -51,4 +51,4 @@ Cases: {world_cases_statistics}
 Deaths: {world_deaths_statistics}
 Recov: {world_recov_statistics}"""
 
-DB_LOG_CMD = '/{}'.format(os.environ.get('LOG'))
+DB_LOG_CMD = f"/{os.environ.get('LOG')}"
