@@ -55,10 +55,14 @@ class WebDriverFactory:
 
         if self.browser == 'FIREFOX':
             executable_path = GeckoDriverManager().install()
-            self.driver = webdriver.Firefox(executable_path=executable_path, options=browser_options())
+            self.driver = webdriver.Firefox(
+                executable_path=executable_path,
+                options=browser_options())
         if self.browser == 'CHROME':
             executable_path = ChromeDriverManager().install()
-            self.driver = webdriver.Chrome(executable_path=executable_path, options=browser_options())
+            self.driver = webdriver.Chrome(
+                executable_path=executable_path,
+                options=browser_options())
 
         self.driver.implicitly_wait(timeout)
         self.driver.maximize_window()
@@ -76,7 +80,11 @@ def wait_for_ajax(driver):
         logger().error(e)
 
 
-def wait_visibility(is_visible: bool, driver, locator: str, timeout=60) -> bool:
+def wait_visibility(
+        is_visible: bool,
+        driver,
+        locator: str,
+        timeout=60) -> bool:
     action = EC.visibility_of_element_located(
         (By.XPATH, locator))
     if not is_visible:
