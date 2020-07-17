@@ -1,5 +1,7 @@
 # py_telegram_popot_bot
 
+![Python Telegram bot](https://github.com/YauheniPo/py_telegram_popot_bot/workflows/Python%20Telegram%20bot/badge.svg)
+
 Telegram Bot **@popot_bot**
 
 Functions:
