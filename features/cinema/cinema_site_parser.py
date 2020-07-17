@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from lxml import html
 
-from bot_constants import MSG_CINEMA_BOT
+from base.constants import MSG_CINEMA_BOT
 from features.cinema.cinema import Cinema
-from logger import logger
+from util.logger import logger
 
 
 def get_movies(site_content):

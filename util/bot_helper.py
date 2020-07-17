@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from telebot import types
 
-from logger import logger
+from util.logger import logger
 
 
 def get_message_keyboard(*args):

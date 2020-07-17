@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from bot_config import browser
 from features.location.map_page import WHAT_HERE_CONTEXT_ITEM, MapPage
-from util.webdriver_helper import (WebDriverFactory, get_firefox_options,
-                                   wait_visibility, wait_for_ajax)
+from util.webdriver_helper import (
+    WebDriverFactory,
+    wait_visibility,
+    wait_for_ajax)
 
 
 def fetch_map(geo):
-    with WebDriverFactory(browser).get_webdriver_instance(options=get_firefox_options()) as driver:
+    with WebDriverFactory(browser).get_webdriver_instance() as driver:
         driver.get(geo.geo_map_url)
         map_page = MapPage(driver)
         map_page.right_mouse_click_on_map()

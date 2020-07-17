@@ -2,7 +2,7 @@
 import os
 
 from bot_config import location_folder, location_url
-from logger import logger
+from util.logger import logger
 
 
 class Geo:

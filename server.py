@@ -7,7 +7,7 @@ import flask
 import telebot
 from flask_sslify import SSLify
 
-from bot import TELEGRAM_BOT_NAME, TELEGRAM_BOT_TOKEN
+from base.bot.bot import TELEGRAM_BOT_NAME, TELEGRAM_BOT_TOKEN
 from popot_bot import bot
 
 logger = logging.getLogger(__name__)

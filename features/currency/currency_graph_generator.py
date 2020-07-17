@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from bot_config import currency_graph_folder, currency_graph_path
-from logger import logger
+from util.logger import logger
 from util.util_graph import fetch_plot_graph_image
 
 
@@ -17,4 +17,4 @@ def fetch_currency_graph(currency_data):
         y_axis_rate,
         currency_graph_folder,
         currency_graph_path,
-        y_axis_rate[0])
+        y_axis_rate[-1])

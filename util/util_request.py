@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 
-from logger import logger
+from util.logger import logger
 
 
 def get_site_request_content(url, params={}, cookies=None):

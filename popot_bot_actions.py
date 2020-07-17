@@ -4,7 +4,7 @@ import time
 import schedule
 from telegram import ParseMode
 
-from bot import bot
+from base.bot.bot import bot
 from db.db_connection import get_users_alarm_currency_rate
 from features.currency.currency_api import (fetch_currency_list,
                                             get_currency_message,

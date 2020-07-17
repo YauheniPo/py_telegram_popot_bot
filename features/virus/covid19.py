@@ -10,8 +10,8 @@ from systemtools import number
 
 from bot_config import virus_covid_data_api_url, covid_graph_folder, covid_graph_path, \
     virus_covid_data_wikipedia_site_url, virus_covid_data_tutby_site_url
-from bot_constants import MSG_VIRUS_COVID_DATA
-from util.util_data import get_current_date, date_format_d_m_Y
+from base.constants import MSG_VIRUS_COVID_DATA
+from util.util_data import get_current_date, DATE_FORMAT_D_M_Y
 from util.util_graph import fetch_plot_graph_image
 from util.util_request import get_site_request_content
 
@@ -104,17 +104,17 @@ def fetch_covid_graph(country_all_data_virus, country_actual_data_virus):
                            covid_graph_folder,
                            covid_graph_path,
                            '{} for today ({})'.format(y_axis_cases[-1],
-                                                      x_axis_dates[-1].strftime(date_format_d_m_Y)),
+                                                      x_axis_dates[-1].strftime(DATE_FORMAT_D_M_Y)),
                            'o')
 
 
 def get_covid_virus_msg_content(*args):
     msg_content = [
         MSG_VIRUS_COVID_DATA.format(
-            virus_data['country'],
-            virus_data['cases'][0],
-            virus_data['deaths'][0],
-            virus_data['recov.'][0]) for virus_data in args]
+            base_country_statistics=virus_data['country'],
+            world_cases_statistics=virus_data['cases'][0],
+            world_deaths_statistics=virus_data['deaths'][0],
+            world_recov_statistics=virus_data['recov.'][0]) for virus_data in args]
     return "\n\n".join(msg_content)
 
 # matplotlib.use('Agg')

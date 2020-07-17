@@ -2,7 +2,7 @@
 import datetime
 from dataclasses import dataclass
 
-from util.util_data import date_format_iso
+from util.util_data import DATE_FORMAT_ISO
 
 
 @dataclass
@@ -12,5 +12,5 @@ class Currency:
 
     def __init__(self, Cur_ID, Date, Cur_OfficialRate):
         self.Cur_ID = Cur_ID
-        self.Date = datetime.datetime.strptime(Date, date_format_iso)
+        self.Date = datetime.datetime.strptime(Date, DATE_FORMAT_ISO)
         self.Cur_OfficialRate = Cur_OfficialRate

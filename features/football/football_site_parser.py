@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from lxml import html
 
-from bot_constants import MSG_FOOTBALL_BOT
+from base.constants import MSG_FOOTBALL_BOT
 from features.football.match import Match
-from logger import logger
+from util.logger import logger
 
 
 def get_matches(site_content):
