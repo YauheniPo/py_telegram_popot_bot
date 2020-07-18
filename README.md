@@ -52,7 +52,7 @@ https://api.telegram.org/bot<bot_token>/deleteWebhook
     - click Save
     
 
-
+flake8 --filename *.py --exclude venv
 How to manually setup flake8 as PyCharm external tool
 
 File / Settings / Tools / External Tools / Add
