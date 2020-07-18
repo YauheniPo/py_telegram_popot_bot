@@ -51,3 +51,25 @@ https://api.telegram.org/bot<bot_token>/deleteWebhook
       from server import app as application
     - click Save
     
+
+
+How to manually setup flake8 as PyCharm external tool
+
+File / Settings / Tools / External Tools / Add
+Name: Flake8
+Program: $PyInterpreterDirectory$/python
+Parameters: -m flake8 --max-complexity 10 --ignore E501 $FilePath$
+Working directory: $ProjectFileDir$
+
+Output Filters / Add
+Name: Filter 1
+Regular expression to match output:
+$FILE_PATH$\:$LINE$\:$COLUMN$\:.*
+
+Output Filters / Add
+Name: Filter 2
+Regular expression to match output:
+$FILE_PATH$\:$LINE$\:.*
+
+To check source with flake8:
+Tools / External Tools / Flake8
