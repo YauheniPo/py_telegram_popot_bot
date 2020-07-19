@@ -52,7 +52,8 @@ def start(message):
 
 
 @bot.message_handler(regexp=r'^\{command}'.format(command=BASE_CMD_CURRENCY))
-@bot.callback_query_handler(func=lambda call: call.data in bot_config.currency_ids)
+@bot.callback_query_handler(
+    func=lambda call: call.data in bot_config.currency_ids)
 @catch_bot_handler_error
 def currency(message):
     user = get_user(message=message)
@@ -71,7 +72,8 @@ def db_log(message):
     insert_analytics(user, message.text)
 
 
-@bot.callback_query_handler(func=lambda call: call.data in bot_config.currency_alarm)
+@bot.callback_query_handler(
+    func=lambda call: call.data in bot_config.currency_alarm)
 @catch_bot_handler_error
 def currency_alarm_call(call):
     logger().info("Button '{}'".format(call.data))
@@ -112,8 +114,7 @@ def football_start(message):
     bot.send_message(chat_id=user.user_id,
                      text=MSG_FOOTBALL_BASE_CMD,
                      reply_markup=get_message_keyboard(*[{k: v} for (k,
-                                                                     v) in
-                                                         bot_config.buttons_football_leagues.items()]))
+                                                                     v) in bot_config.buttons_football_leagues.items()]))
     insert_analytics(user, message.text)
 
 
@@ -182,7 +183,8 @@ def echo_all(message):
     logger().info("User message: '{}'".format(user_message))
 
 
-@bot.callback_query_handler(func=lambda call: call.data == bot_config.currency_graph)
+@bot.callback_query_handler(
+    func=lambda call: call.data == bot_config.currency_graph)
 @catch_bot_handler_error
 def currency_graph_call(call):
     logger().info("Button '{}'".format(call.data))
@@ -192,7 +194,8 @@ def currency_graph_call(call):
     insert_analytics(user, bot_config.currency_graph)
 
 
-@bot.callback_query_handler(func=lambda call: call.data == bot_config.cinema_soon)
+@bot.callback_query_handler(
+    func=lambda call: call.data == bot_config.cinema_soon)
 @catch_bot_handler_error
 def cinema_soon_call(call):
     logger().info("Button '{}'".format(call.data))
