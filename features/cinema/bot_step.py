@@ -10,8 +10,7 @@ from util.util_request import get_site_request_content
 def send_cinema_list(user):
     movies = get_movies(
         get_site_request_content(
-            bot_config.cinema_url +
-            bot_config.cinema_url_path_today))
+            f"{bot_config.cinema_url}{bot_config.cinema_url_path_today}"))
 
     bot.send_message(
         chat_id=user.user_id,

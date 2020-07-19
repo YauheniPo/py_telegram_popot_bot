@@ -70,7 +70,7 @@ class WebDriverFactory:
 
 
 def wait_for_ajax(driver):
-    wait = WebDriverWait(driver, 15)
+    wait = WebDriverWait(driver, 30)
     try:
         wait.until(lambda driver: driver.execute_script(
             'return jQuery.active') == 0)
