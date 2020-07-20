@@ -38,7 +38,8 @@ def job():
                 parse_mode=ParseMode.HTML)
 
 
-schedule.every().monday().thursday().wednesday().tuesday().friday().at("13:05").do(job)
+schedule.every().monday().thursday().wednesday(
+).tuesday().friday().at("13:05").do(job)
 
 if __name__ == "__main__":
     for i in range(0, 5):
