@@ -11,6 +11,8 @@ db = TinyDB(db_data_json_file)
 users_table = db.table('users')
 cmd_table = db.table('commands')
 currency_alarm_table = db.table('currency_alarm')
+insta_followers_table = db.table('insta_followers')
+user_insta_followers_table = db.table('user_insta_followers')
 query = Query()
 
 

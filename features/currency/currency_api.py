@@ -22,7 +22,7 @@ def get_currency_response_json(currency_id):
     start_date = (
         datetime.datetime.now() -
         datetime.timedelta(
-            days=bot_config.currency_graph_days)) .strftime(DATE_FORMAT_Y_M_D)
+            days=bot_config.currency_graph_days)).strftime(DATE_FORMAT_Y_M_D)
 
     parameters = {
         "startDate": start_date,

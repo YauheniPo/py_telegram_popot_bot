@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import os
 import re
 
-from bot_config import *
+from bot_config import instagram_url_media_name_regexp, instagram_post_content_folder
 
 
 class InstaPost:

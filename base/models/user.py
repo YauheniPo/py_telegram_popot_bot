@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from overload import overload
-from telebot.types import Message
 
 from db.db_connection import get_db_user, insert_user
 from util.logger import logger

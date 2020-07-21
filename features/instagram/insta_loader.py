@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from bot_config import *
-from util.util_request import *
+from bot_config import browser, instagram_save_content_service
+from util.logger import logger
 from util.webdriver_helper import WebDriverFactory, wait_for_ajax, wait_visibility
 
 

@@ -9,14 +9,29 @@ BASE_CMD_INSTAGRAM = '/instagram'
 BASE_CMD_GEO = '/geo'
 BASE_CMD_VIRUS = '/virus'
 
-MSG_START_CMD_BASE = """
-{start} - HELP - telegram bot functionals
-{currency} - $ / € / RUR - currency data and graph
-{cinema} - cinema posters
-{football} - football calendar
-{instagram} - save Instagram post content by link
-{geo} - location of the nearest ATMs
-{virus} - COVID-19 virus statistics"""
+EMOJI_LOCATION = "📍"
+EMOJI_CURRENCY = "💵"
+EMOJI_ROBOT = "🤖"
+EMOJI_CINEMA = "🎬"
+EMOJI_PHOTO = "📷"
+EMOJI_GRAPH = "📈"
+EMOJI_FOOTBALL = "⚽"
+EMOJI_FINGER_DOWN = "👇"
+
+MSG_START_CMD_BASE = f"""
+{EMOJI_ROBOT}    {BASE_CMD_START} - HELP - telegram bot functionals
+
+{EMOJI_CURRENCY}    {BASE_CMD_CURRENCY} - $ / € / RUR - currency data and graph
+
+{EMOJI_CINEMA}    {BASE_CMD_CINEMA} - cinema posters
+
+{EMOJI_FOOTBALL}    {BASE_CMD_FOOTBALL} - football calendar
+
+{EMOJI_PHOTO}    {BASE_CMD_INSTAGRAM} - save Instagram post content by link
+
+{EMOJI_LOCATION}    {BASE_CMD_GEO} - location of the nearest ATMs
+
+{EMOJI_GRAPH}    {BASE_CMD_VIRUS} - COVID-19 virus statistics"""
 
 MSG_CURRENCY_BOT = """
 <b>{currency}</b>
@@ -24,7 +39,8 @@ MSG_CURRENCY_BOT = """
 
 <b>{currency_current_day}</b>"""
 
-MSG_CURRENCY_ALARM_BOT = """The last rate is <b>{today_rate}</b>
+MSG_CURRENCY_ALARM_BOT = """
+The last rate is <b>{today_rate}</b>
 
 Please set your $ rate for notification.
 
@@ -40,10 +56,15 @@ MSG_FOOTBALL_BOT = "<i>{date}</i>   <b>{host_team} -:- {guest_team}</b>"
 MSG_INSTAGRAM_BOT = """
 You will receive a post file from Instagram by sending a link to this post to the bot.
 
-Please copy/share Instagram post link and paste/move to bot."""
-MSG_INSTAGRAM_POST_CONTENT = "<b>Post description:</b>\n{}\n\n<b>Post media:</b>\n{}"
+Please copy/share Instagram public post link and paste/move to bot."""
+MSG_INSTAGRAM_POST_CONTENT = """<b>Post description:</b>
+{}
 
-MSG_LOCATION_MAP = "<a href='{link}'>GO to Yandex map.\nClick here!</a>"
+<b>Post media:</b>
+{}"""
+
+MSG_LOCATION_MAP = """<a href='{link}'>GO to Yandex map.
+Click here!</a>"""
 
 MSG_VIRUS_COVID_DATA = """
 {base_country_statistics}:

@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-from telebot import types
-
+import bot_config
 from base.bot.bot import bot
 from base.bot.bot_step import start_step, catch_bot_handler_error
-from base.constants import *
+from base.constants import BASE_CMD_START, BASE_CMD_CURRENCY, DB_LOG_CMD, BASE_CMD_CINEMA, BASE_CMD_FOOTBALL, \
+    MSG_FOOTBALL_BASE_CMD, BASE_CMD_INSTAGRAM, MSG_INSTAGRAM_BOT, BASE_CMD_GEO, BASE_CMD_VIRUS
 from base.models.user import fetch_user, get_user
 from db.db_connection import get_db_data, insert_analytics, insert_currency_alarm
 from features.cinema.bot_step import send_cinema_list, send_cinema_soon_list
 from features.currency.bot_step import send_currency_rate, send_msg_alarm_currency, \
     set_currency_alarm_rate_and_get_new_rate, send_currency_graph
-from features.currency.currency_api import *
+from features.currency.currency_api import get_today_currency_rate
 from features.football.bot_step import send_football_calendar
 from features.instagram.bot_step import send_to_user_insta_post_media_content
-from features.instagram.insta_loader import *
 from features.instagram.insta_post import InstaPost
-from features.location.bot_step import send_map_location
+from features.location.bot_step import send_map_location, geo_request
 from features.virus.bot_step import sent_virus_data
 from util.bot_helper import get_message_keyboard
+from util.logger import logger
 from util.util_data import is_match_by_regexp
 
 __author__ = "Yauheni Papovich"
@@ -52,7 +52,8 @@ def start(message):
 
 
 @bot.message_handler(regexp=r'^\{command}'.format(command=BASE_CMD_CURRENCY))
-@bot.callback_query_handler(func=lambda call: call.data in currency_ids)
+@bot.callback_query_handler(
+    func=lambda call: call.data in bot_config.currency_ids)
 @catch_bot_handler_error
 def currency(message):
     user = get_user(message=message)
@@ -71,7 +72,8 @@ def db_log(message):
     insert_analytics(user, message.text)
 
 
-@bot.callback_query_handler(func=lambda call: call.data in currency_alarm)
+@bot.callback_query_handler(
+    func=lambda call: call.data in bot_config.currency_alarm)
 @catch_bot_handler_error
 def currency_alarm_call(call):
     logger().info("Button '{}'".format(call.data))
@@ -86,7 +88,7 @@ def currency_alarm_call(call):
 
 @bot.callback_query_handler(
     func=lambda call: call.data is not None and is_match_by_regexp(
-        call.data, currency_alarm_rate_button_regexp))
+        call.data, bot_config.currency_alarm_rate_button_regexp))
 @catch_bot_handler_error
 def update_currency_alarm_rate(call):
     user = get_user(user_id=call.from_user.id)
@@ -112,7 +114,7 @@ def football_start(message):
     bot.send_message(chat_id=user.user_id,
                      text=MSG_FOOTBALL_BASE_CMD,
                      reply_markup=get_message_keyboard(*[{k: v} for (k,
-                                                                     v) in buttons_football_leagues.items()]))
+                                                                     v) in bot_config.buttons_football_leagues.items()]))
     insert_analytics(user, message.text)
 
 
@@ -129,7 +131,7 @@ def instagram_start(message):
 
 @bot.message_handler(
     func=lambda message: message.text is not None and is_match_by_regexp(
-        message.text, instagram_link_regexp))
+        message.text, bot_config.instagram_link_regexp))
 @catch_bot_handler_error
 def instagram_post_content(message):
     user = get_user(user_id=message.chat.id)
@@ -145,14 +147,7 @@ def instagram_post_content(message):
 def geo_start(message):
     user = get_user(user_id=message.chat.id)
 
-    keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
-    button_geo = types.KeyboardButton(
-        text="Send location", request_location=True)
-    keyboard.add(button_geo)
-    bot.send_message(
-        user.user_id,
-        "Hello! Click on the button and give me your location.",
-        reply_markup=keyboard)
+    geo_request(user)
     insert_analytics(user, message.text)
 
 
@@ -188,17 +183,19 @@ def echo_all(message):
     logger().info("User message: '{}'".format(user_message))
 
 
-@bot.callback_query_handler(func=lambda call: call.data == currency_graph)
+@bot.callback_query_handler(
+    func=lambda call: call.data == bot_config.currency_graph)
 @catch_bot_handler_error
 def currency_graph_call(call):
     logger().info("Button '{}'".format(call.data))
     user = get_user(user_id=call.from_user.id)
 
     send_currency_graph(user, call.message)
-    insert_analytics(user, currency_graph)
+    insert_analytics(user, bot_config.currency_graph)
 
 
-@bot.callback_query_handler(func=lambda call: call.data == cinema_soon)
+@bot.callback_query_handler(
+    func=lambda call: call.data == bot_config.cinema_soon)
 @catch_bot_handler_error
 def cinema_soon_call(call):
     logger().info("Button '{}'".format(call.data))
@@ -209,7 +206,7 @@ def cinema_soon_call(call):
 
 
 @bot.callback_query_handler(
-    func=lambda call: call.data in football_leagues_cmd)
+    func=lambda call: call.data in bot_config.football_leagues_cmd)
 @catch_bot_handler_error
 def football_calendar(call):
     logger().info("Button '{}'".format(call.data))
