@@ -58,14 +58,19 @@ def get_movies(site_content):
     movies: dict[str: list] = {}
 
     cleaner = html.clean.Cleaner(style=True)
-    html_site_elements_content = cleaner.clean_html(html.fromstring(site_content))
+    html_site_elements_content = cleaner.clean_html(
+        html.fromstring(site_content))
 
-    for movie in html_site_elements_content.xpath(MOVIE_TICKETS_BLOCK):  # type: HtmlElement
+    for movie in html_site_elements_content.xpath(
+            MOVIE_TICKETS_BLOCK):  # type: HtmlElement
         movie_block_tag = movie.tag
         if movie_block_tag == DIV_TAG:
-            movies_section = movie.xpath(XPATH_GET_TEXT.format(xpath=MOVIES_TITLE_BLOCK))[0].strip()
+            movies_section = movie.xpath(
+                XPATH_GET_TEXT.format(
+                    xpath=MOVIES_TITLE_BLOCK))[0].strip()
             continue
-        movies_poster = [] if movies.get(movies_section) is None else movies[movies_section]
+        movies_poster = [] if movies.get(
+            movies_section) is None else movies[movies_section]
         movies[movies_section] = movies_poster + fetch_movies(movie)
 
     return movies
