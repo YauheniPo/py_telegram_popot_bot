@@ -116,18 +116,3 @@ def get_covid_virus_msg_content(*args):
             world_deaths_statistics=virus_data['deaths'][0],
             world_recov_statistics=virus_data['recov.'][0]) for virus_data in args]
     return "\n\n".join(msg_content)
-
-# matplotlib.use('Agg')
-#
-# covid19 = COVID19Py.COVID19(data_source="jhu")
-# data = covid19.getLocationById(22)
-# virus_details = dict(data["latest"])
-# del virus_details['recovered']
-# names = list(virus_details.keys())
-# values = list(virus_details.values())
-# plt.bar(range(len(virus_details)), values, tick_label=names)
-# # for i in range(len(values)):
-# # plt.annotate(s=str(values[0]), xy=(values[0], names[0]))
-# if not os.path.exists(covid_graph_folder):
-#     os.makedirs(covid_graph_folder)
-# plt.savefig(covid_graph_path)
