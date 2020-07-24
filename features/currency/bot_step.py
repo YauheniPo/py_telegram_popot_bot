@@ -3,10 +3,12 @@ import re
 from telegram import ParseMode
 
 from base.bot.bot import bot
+from base.constants import MSG_CURRENCY_ALARM_BOT
 from bot_config import buttons_currency_selection, button_currency_graph, currency_dollar_id, button_currency_alarm, \
     buttons_currency_alarm_rate, currency_alarm_rate_regexp, currency_ids, currency_graph_path
-from base.constants import MSG_CURRENCY_ALARM_BOT
-from features.currency.currency_api import get_currency_message, fetch_currency_list, get_currency_response_json
+from db.db_connection import insert_currency_alarm
+from features.currency.currency_api import get_currency_message, fetch_currency_list, get_currency_response_json, \
+    get_actual_currency_rate_for_alarm, get_today_currency_rate
 from features.currency.currency_graph_generator import fetch_currency_graph
 from util.bot_helper import get_message_keyboard
 from util.util_data import find_all_by_regexp
@@ -26,20 +28,19 @@ def send_currency_rate(user, currency_id: int):
                      parse_mode=ParseMode.HTML)
 
 
-def send_msg_alarm_currency(
-        user,
-        today_currency_rate,
-        around_today_currency_rate):
+def send_msg_alarm_currency(user):
+    today_currency_rate, db_user_alarm_currency_rate = get_actual_currency_rate_for_alarm(user)
+
     bot.send_message(
         chat_id=user.user_id,
         text=MSG_CURRENCY_ALARM_BOT.format(
             today_rate=today_currency_rate,
-            around_today_rate=around_today_currency_rate),
+            around_today_rate=round(db_user_alarm_currency_rate, 1)),
         reply_markup=get_message_keyboard(buttons_currency_alarm_rate),
         parse_mode=ParseMode.HTML)
 
 
-def set_currency_alarm_rate_and_get_new_rate(call):
+def set_currency_alarm_rate(user, call):
     call_message = call.message.text.strip()
     currency_alarm_rate = find_all_by_regexp(
         call_message, currency_alarm_rate_regexp)[0]
@@ -61,7 +62,7 @@ def set_currency_alarm_rate_and_get_new_rate(call):
 
     send_currency_alarm_message(message)
 
-    return new_currency_alarm_rate
+    insert_currency_alarm(user, new_currency_alarm_rate)
 
 
 def send_currency_graph(user, bot_message):

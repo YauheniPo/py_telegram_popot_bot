@@ -21,6 +21,11 @@ def get_db_user(user_id):
     return db_users[0] if db_users else []
 
 
+def get_db_user_alarm_currency_rate(user_id):
+    db_user_alarm_currency_rate = currency_alarm_table.search(query.id == user_id)
+    return db_user_alarm_currency_rate[0]['alarm_rate'] if db_user_alarm_currency_rate else []
+
+
 def insert_user(user_chat):
     user_data = {
         'id': user_chat.id,
@@ -47,7 +52,7 @@ def insert_analytics(user, cmd):
         cmd_table.insert({'id': user.user_id, cmd: 1})
 
 
-def get_users_alarm_currency_rate():
+def get_db_users_alarm_currency_rate():
     return currency_alarm_table.all()
 
 
@@ -64,6 +69,6 @@ def insert_currency_alarm(user, alarm_rate):
             {'id': user.user_id, 'alarm_rate': alarm_rate})
 
 
-def get_db_data():
+def get_db_all_data():
     with open(db_data_json_file, "rb") as fin:
         return json.load(fin)

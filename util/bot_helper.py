@@ -13,5 +13,5 @@ def get_message_keyboard(*args):
                 callback_data=key) for key,
             value in button.items()]
         message_keyboard.row(*buttons)
-    logger().info("Get message keyboard: {}".format(args))
+    logger().info(f"Get message keyboard: {args}")
     return message_keyboard

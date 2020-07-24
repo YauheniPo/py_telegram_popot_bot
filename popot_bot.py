@@ -5,11 +5,10 @@ from base.bot.bot_step import start_step, catch_bot_handler_error
 from base.constants import BASE_CMD_START, BASE_CMD_CURRENCY, DB_LOG_CMD, BASE_CMD_CINEMA, BASE_CMD_FOOTBALL, \
     MSG_FOOTBALL_BASE_CMD, BASE_CMD_INSTAGRAM, MSG_INSTAGRAM_BOT, BASE_CMD_GEO, BASE_CMD_VIRUS
 from base.models.user import fetch_user, get_user
-from db.db_connection import get_db_data, insert_analytics, insert_currency_alarm
+from db.db_connection import get_db_all_data, insert_analytics
 from features.cinema.bot_step import send_cinema_list, send_cinema_soon_list
 from features.currency.bot_step import send_currency_rate, send_msg_alarm_currency, \
-    set_currency_alarm_rate_and_get_new_rate, send_currency_graph
-from features.currency.currency_api import get_today_currency_rate
+    set_currency_alarm_rate, send_currency_graph
 from features.football.bot_step import send_football_calendar
 from features.instagram.bot_step import send_to_user_insta_post_media_content
 from features.instagram.insta_post import InstaPost
@@ -23,22 +22,22 @@ __author__ = "Yauheni Papovich"
 __email__ = "ip.popovich.1990@gmail.com"
 
 __all__ = [
+    'start',
+    'currency_start',
     'currency_alarm_call',
+    'currency_graph_call',
+    'currency_alarm_rate_update',
     'cinema',
-    'currency',
-    'db_log',
-    'echo_all',
+    'cinema_soon_call',
     'football_start',
+    'football_calendar',
     'geo_start',
     'instagram_start',
-    'location',
-    'cinema_soon_call',
-    'currency_graph_call',
-    'football_calendar',
     'instagram_post_content',
-    'start',
-    'update_currency_alarm_rate',
-    'virus'
+    'location',
+    'virus',
+    'echo_all',
+    'db_log'
 ]
 
 
@@ -55,7 +54,7 @@ def start(message):
 @bot.callback_query_handler(
     func=lambda call: call.data in bot_config.currency_ids)
 @catch_bot_handler_error
-def currency(message):
+def currency_start(message):
     user = get_user(message=message)
 
     actual_currency = getattr(message, 'data', bot_config.currency_dollar_id)
@@ -68,7 +67,7 @@ def currency(message):
 def db_log(message):
     user = get_user(user_id=message.chat.id)
 
-    bot.send_message(user.user_id, str(get_db_data()))
+    bot.send_message(user.user_id, str(get_db_all_data()))
     insert_analytics(user, message.text)
 
 
@@ -79,22 +78,17 @@ def currency_alarm_call(call):
     logger().info("Button '{}'".format(call.data))
     user = get_user(user_id=call.from_user.id)
 
-    today_currency_rate, around_today_currency_rate = get_today_currency_rate()
-    send_msg_alarm_currency(
-        user,
-        today_currency_rate,
-        around_today_currency_rate)
+    send_msg_alarm_currency(user)
 
 
 @bot.callback_query_handler(
     func=lambda call: call.data is not None and is_match_by_regexp(
         call.data, bot_config.currency_alarm_rate_button_regexp))
 @catch_bot_handler_error
-def update_currency_alarm_rate(call):
+def currency_alarm_rate_update(call):
     user = get_user(user_id=call.from_user.id)
 
-    new_currency_alarm_rate = set_currency_alarm_rate_and_get_new_rate(call)
-    insert_currency_alarm(user, new_currency_alarm_rate)
+    set_currency_alarm_rate(user, call)
 
 
 @bot.message_handler(regexp=r'^\{cinema}'.format(cinema=BASE_CMD_CINEMA))
@@ -114,7 +108,8 @@ def football_start(message):
     bot.send_message(chat_id=user.user_id,
                      text=MSG_FOOTBALL_BASE_CMD,
                      reply_markup=get_message_keyboard(*[{k: v} for (k,
-                                                                     v) in bot_config.buttons_football_leagues.items()]))
+                                                                     v) in
+                                                         bot_config.buttons_football_leagues.items()]))
     insert_analytics(user, message.text)
 
 

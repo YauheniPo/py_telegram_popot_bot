@@ -6,20 +6,17 @@ from telegram import ParseMode
 
 import bot_config
 from base.bot.bot import bot
-from db.db_connection import get_users_alarm_currency_rate
-from features.currency.currency_api import (fetch_currency_list,
-                                            get_currency_message,
-                                            get_currency_response_json)
+from db.db_connection import get_db_users_alarm_currency_rate
+from features.currency.currency_api import (get_currency_message,
+                                            get_today_currency_rate)
 from util.bot_helper import get_message_keyboard
 from util.logger import logger
 
 
 def job():
-    users = get_users_alarm_currency_rate()
+    users = get_db_users_alarm_currency_rate()
     for user in users:
-        currency_list = fetch_currency_list(
-            get_currency_response_json(bot_config.currency_dollar_id))
-        today_currency_rate = currency_list[-1].Cur_OfficialRate
+        today_currency_rate = get_today_currency_rate()
 
         if today_currency_rate >= user['alarm_rate']:
             actual_buttons_currency_selection = dict(
@@ -47,10 +44,9 @@ for schedule_time in ["13:05"]:
 
 if __name__ == "__main__":
     for i in range(0, 5):
-        time.sleep(20)
+        time.sleep(5)
         try:
             while True:
                 schedule.run_pending()
-                time.sleep(15)
         except Exception as e:
             logger().error(e)

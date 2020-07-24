@@ -5,6 +5,7 @@ import requests
 
 import bot_config
 from base.constants import MSG_CURRENCY_BOT
+from db.db_connection import get_db_user_alarm_currency_rate
 from features.currency.сurrency import Currency
 from util.logger import logger
 from util.util_data import DATE_FORMAT_D_M, DATE_FORMAT_Y_M_D
@@ -63,8 +64,18 @@ def get_currency_message(currency_id):
         currency_current_day=currency_response_current_day)
 
 
+def get_currency_rate_list(currency_id):
+    return fetch_currency_list(get_currency_response_json(currency_id))
+
+
 def get_today_currency_rate():
-    currency_list = fetch_currency_list(
-        get_currency_response_json(bot_config.currency_dollar_id))
-    today_currency_rate = currency_list[-1].Cur_OfficialRate
-    return [today_currency_rate, round(today_currency_rate, 1)]
+    currency_list = get_currency_rate_list(bot_config.currency_dollar_id)
+    return currency_list[-1].Cur_OfficialRate
+
+
+def get_actual_currency_rate_for_alarm(user):
+    db_user_alarm_currency_rate = get_db_user_alarm_currency_rate(user.user_id)
+    today_currency_rate = get_today_currency_rate()
+    if db_user_alarm_currency_rate:
+        return today_currency_rate, db_user_alarm_currency_rate
+    return today_currency_rate, today_currency_rate

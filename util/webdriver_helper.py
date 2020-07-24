@@ -47,7 +47,7 @@ class WebDriverFactory:
         self.browser = browser.upper()
         self.driver = None
 
-    def get_webdriver_instance(self, timeout=3):
+    def get_webdriver_instance(self, timeout=3, cookies=None):
         logger().info(
             "Initialization of {browser}.".format(
                 browser=self.browser))
@@ -56,8 +56,7 @@ class WebDriverFactory:
         if self.browser == 'FIREFOX':
             executable_path = GeckoDriverManager().install()
             self.driver = webdriver.Firefox(
-                executable_path=executable_path,
-                options=browser_options())
+                executable_path=executable_path)
         if self.browser == 'CHROME':
             executable_path = ChromeDriverManager().install()
             self.driver = webdriver.Chrome(
@@ -66,6 +65,9 @@ class WebDriverFactory:
 
         self.driver.implicitly_wait(timeout)
         self.driver.maximize_window()
+
+        if cookies:
+            self.driver.add_cookie(cookie_dict=cookies)
         return self.driver
 
 
