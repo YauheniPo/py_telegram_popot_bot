@@ -17,7 +17,8 @@ class InstaPost:
         self.media_types = []
 
     def append_media_url(self, media_url):
-        self.media_urls.append(media_url)
+        if media_url not in self.media_urls:
+            self.media_urls.append(media_url)
 
         post_image_name = re.search(
             instagram_url_media_name_regexp,
@@ -28,7 +29,8 @@ class InstaPost:
                 post_image_name))
 
     def append_media_type(self, media_type):
-        self.media_types.append(media_type)
+        if media_type not in self.media_types:
+            self.media_types.append(media_type)
 
     def set_description(self, post_description):
         self.post_description = post_description
