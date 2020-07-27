@@ -29,7 +29,8 @@ def send_currency_rate(user, currency_id: int):
 
 
 def send_msg_alarm_currency(user):
-    today_currency_rate, db_user_alarm_currency_rate = get_actual_currency_rate_for_alarm(user)
+    today_currency_rate, db_user_alarm_currency_rate = get_actual_currency_rate_for_alarm(
+        user)
 
     bot.send_message(
         chat_id=user.user_id,

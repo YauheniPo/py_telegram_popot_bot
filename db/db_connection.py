@@ -22,8 +22,10 @@ def get_db_user(user_id):
 
 
 def get_db_user_alarm_currency_rate(user_id):
-    db_user_alarm_currency_rate = currency_alarm_table.search(query.id == user_id)
-    return db_user_alarm_currency_rate[0]['alarm_rate'] if db_user_alarm_currency_rate else []
+    db_user_alarm_currency_rate = currency_alarm_table.search(
+        query.id == user_id)
+    return db_user_alarm_currency_rate[0]['alarm_rate'] if db_user_alarm_currency_rate else [
+    ]
 
 
 def insert_user(user_chat):
