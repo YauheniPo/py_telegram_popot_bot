@@ -36,11 +36,11 @@ def job():
 
 
 for schedule_time in ["13:05"]:
-    schedule.every().monday.at(schedule_time).do(job, schedule_time)
-    schedule.every().tuesday.at(schedule_time).do(job, schedule_time)
-    schedule.every().wednesday.at(schedule_time).do(job, schedule_time)
-    schedule.every().thursday.at(schedule_time).do(job, schedule_time)
-    schedule.every().friday.at(schedule_time).do(job, schedule_time)
+    schedule.every().monday.at(schedule_time).do(job)
+    schedule.every().tuesday.at(schedule_time).do(job)
+    schedule.every().wednesday.at(schedule_time).do(job)
+    schedule.every().thursday.at(schedule_time).do(job)
+    schedule.every().friday.at(schedule_time).do(job)
 
 if __name__ == "__main__":
     for i in range(0, 5):
