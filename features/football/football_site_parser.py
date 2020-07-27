@@ -20,14 +20,13 @@ def get_matches(site_content):
     for match in html.fromstring(site_content).xpath(matches_tree_xpath):
         match_host_team = match.xpath(
             xpath_get_text.format(
-                xpath=match_host_team_xpath))[0]
+                xpath=match_host_team_xpath))
         match_guest_team = match.xpath(
             xpath_get_text.format(
-                xpath=match_guest_team_xpath))[0]
-        match_date = str(
-            match.xpath(
-                xpath_get_text.format(
-                    xpath=match_date_xpath))[0]).strip()
+                xpath=match_guest_team_xpath))
+        match_date = match.xpath(
+            xpath_get_text.format(
+                xpath=match_date_xpath))
         matches.append(
             Match(
                 host_team=match_host_team,

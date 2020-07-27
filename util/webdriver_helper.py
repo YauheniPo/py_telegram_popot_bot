@@ -65,8 +65,9 @@ class WebDriverFactory:
 
         self.driver.implicitly_wait(timeout)
         self.driver.maximize_window()
-
-        if cookies:
+        if cookies is None:
+            cookies = {}
+        for cookies in cookies:
             self.driver.add_cookie(cookie_dict=cookies)
         return self.driver
 
