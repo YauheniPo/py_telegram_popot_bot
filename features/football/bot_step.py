@@ -11,8 +11,8 @@ def send_football_calendar(user, football_league):
     matches = get_matches(
         get_site_request_content(
             url=bot_config.football_url +
-                football_league +
-                bot_config.football_url_path_calendar))
+            football_league +
+            bot_config.football_url_path_calendar))
 
     actual_buttons_football = dict(bot_config.buttons_football_leagues)
     football_message_title = actual_buttons_football.pop(football_league)
