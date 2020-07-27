@@ -7,15 +7,15 @@ from util.bot_helper import get_message_keyboard
 from util.util_request import get_site_request_content
 
 
-def send_football_calendar(user, bot_data):
+def send_football_calendar(user, football_league):
     matches = get_matches(
         get_site_request_content(
             url=bot_config.football_url +
-            bot_data +
+            football_league +
             bot_config.football_url_path_calendar))
 
     actual_buttons_football = dict(bot_config.buttons_football_leagues)
-    football_message_title = actual_buttons_football.pop(bot_data)
+    football_message_title = actual_buttons_football.pop(football_league)
 
     bot.send_message(
         chat_id=user.user_id,
