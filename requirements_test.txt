@@ -2,4 +2,3 @@ pytest
 pytest-html
 pytest-xdist
 PyHamcrest
-pytest-cov

@@ -171,7 +171,7 @@ def location(message):
     func=lambda message: True)
 @catch_bot_handler_error
 def echo_all(message):
-    user = User.get_user(user_id=message.chat.id)
+    User.get_user(user_id=message.chat.id)
     user_message = message.text
 
     logger().info("User message: '{}'".format(user_message))

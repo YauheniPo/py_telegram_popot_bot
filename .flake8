@@ -4,13 +4,17 @@ ignore =
     # Exclude error D302 Use u""" for Unicode docstrings
     #D302,
     # Exclude error D100 Missing docstring in public module
-    D100,
+    #D100,
     # Exclude error D104 Missing docstring in public package
-    D104,
+    #D104,
     # Exclude error D102 Missing docstring in public method
-    D102,
+    #D102,
     # Exclude error E128 continuation line under-indented for visual indent
-    E128
+    #E128,
+    # Exclude error F403 Use import * used
+    F403,
+    # Exclude error F405 Use func may be undefined
+    F405
 
 max-line-length = 120
 format = '%(path)s:%(row)d,%(col)d:%(code)s:%(text)s:https://lintlyci.github.io/Flake8Rules/rules/%(code)s.html'

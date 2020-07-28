@@ -1,9 +1,9 @@
-name: Python Telegram bot
+name: Python Telegram bot (@popot_bot)
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  build:
+  popotBotGitHubActions:
 
     runs-on: ubuntu-latest
     strategy:
@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+      - name: Install BOT dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -41,4 +41,31 @@ jobs:
           labels: autopep8, automated pr
           reviewers: peter-evans
           branch: autopep8-patches
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          flake8 .
+      - name: Install BOT-test dependencies
+        run: |
+          pip install -r requirements-test.txt
+      - name: Run tests with pytest and generate coverage report
+        run: |
+          pip install pytest-cov
+          pytest --cov=./ --cov-report=xml --html=report.html -n 10 test/test_base.py
 
+      - name: Show project dir files
+        run: find . -not \( -path "./.pytest_cache/*" -o -path "./.git/*" -o -path "*/__pycache__/*" -o -path "./.idea/*" \)
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1.0.3
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+          file: ./coverage.xml
+          flags: unittests
+          nema: codecov-popot-bot
+
+      - name: Upload pytest report
+        uses: actions/upload-artifact@v1
+        with:
+          name: report
+          path: report.html,./assets
