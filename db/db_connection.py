@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 import json
-import os
+from os import path
 
 from tinydb import Query, TinyDB
 
+from util import get_project_dirpath
 from util.logger import logger
 
-db_data_json_file = f'db{os.path.sep}db.json'
+DB_JSON = "db.json"
+db_data_json_file = path.join(get_project_dirpath(), "db", DB_JSON)
 db = TinyDB(db_data_json_file)
 users_table = db.table('users')
 cmd_table = db.table('commands')
