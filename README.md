@@ -4,20 +4,24 @@
 
 [![codecov](https://codecov.io/gh/YauheniPo/py_telegram_popot_bot/branch/master/graph/badge.svg)](https://codecov.io/gh/YauheniPo/py_telegram_popot_bot)
 
-<a href="https://codecov.io/gh/YauheniPo/py_telegram_popot_bot">
-  <img src="https://codecov.io/gh/YauheniPo/py_telegram_popot_bot/branch/master/graph/badge.svg" />
-</a>
 
 Telegram Bot **@popot_bot**
 
 Functions:
 
-```/start - HELP - telegram bot functionals
- /currency - $ / € / RUR - currency data and graph
- /cinema - cinema posters
- /football - football calendar
- /instagram - save Instagram post content by link
- /geo - location of the nearest ATMs
+```🤖    /start - HELP - telegram bot functionals
+
+💵    /currency - $ / € / RUR - currency data and graph
+
+🎬    /cinema - cinema posters
+
+⚽    /football - football calendar
+
+📷    /instagram - save Instagram post content by link
+
+📍    /geo - location of the nearest ATMs
+
+📈    /virus - COVID-19 virus statistics
 ```
     
 
