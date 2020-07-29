@@ -1,10 +1,10 @@
 name: Python Telegram bot (@popot_bot)
 
 on:
-  push:
+#  push:
   pull_request:
-  schedule:
-    - cron: "0 2 * * 1-5"
+#  schedule:
+#    - cron: "0 2 * * 1-5"
 
 jobs:
   popotBotGitHubActions:
@@ -54,8 +54,10 @@ jobs:
           pip install -r requirements_test.txt
       - name: Run tests with pytest and generate coverage report
         run: |
+          export DB_TEST=db_test
           pip install pytest-cov
-          pytest --cov=./ --cov-report=xml --html=report.html -n 10 test/test_base.py
+          pytest --cov=./ --cov-report=xml test/test_base.py
+          unset DB_TEST
 
       - name: Show project dir files
         run: find . -not \( -path "./.pytest_cache/*" -o -path "./.git/*" -o -path "*/__pycache__/*" -o -path "./.idea/*" \)
@@ -72,4 +74,6 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: report
-          path: report.html
+          path: |
+            report.html
+            assets/
