@@ -2,6 +2,12 @@
 
 ![Python Telegram bot](https://github.com/YauheniPo/py_telegram_popot_bot/workflows/Python%20Telegram%20bot/badge.svg)
 
+[![codecov](https://codecov.io/gh/YauheniPo/py_telegram_popot_bot/branch/master/graph/badge.svg)](https://codecov.io/gh/YauheniPo/py_telegram_popot_bot)
+
+<a href="https://codecov.io/gh/YauheniPo/py_telegram_popot_bot">
+  <img src="https://codecov.io/gh/YauheniPo/py_telegram_popot_bot/branch/master/graph/badge.svg" />
+</a>
+
 Telegram Bot **@popot_bot**
 
 Functions:
