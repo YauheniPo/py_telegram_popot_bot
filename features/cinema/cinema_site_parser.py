@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import lxml.html.clean
 from lxml import html
 from lxml.html import HtmlElement
 

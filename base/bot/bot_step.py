@@ -12,9 +12,7 @@ def catch_bot_handler_error(f):
         try:
             return f(bot_request)
         except Exception as e:
-            # Add info to error tracking
             logger().exception(str(e))
-
     return bot_handler_wrapper
 
 

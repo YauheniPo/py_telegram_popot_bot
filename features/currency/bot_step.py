@@ -8,7 +8,7 @@ from bot_config import buttons_currency_selection, button_currency_graph, curren
     buttons_currency_alarm_rate, currency_alarm_rate_regexp, currency_ids, currency_graph_path
 from db.db_connection import insert_currency_alarm
 from features.currency.currency_api import get_currency_message, fetch_currency_list, get_currency_response_json, \
-    get_actual_currency_rate_for_alarm, get_today_currency_rate
+    get_actual_currency_rate_for_alarm
 from features.currency.currency_graph_generator import fetch_currency_graph
 from util.bot_helper import get_message_keyboard
 from util.util_data import find_all_by_regexp
