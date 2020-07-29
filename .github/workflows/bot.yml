@@ -51,7 +51,7 @@ jobs:
           flake8 .
       - name: Install BOT-test dependencies
         run: |
-          pip install -r requirements-test.txt
+          pip install -r requirements_test.txt
       - name: Run tests with pytest and generate coverage report
         run: |
           pip install pytest-cov
