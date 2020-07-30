@@ -7,20 +7,16 @@ on:
 #    - cron: "0 2 * * 1-5"
 
 jobs:
-  popotBotGitHubActions:
-
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-#        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.8]
-#        python-version: [3.5, 3.6, 3.7, 3.8]
-
   autopep8:
     # Check if the PR is not raised by this workflow and is not from a fork
     if: startsWith(github.head_ref, 'autopep8-patches') == false && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          os: [ubuntu-latest]
+    #        os: [ubuntu-latest, macos-latest, windows-latest]
+          python-version: [3.8]
+    #        python-version: [3.5, 3.6, 3.7, 3.8]
     steps:
       - uses: actions/checkout@v2
         with:
