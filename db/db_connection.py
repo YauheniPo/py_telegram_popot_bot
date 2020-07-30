@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import os
 from os import path
 
 from tinydb import Query, TinyDB
@@ -7,27 +8,27 @@ from tinydb import Query, TinyDB
 from util import get_project_dirpath
 from util.logger import logger
 
-DB_JSON = "db.json"
-db_data_json_file = path.join(get_project_dirpath(), "db", DB_JSON)
+JSON_EXTENSION = ".json"
+DB_FILENAME = "db_bot"
+
+
+def get_db_json_data_path(db_json=os.environ.get('DB_TEST', DB_FILENAME)):
+    return path.join(get_project_dirpath(), "db", db_json + JSON_EXTENSION)
+
+
+db_data_json_file = get_db_json_data_path()
 db = TinyDB(db_data_json_file)
 users_table = db.table('users')
-cmd_table = db.table('commands')
 currency_alarm_table = db.table('currency_alarm')
-insta_followers_table = db.table('insta_followers')
-user_insta_followers_table = db.table('user_insta_followers')
+cmd_table = db.table('commands')
+# insta_followers_table = db.table('insta_followers')
+# user_insta_followers_table = db.table('user_insta_followers')
 query = Query()
 
 
 def get_db_user(user_id):
     db_users = users_table.search(query.id == user_id)
     return db_users[0] if db_users else []
-
-
-def get_db_user_alarm_currency_rate(user_id):
-    db_user_alarm_currency_rate = currency_alarm_table.search(
-        query.id == user_id)
-    return db_user_alarm_currency_rate[0]['alarm_rate'] if db_user_alarm_currency_rate else [
-    ]
 
 
 def insert_user(user_chat):
@@ -54,6 +55,13 @@ def insert_analytics(user, cmd):
             cmd_table.write_back(user_db_analytics)
     else:
         cmd_table.insert({'id': user.user_id, cmd: 1})
+
+
+def get_db_user_alarm_currency_rate(user_id):
+    db_user_alarm_currency_rate = currency_alarm_table.search(
+        query.id == user_id)
+    return db_user_alarm_currency_rate[0]['alarm_rate'] if db_user_alarm_currency_rate else [
+    ]
 
 
 def get_db_users_alarm_currency_rate():

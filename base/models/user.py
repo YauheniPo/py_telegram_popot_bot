@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from telegram import Chat
+
 from db.db_connection import get_db_user, insert_user
 from util.logger import logger
 
@@ -9,7 +11,7 @@ class User:
         self.username = user_db['username']
         self.first_name = user_db['first_name']
         self.last_name = user_db['last_name']
-        self.user_id = user_db['id']
+        self.user_id: int = user_db['id']
 
     @classmethod
     def get_user(cls, user_id):
@@ -18,7 +20,7 @@ class User:
         return cls(user_db=user_db)
 
     @staticmethod
-    def fetch_user(chat):
+    def fetch_user(chat: Chat):
         user = get_db_user(chat.id)
         if not user:
             insert_user(chat)
