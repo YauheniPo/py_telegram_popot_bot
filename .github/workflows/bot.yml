@@ -69,7 +69,9 @@ jobs:
           pytest --cov=./ --cov-report=xml test/
           unset DB_TEST
       - name: Show project dir files
-        run: find . -not \( -path "*/.pytest_cache/*" -o -path "./.git/*" -o -path "*/__pycache__/*" -o -path "./.idea/*" \)
+        run: |
+          rwd
+          find . -not \( -path "*/.pytest_cache/*" -o -path "./.git/*" -o -path "*/__pycache__/*" -o -path "./.idea/*" \)
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1.0.3
         with:
@@ -82,5 +84,4 @@ jobs:
         with:
           name: report
           path: |
-            ../report.html
-            ../assets
+            report.html
