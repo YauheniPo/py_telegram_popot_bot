@@ -80,8 +80,9 @@ jobs:
           flags: unittests
           nema: codecov-popot-bot
       - name: Upload pytest report
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: report
-          path: ./report.html
-            ./assets
+          paths:
+            - ./report.html
+            - ./assets
