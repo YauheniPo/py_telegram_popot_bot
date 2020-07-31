@@ -82,5 +82,5 @@ jobs:
       - name: Upload pytest report
         uses: actions/upload-artifact@v2
         with:
-          path: |
-            report: report.html, assets
+          name: report
+          path: report.html
