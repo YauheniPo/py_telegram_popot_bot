@@ -83,5 +83,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: report
-          path: /assets
+          path: |
+            assets
+            report.html
           if-no-files-found: ignore # 'warn' or 'ignore' are also available, defaults to `warn`
