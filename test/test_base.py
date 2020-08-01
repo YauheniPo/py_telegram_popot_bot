@@ -22,8 +22,12 @@ def test_bot_script_func():
     actual_bot_script_func = re.findall(
         ROBOT_SCRIPT_FUNC_NAME_REGEXP, script_content)
 
-    assert_that(bot_script_all, contains_inanyorder(*actual_bot_script_func),
-                reason=f"Functions from bot base script '{popot_bot.__name__}' does not compliance with '__all__' data.")
+    assert_that(
+        bot_script_all,
+        contains_inanyorder(
+            *
+            actual_bot_script_func),
+        reason=f"Functions from bot base script '{popot_bot.__name__}' does not compliance with '__all__' data.")
 
 
 @pytest.mark.parametrize(

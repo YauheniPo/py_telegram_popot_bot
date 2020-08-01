@@ -7,8 +7,35 @@ on:
 #    - cron: "0 2 * * 1-5"
 
 jobs:
+  autopep8:
+    # Check if the PR is not raised by this workflow and is not from a fork
+    if: startsWith(github.head_ref, 'autopep8-patches') == false && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: autopep8
+        id: autopep8
+        uses: peter-evans/autopep8@v1
+        with:
+          args: --exit-code --recursive --in-place --aggressive --aggressive .
+      - name: Set autopep8 branch name
+        id: vars
+        run: echo ::set-output name=branch-name::"autopep8-patches/${{ github.head_ref }}"
+      - name: Create Pull Request
+        if: steps.autopep8.outputs.exit-code == 2
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: autopep8 action fixes
+          title: Fixes by autopep8 action
+          body: This is an auto-generated PR with fixes by autopep8.
+          labels: autopep8, automated pr
+          branch: ${{ steps.vars.outputs.branch-name }}
+      - name: Fail if autopep8 made changes
+        if: steps.autopep8.outputs.exit-code == 2
+        run: exit 1
   popotBotGitHubActions:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -16,7 +43,6 @@ jobs:
 #        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.8]
 #        python-version: [3.5, 3.6, 3.7, 3.8]
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -29,22 +55,6 @@ jobs:
           pip install -r requirements.txt
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
-      - uses: actions/checkout@v2
-      - name: autopep8
-        uses: peter-evans/autopep8@v1
-        with:
-          args: --recursive --in-place --aggressive --aggressive .
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v2
-        with:
-          token: ${{ secrets.token }}
-          commit-message: autopep8 action fixes
-          committer: Peter Evans <peter-evans@users.noreply.github.com>
-          title: Fixes by autopep8 action
-          body: This is an auto-generated PR with fixes by autopep8.
-          labels: autopep8, automated pr
-          reviewers: peter-evans
-          branch: autopep8-patches
       - name: Lint with flake8
         run: |
           pip install flake8
@@ -58,10 +68,10 @@ jobs:
           pip install pytest-cov
           pytest --cov=./ --cov-report=xml test/
           unset DB_TEST
-
       - name: Show project dir files
-        run: find . -not \( -path "./test/.pytest_cache/*" -o -path "./.git/*" -o -path "*/__pycache__/*" -o -path "./.idea/*" \)
-
+        run: |
+          pwd
+          find . -not \( -path "*/.pytest_cache/*" -o -path "./.git/*" -o -path "*/__pycache__/*" -o -path "./.idea/*" \)
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1.0.3
         with:
@@ -69,11 +79,11 @@ jobs:
           file: ./coverage.xml
           flags: unittests
           nema: codecov-popot-bot
-
       - name: Upload pytest report
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: report
           path: |
-            ./report.html
-            ./assets
+            assets
+            report.html
+          if-no-files-found: ignore # 'warn' or 'ignore' are also available, defaults to `warn`
