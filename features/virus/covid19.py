@@ -9,7 +9,7 @@ from overload import overload
 from systemtools import number
 
 from base.constants import MSG_VIRUS_COVID_DATA
-from bot_config import virus_covid_data_api_url, covid_graph_folder, covid_graph_path, \
+from bot_config import virus_covid_data_api_url, covid_graph_path, \
     virus_covid_data_wikipedia_site_url, virus_covid_data_tutby_site_url
 from util.util_data import get_current_date, DATE_FORMAT_D_M_Y
 from util.util_graph import fetch_plot_graph_image
@@ -101,7 +101,6 @@ def fetch_covid_graph(country_all_data_virus, country_actual_data_virus):
 
     fetch_plot_graph_image(x_axis_dates,
                            y_axis_cases,
-                           covid_graph_folder,
                            covid_graph_path,
                            '{} for today ({})'.format(y_axis_cases[-1],
                                                       x_axis_dates[-1].strftime(DATE_FORMAT_D_M_Y)),

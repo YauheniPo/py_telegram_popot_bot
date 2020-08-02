@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+
 import selenium.webdriver.support.expected_conditions as EC
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -12,15 +14,13 @@ from util.logger import logger
 
 FIREFOX = 'FIREFOX'
 CHROME = 'CHROME'
-BROWSERS = {FIREFOX,
-            CHROME}
 
 
 def get_firefox_options():
     from selenium.webdriver.firefox.options import Options
 
     options = Options()
-    options.headless = True
+    options.add_argument("--headless")
     return options
 
 
@@ -28,17 +28,8 @@ def get_chrome_options():
     from selenium.webdriver.chrome.options import Options
 
     options = Options()
-    options.headless = False
+    # options.add_argument("--headless")
     return options
-
-
-def get_browser_options(browser: str):
-    return dict(zip(
-        BROWSERS,
-        {
-            get_firefox_options,
-            get_chrome_options
-        })).get(browser.upper())
 
 
 class WebDriverFactory:
@@ -51,17 +42,17 @@ class WebDriverFactory:
         logger().info(
             "Initialization of {browser}.".format(
                 browser=self.browser))
-        browser_options = get_browser_options(self.browser)
 
         if self.browser == 'FIREFOX':
             executable_path = GeckoDriverManager().install()
             self.driver = webdriver.Firefox(
-                executable_path=executable_path)
+                executable_path=executable_path,
+                options=get_firefox_options())
         if self.browser == 'CHROME':
             executable_path = ChromeDriverManager().install()
             self.driver = webdriver.Chrome(
                 executable_path=executable_path,
-                options=browser_options())
+                options=get_chrome_options())
 
         self.driver.implicitly_wait(timeout)
         self.driver.maximize_window()
@@ -99,3 +90,10 @@ def wait_visibility(
         return True
     except TimeoutException:
         return False
+
+
+def take_screenshot(driver, screenshot):
+    screen_folder = os.path.dirname(screenshot)
+    if not os.path.exists(screen_folder):
+        os.makedirs(screen_folder)
+    driver.save_screenshot(screenshot)
