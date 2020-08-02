@@ -20,4 +20,5 @@ def remove_test_archive():
     yield
     # Teardown
     test_archive_folder = TEST_ARCHIVE_FOLDER
-    shutil.rmtree(test_archive_folder) if os.path.exists(test_archive_folder) else None
+    shutil.rmtree(test_archive_folder) if os.path.exists(
+        test_archive_folder) else None
