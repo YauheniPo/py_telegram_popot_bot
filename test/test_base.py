@@ -47,10 +47,18 @@ def test_db_user_fetching(user_chat_mock):
 
     user_from_db = User.fetch_user(user_chat_mock)
 
-    assert_that(user_from_db.user_id, is_(user_chat_mock.id), "Users ID is invalid from DB.")
-    assert_that(user_from_db.username, is_(user_chat_mock.username), "Users username is invalid from DB.")
-    assert_that(user_from_db.first_name, is_(user_chat_mock.first_name), "Users first name is invalid from DB.")
-    assert_that(user_from_db.last_name, is_(user_chat_mock.last_name), "Users last name is invalid from DB.")
+    assert_that(user_from_db.user_id,
+                is_(user_chat_mock.id),
+                "Users ID is invalid from DB.")
+    assert_that(user_from_db.username,
+                is_(user_chat_mock.username),
+                "Users username is invalid from DB.")
+    assert_that(user_from_db.first_name,
+                is_(user_chat_mock.first_name),
+                "Users first name is invalid from DB.")
+    assert_that(user_from_db.last_name,
+                is_(user_chat_mock.last_name),
+                "Users last name is invalid from DB.")
 
 
 @pytest.mark.parametrize(
@@ -64,13 +72,17 @@ def test_webdriver_instance(browser):
     """Test of checking valid initialization browser instance."""
 
     with WebDriverFactory(browser).get_webdriver_instance() as driver:
-        assert_that(driver, not_none(), f"WebDriver of {browser} does not initialize.")
+        assert_that(
+            driver,
+            not_none(),
+            f"WebDriver of {browser} does not initialize.")
 
 
 def test_plot_graph_image_generation():
     """Test of generation graph image."""
 
-    test_graph_image_path = os.path.join(TEST_ARCHIVE_FOLDER, TEST_GRAPH_IMAGE_PNG_NAME)
+    test_graph_image_path = os.path.join(
+        TEST_ARCHIVE_FOLDER, TEST_GRAPH_IMAGE_PNG_NAME)
     fetch_plot_graph_image([datetime.now()], [random.randrange(10, 1000)],
                            test_graph_image_path, "test_label")
 
