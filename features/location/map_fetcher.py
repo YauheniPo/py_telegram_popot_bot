@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-from bot_config import browser
 from features.location.map_page import WHAT_HERE_CONTEXT_ITEM, MapPage
 from util.webdriver_helper import (
     WebDriverFactory,
     wait_visibility,
-    wait_for_ajax)
+    wait_for_ajax, take_screenshot, FIREFOX)
 
 
 def fetch_map(geo):
-    with WebDriverFactory(browser).get_webdriver_instance() as driver:
+    with WebDriverFactory(FIREFOX).get_webdriver_instance() as driver:
         driver.get(geo.geo_map_url)
         map_page = MapPage(driver)
         map_page.right_mouse_click_on_map()
@@ -17,4 +16,4 @@ def fetch_map(geo):
         wait_for_ajax(driver)
         map_page.collapse_searching_list()
         wait_for_ajax(driver)
-        driver.save_screenshot(geo.screen_path)
+        take_screenshot(driver, geo.screen_path)

@@ -1,7 +1,5 @@
 import os
 
-browser = 'chrome'
-
 currency_api_url = "http://www.nbrb.by/API/ExRates/Rates/Dynamics"
 currency_dollar_id = '145'
 currency_euro_id = '292'

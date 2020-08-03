@@ -13,7 +13,6 @@ matplotlib.use('Agg')
 def fetch_plot_graph_image(
         x_axis_data,
         y_axis_data,
-        graph_folder,
         graph_path,
         label,
         scale='-'):
@@ -25,6 +24,7 @@ def fetch_plot_graph_image(
         plt.legend(handles=[patch])
         plt.gcf().autofmt_xdate(rotation=20)
         plt.grid('minor')
+        graph_folder = os.path.dirname(graph_path)
         if not os.path.exists(graph_folder):
             os.makedirs(graph_folder)
         plt.savefig(graph_path)
