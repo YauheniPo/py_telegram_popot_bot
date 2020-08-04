@@ -111,8 +111,7 @@ def football_start(message):
     bot.send_message(chat_id=user.user_id,
                      text=MSG_FOOTBALL_BASE_CMD,
                      reply_markup=get_message_keyboard(*[{k: v} for (k,
-                                                                     v) in
-                                                         bot_config.buttons_football_leagues.items()]))
+                                                                     v) in bot_config.buttons_football_leagues.items()]))
     DBConnector().insert_analytics(user, message.text)
 
 
