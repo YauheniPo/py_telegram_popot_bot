@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import pickle
-
 import bot_config
 from base.bot.bot import bot
 from base.bot.bot_step import start_step, catch_bot_handler_error
@@ -19,7 +17,6 @@ from features.virus.bot_step import sent_virus_data
 from util.bot_helper import get_message_keyboard
 from util.logger import logger
 from util.util_data import is_match_by_regexp
-from util.webdriver_helper import WebDriverFactory
 
 __author__ = "Yauheni Papovich"
 __email__ = "ip.popovich.1990@gmail.com"
@@ -125,26 +122,6 @@ def instagram_start(message):
 
     bot.send_message(user.user_id, MSG_INSTAGRAM_BOT)
     DBConnector().insert_analytics(user, message.text)
-
-
-@bot.message_handler(
-    regexp=r'^\{instagram}'.format(
-        instagram='/insta_followers'))
-@catch_bot_handler_error
-def instagram_followers(message):
-    user = User.get_user(user_id=message.chat.id)
-    s = "https://www.instagram.com/evgeny_popovich_/followers/git reset --soft HEAD~1"
-    # with WebDriverFactory("chrome").get_webdriver_instance() as driver:
-    #     driver.get(s)
-    #     pickle.dump(driver.get_cookies(), open("cookies.pkl", "wb"))
-    with WebDriverFactory("chrome").get_webdriver_instance() as driver:
-        driver.get(s)
-        cookies = pickle.load(open("cookies.pkl", "rb"))
-        for cookie in cookies:
-            # adding the cookies to the session through webdriver instance
-            driver.add_cookie(cookie)
-        driver.refresh()
-    # ff = get_site_request_content(url=s, cookies=browser_cookie3.chrome())
 
 
 @bot.message_handler(
