@@ -89,6 +89,6 @@ jobs:
           name: report
           path: |
             assets
+            screenshot
             report.html
-            */screenshot
           if-no-files-found: ignore # 'warn' or 'ignore' are also available, defaults to `warn`
