@@ -16,10 +16,13 @@ def fetch_insta_post_data(insta_post_model):
 
     with WebDriverFactory(FIREFOX).get_webdriver_instance() as driver:
         try:
-            driver.get(instagram_save_content_service + insta_post_model.post_url)
+            driver.get(
+                instagram_save_content_service +
+                insta_post_model.post_url)
             wait_visibility(True, driver, searching_result)
             wait_for_ajax(driver)
-            insta_post_items = driver.find_elements_by_xpath(results_for_download)
+            insta_post_items = driver.find_elements_by_xpath(
+                results_for_download)
             post_media_urls = [media.get_attribute(
                 "href") for media in insta_post_items]
             insta_post_model.media_urls = post_media_urls
@@ -27,7 +30,11 @@ def fetch_insta_post_data(insta_post_model):
                 insta_media_description_xpath).text
             insta_post_model.post_description = insta_post_description
         except NoSuchElementException as ex:
-            take_screenshot(driver, os.path.join("screenshot", f"{datetime.datetime.now().microsecond}.jpg"))
+            take_screenshot(
+                driver,
+                os.path.join(
+                    "screenshot",
+                    f"{datetime.datetime.now().microsecond}.jpg"))
             raise ex
 
     logger().info(("--Instagram instance-- '{}'".format(insta_post_model.__dict__)).encode("utf-8"))
