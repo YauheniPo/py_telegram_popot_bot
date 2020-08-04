@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from bot_config import instagram_save_content_service
 from util.logger import logger
-from util.webdriver_helper import WebDriverFactory, wait_for_ajax, wait_visibility, CHROME
+from util.webdriver_helper import WebDriverFactory, wait_for_ajax, wait_visibility, FIREFOX
 
 
 def fetch_insta_post_data(insta_post_model):
@@ -9,7 +9,7 @@ def fetch_insta_post_data(insta_post_model):
     searching_result = "//div[@id='sf_result']/div[contains(@class, 'result')]"
     results_for_download = f"{searching_result}//a[@download]"
 
-    with WebDriverFactory(CHROME).get_webdriver_instance() as driver:
+    with WebDriverFactory(FIREFOX).get_webdriver_instance() as driver:
         driver.get(instagram_save_content_service + insta_post_model.post_url)
         wait_visibility(True, driver, searching_result)
         wait_for_ajax(driver)

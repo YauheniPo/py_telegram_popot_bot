@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+import pickle
+
 import bot_config
 from base.bot.bot import bot
 from base.bot.bot_step import start_step, catch_bot_handler_error
 from base.constants import BASE_CMD_START, BASE_CMD_CURRENCY, DB_LOG_CMD, BASE_CMD_CINEMA, BASE_CMD_FOOTBALL, \
     MSG_FOOTBALL_BASE_CMD, BASE_CMD_INSTAGRAM, MSG_INSTAGRAM_BOT, BASE_CMD_GEO, BASE_CMD_VIRUS
 from base.models.user import User
-from db.db_connection import get_db_all_data, insert_analytics
+from db.db_connection import DBConnector
 from features.cinema.bot_step import send_cinema_list, send_cinema_soon_list
 from features.currency.bot_step import send_currency_rate, send_msg_alarm_currency, \
     set_currency_alarm_rate, send_currency_graph
@@ -17,6 +19,7 @@ from features.virus.bot_step import sent_virus_data
 from util.bot_helper import get_message_keyboard
 from util.logger import logger
 from util.util_data import is_match_by_regexp
+from util.webdriver_helper import WebDriverFactory
 
 __author__ = "Yauheni Papovich"
 __email__ = "ip.popovich.1990@gmail.com"
@@ -47,7 +50,7 @@ def start(message):
     user = User.fetch_user(chat=message.chat)
 
     start_step(user)
-    insert_analytics(user, message.text)
+    DBConnector().insert_analytics(user, message.text)
 
 
 @bot.message_handler(regexp=r'^\{command}'.format(command=BASE_CMD_CURRENCY))
@@ -59,7 +62,7 @@ def currency_start(message):
 
     actual_currency = getattr(message, 'data', bot_config.currency_dollar_id)
     send_currency_rate(user, actual_currency)
-    insert_analytics(user, BASE_CMD_CURRENCY)
+    DBConnector().insert_analytics(user, BASE_CMD_CURRENCY)
 
 
 @bot.message_handler(regexp=r'^\{log}'.format(log=DB_LOG_CMD))
@@ -67,8 +70,8 @@ def currency_start(message):
 def db_log(message):
     user = User.get_user(user_id=message.chat.id)
 
-    bot.send_message(user.user_id, str(get_db_all_data()))
-    insert_analytics(user, message.text)
+    bot.send_message(user.user_id, str(DBConnector().get_db_all_data()))
+    DBConnector().insert_analytics(user, message.text)
 
 
 @bot.callback_query_handler(
@@ -97,7 +100,7 @@ def cinema(message):
     user = User.get_user(user_id=message.chat.id)
 
     send_cinema_list(user)
-    insert_analytics(user, message.text)
+    DBConnector().insert_analytics(user, message.text)
 
 
 @bot.message_handler(regexp=r'^\{football}'.format(football=BASE_CMD_FOOTBALL))
@@ -108,8 +111,9 @@ def football_start(message):
     bot.send_message(chat_id=user.user_id,
                      text=MSG_FOOTBALL_BASE_CMD,
                      reply_markup=get_message_keyboard(*[{k: v} for (k,
-                                                                     v) in bot_config.buttons_football_leagues.items()]))
-    insert_analytics(user, message.text)
+                                                                     v) in
+                                                         bot_config.buttons_football_leagues.items()]))
+    DBConnector().insert_analytics(user, message.text)
 
 
 @bot.message_handler(
@@ -120,7 +124,27 @@ def instagram_start(message):
     user = User.get_user(user_id=message.chat.id)
 
     bot.send_message(user.user_id, MSG_INSTAGRAM_BOT)
-    insert_analytics(user, message.text)
+    DBConnector().insert_analytics(user, message.text)
+
+
+@bot.message_handler(
+    regexp=r'^\{instagram}'.format(
+        instagram='/insta_followers'))
+@catch_bot_handler_error
+def instagram_followers(message):
+    user = User.get_user(user_id=message.chat.id)
+    s = "https://www.instagram.com/evgeny_popovich_/followers/git reset --soft HEAD~1"
+    # with WebDriverFactory("chrome").get_webdriver_instance() as driver:
+    #     driver.get(s)
+    #     pickle.dump(driver.get_cookies(), open("cookies.pkl", "wb"))
+    with WebDriverFactory("chrome").get_webdriver_instance() as driver:
+        driver.get(s)
+        cookies = pickle.load(open("cookies.pkl", "rb"))
+        for cookie in cookies:
+            # adding the cookies to the session through webdriver instance
+            driver.add_cookie(cookie)
+        driver.refresh()
+    # ff = get_site_request_content(url=s, cookies=browser_cookie3.chrome())
 
 
 @bot.message_handler(
@@ -133,7 +157,7 @@ def instagram_post_content(message):
     send_to_user_insta_post_media_content(InstaPost(
         post_url=message.text,
         message_id=message.message_id), user)
-    insert_analytics(user, 'insta_link')
+    DBConnector().insert_analytics(user, 'insta_link')
 
 
 @bot.message_handler(regexp=r'^\{geo}'.format(geo=BASE_CMD_GEO))
@@ -142,7 +166,7 @@ def geo_start(message):
     user = User.get_user(user_id=message.chat.id)
 
     geo_request(user)
-    insert_analytics(user, message.text)
+    DBConnector().insert_analytics(user, message.text)
 
 
 @bot.message_handler(regexp=r'^\{virus}'.format(virus=BASE_CMD_VIRUS))
@@ -151,7 +175,7 @@ def virus(message):
     user = User.get_user(user_id=message.chat.id)
 
     sent_virus_data(user)
-    insert_analytics(user, message.text)
+    DBConnector().insert_analytics(user, message.text)
 
 
 @bot.message_handler(content_types=['location'])
@@ -161,7 +185,7 @@ def location(message):
 
     if message.location is not None:
         send_map_location(bot, user, message)
-    insert_analytics(user, message.text)
+    DBConnector().insert_analytics(user, message.text)
 
 
 @bot.message_handler(
@@ -185,7 +209,7 @@ def currency_graph_call(call):
     user = User.get_user(user_id=call.from_user.id)
 
     send_currency_graph(user, call.message)
-    insert_analytics(user, bot_config.currency_graph)
+    DBConnector().insert_analytics(user, bot_config.currency_graph)
 
 
 @bot.callback_query_handler(
@@ -196,7 +220,7 @@ def cinema_soon_call(call):
     user = User.get_user(user_id=call.from_user.id)
 
     send_cinema_soon_list(user)
-    insert_analytics(user, call.data)
+    DBConnector().insert_analytics(user, call.data)
 
 
 @bot.callback_query_handler(
@@ -207,7 +231,7 @@ def football_calendar(call):
     user = User.get_user(user_id=call.from_user.id)
 
     send_football_calendar(user, call.data)
-    insert_analytics(user, call.data)
+    DBConnector().insert_analytics(user, call.data)
 
 
 if __name__ == "__main__":

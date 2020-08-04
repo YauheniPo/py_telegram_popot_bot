@@ -6,7 +6,7 @@ from telegram import ParseMode
 
 import bot_config
 from base.bot.bot import bot
-from db.db_connection import get_db_users_alarm_currency_rate
+from db.db_connection import DBConnector
 from features.currency.currency_api import (get_currency_message,
                                             get_today_currency_rate)
 from util.bot_helper import get_message_keyboard
@@ -14,7 +14,7 @@ from util.logger import logger
 
 
 def job():
-    users = get_db_users_alarm_currency_rate()
+    users = DBConnector().get_db_users_alarm_currency_rate()
     for user in users:
         today_currency_rate = get_today_currency_rate()
 

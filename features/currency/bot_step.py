@@ -6,7 +6,7 @@ from base.bot.bot import bot
 from base.constants import MSG_CURRENCY_ALARM_BOT
 from bot_config import buttons_currency_selection, button_currency_graph, currency_dollar_id, button_currency_alarm, \
     buttons_currency_alarm_rate, currency_alarm_rate_regexp, currency_ids, currency_graph_path
-from db.db_connection import insert_currency_alarm
+from db.db_connection import DBConnector
 from features.currency.currency_api import get_currency_message, fetch_currency_list, get_currency_response_json, \
     get_actual_currency_rate_for_alarm
 from features.currency.currency_graph_generator import fetch_currency_graph
@@ -63,7 +63,7 @@ def set_currency_alarm_rate(user, call):
 
     send_currency_alarm_message(message)
 
-    insert_currency_alarm(user, new_currency_alarm_rate)
+    DBConnector().insert_currency_alarm(user, new_currency_alarm_rate)
 
 
 def send_currency_graph(user, bot_message):
