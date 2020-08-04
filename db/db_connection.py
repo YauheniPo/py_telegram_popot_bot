@@ -42,7 +42,8 @@ class DBConnector(object):
 
     def insert_analytics(self, user, cmd):
         logger().info("Insert analytics command '{}' of user {}".format(cmd, user.__dict__))
-        user_db_analytics = self.cmd_table.search(self.query.id == user.user_id)
+        user_db_analytics = self.cmd_table.search(
+            self.query.id == user.user_id)
         if user_db_analytics:
             user_db_cmd_analytics = self.cmd_table.search(
                 (self.query.id == user.user_id) & (self.query[cmd]))
@@ -68,7 +69,8 @@ class DBConnector(object):
         logger().info(
             "Insert analytics currency rate alarm '{}' of user {}".format(
                 alarm_rate, user.__dict__))
-        user_db_analytics = self.currency_alarm_table.search(self.query.id == user.user_id)
+        user_db_analytics = self.currency_alarm_table.search(
+            self.query.id == user.user_id)
         if user_db_analytics:
             user_db_analytics[0]['alarm_rate'] = alarm_rate
             self.currency_alarm_table.write_back(user_db_analytics)
