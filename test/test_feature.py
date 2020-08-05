@@ -18,7 +18,7 @@ from util.util_request import get_site_request_content
             InstaPost(
                 post_url=INSTAGRAM_PUBLIC_POST_LINK),
             marks=pytest.mark.xfail(
-                SimpleDate().tzinfo == 'Etc/UTC',
+                SimpleDate().tzinfo.zone == 'Etc/UTC',
                 reason="Instagram post from private account.")),
         pytest.param(
             InstaPost(
