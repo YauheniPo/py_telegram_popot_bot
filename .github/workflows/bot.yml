@@ -83,7 +83,9 @@ jobs:
           file: ./coverage.xml
           flags: unittests
           nema: codecov-popot-bot
-      - name: Upload pytest report
+  artifacts:
+    steps:
+      - name: Upload tests execution results
         uses: actions/upload-artifact@v2
         with:
           name: report
@@ -91,4 +93,5 @@ jobs:
             assets
             screenshot
             report.html
+            config.log
           if-no-files-found: ignore # 'warn' or 'ignore' are also available, defaults to `warn`

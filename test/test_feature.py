@@ -23,8 +23,8 @@ from util.util_request import get_site_request_content
          "Instagram private post."])
 def test_insta_post_fetching_data(insta_post):
     """Test of fetching Instagram post data."""
-    print(SimpleDate().tzinfo)
     logger().info(SimpleDate().tzinfo)
+    assert_that(SimpleDate().tzinfo, is_("USA"))
     fetch_insta_post_data(insta_post)
 
     assert_that(len(insta_post.media_urls) > 1, is_(equal_to(
