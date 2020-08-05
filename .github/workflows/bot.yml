@@ -85,7 +85,7 @@ jobs:
           nema: codecov-popot-bot
   artifacts:
     runs-on: ubuntu-latest
-    if: always()
+    needs: popotBotGitHubActions
     steps:
       - name: Upload tests execution results
         uses: actions/upload-artifact@v2
