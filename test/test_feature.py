@@ -1,29 +1,30 @@
 # -*- coding: utf-8 -*-
 import pytest
 from hamcrest import assert_that, is_, equal_to, is_not, empty
+from simpledate import SimpleDate
 
 import bot_config
 from features.football.football_site_parser import get_matches
 from features.instagram.insta_loader import fetch_insta_post_data
 from features.instagram.insta_post import InstaPost
 from test.constants_test import INSTAGRAM_PUBLIC_POST_LINK, INSTAGRAM_PRIVATE_POST_LINK
+from util.logger import logger
 from util.util_request import get_site_request_content
 
 
 @pytest.mark.parametrize(
-    "insta_post", [
-        pytest.param(
-            InstaPost(
-                post_url=INSTAGRAM_PUBLIC_POST_LINK), marks=pytest.mark.xfail(
-                reason="Instagram post from private account.")),
-        pytest.param(
-            InstaPost(
-                post_url=INSTAGRAM_PRIVATE_POST_LINK), marks=pytest.mark.xfail(
-                reason="Instagram post from private account."))], ids=[
-        "Instagram public post.", "Instagram private post."])
+    "insta_post",
+    [InstaPost(post_url=INSTAGRAM_PUBLIC_POST_LINK),
+     pytest.param(
+         InstaPost(
+             post_url=INSTAGRAM_PRIVATE_POST_LINK), marks=pytest.mark.xfail(
+             reason="Instagram post from private account."))],
+    ids=["Instagram public post.",
+         "Instagram private post."])
 def test_insta_post_fetching_data(insta_post):
     """Test of fetching Instagram post data."""
-
+    print(SimpleDate().tzinfo)
+    logger().info(SimpleDate().tzinfo)
     fetch_insta_post_data(insta_post)
 
     assert_that(len(insta_post.media_urls) > 1, is_(equal_to(
