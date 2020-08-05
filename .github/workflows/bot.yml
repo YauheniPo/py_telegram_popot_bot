@@ -83,10 +83,6 @@ jobs:
           file: ./coverage.xml
           flags: unittests
           nema: codecov-popot-bot
-  artifacts:
-    runs-on: ubuntu-latest
-    needs: popotBotGitHubActions
-    steps:
       - name: Upload tests execution results
         uses: actions/upload-artifact@v2
         with:
