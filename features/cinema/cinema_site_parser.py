@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from lxml import html
 from lxml.html import HtmlElement
+from lxml.html.clean import Cleaner
 
 from base.constants import MSG_CINEMA_BOT
 from features.cinema.cinema import Cinema
@@ -56,8 +57,7 @@ def get_movies(site_content):
     movies_section: str = MOVIES_POSTER
     movies: dict[str: list] = {}
 
-    cleaner = html.clean.Cleaner(style=True)
-    html_site_elements_content = cleaner.clean_html(
+    html_site_elements_content = Cleaner(style=True).clean_html(
         html.fromstring(site_content))
 
     for movie in html_site_elements_content.xpath(

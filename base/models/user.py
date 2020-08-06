@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from telegram import Chat
 
-from db.db_connection import get_db_user, insert_user
+from db.db_connection import DBConnector
 from util.logger import logger
 
 
@@ -15,13 +15,13 @@ class User:
 
     @classmethod
     def get_user(cls, user_id):
-        user_db = get_db_user(user_id=user_id)
+        user_db = DBConnector().get_db_user(user_id=user_id)
         logger().info(f"***** {user_db} *****")
         return cls(user_db=user_db)
 
     @staticmethod
     def fetch_user(chat: Chat):
-        user = get_db_user(chat.id)
+        user = DBConnector().get_db_user(chat.id)
         if not user:
-            insert_user(chat)
+            DBConnector().insert_user(chat)
         return User.get_user(user_id=chat.id)

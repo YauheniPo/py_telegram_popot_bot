@@ -42,7 +42,7 @@ def test_bot_script_func():
     ids=["valid_user_with_all_data",
          "valid_user_with_only_id"]
 )
-def test_db_user_fetching(user_chat_mock):
+def test_db_user_fetching(user_chat_mock, close_db_connection):
     """Test for checking user data obtained from the DB."""
 
     user_from_db = User.fetch_user(user_chat_mock)

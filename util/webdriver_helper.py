@@ -54,6 +54,8 @@ class WebDriverFactory:
                 executable_path=executable_path,
                 options=get_chrome_options())
 
+        logger().info(f"Created instance of '{self.browser}' browser.")
+
         self.driver.implicitly_wait(timeout)
         self.driver.maximize_window()
         if cookies is None:

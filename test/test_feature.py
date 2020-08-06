@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 from hamcrest import assert_that, is_, equal_to, is_not, empty
+from simpledate import SimpleDate
 
 import bot_config
 from features.football.football_site_parser import get_matches
@@ -11,13 +12,22 @@ from util.util_request import get_site_request_content
 
 
 @pytest.mark.parametrize(
-    "insta_post", [
-        InstaPost(
-            post_url=INSTAGRAM_PUBLIC_POST_LINK), pytest.param(
-                InstaPost(
-                    post_url=INSTAGRAM_PRIVATE_POST_LINK), marks=pytest.mark.xfail(
-                        reason="Instagram post from private account."))], ids=[
-                            "Instagram public post.", "Instagram private post."])
+    "insta_post",
+    [
+        pytest.param(
+            InstaPost(
+                post_url=INSTAGRAM_PUBLIC_POST_LINK),
+            marks=pytest.mark.xfail(
+                SimpleDate().tzinfo.zone == 'Etc/UTC',
+                reason="Instagram post from private account.")),
+        pytest.param(
+            InstaPost(
+                post_url=INSTAGRAM_PRIVATE_POST_LINK),
+            marks=pytest.mark.xfail(
+                reason="Instagram post from private account."))],
+    ids=[
+        "Instagram public post.",
+        "Instagram private post."])
 def test_insta_post_fetching_data(insta_post):
     """Test of fetching Instagram post data."""
 
