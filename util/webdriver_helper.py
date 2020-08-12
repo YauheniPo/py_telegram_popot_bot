@@ -27,9 +27,11 @@ def get_firefox_options():
 def get_chrome_options():
     from selenium.webdriver.chrome.options import Options
 
-    options = Options()
-    options.add_argument("--headless")
-    return options
+    chrome_options = Options()
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument('--headless')
+    return chrome_options
 
 
 class WebDriverFactory:
