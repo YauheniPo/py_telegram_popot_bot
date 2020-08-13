@@ -1,0 +1,18 @@
+# Exclude EVERYTHING first
+*
+
+# Now selectively include stuff
+!base
+!db
+!features
+!popot_bot.py
+!pytest.ini
+!requirements_server.txt
+!requirements.txt
+!test
+!bot_config.py
+!logging_config.ini
+!popot_bot_actions.py
+!requirements_test.txt
+!server.py
+!util
