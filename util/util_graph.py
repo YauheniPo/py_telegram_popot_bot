@@ -2,10 +2,7 @@
 import os
 
 import matplotlib
-import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
-
-from util.util_data import DATE_FORMAT_D_M_Y
 
 matplotlib.use('Agg')
 
@@ -14,19 +11,38 @@ def fetch_plot_graph_image(
         x_axis_data,
         y_axis_data,
         graph_path,
-        label,
-        scale='-'):
+        labels,
+        y_labels=['rates'],
+        colors=['blue'],
+        scales=['-']):
     try:
-        plt.xlabel('Current date is {}'.format(
-            x_axis_data[-1].strftime(DATE_FORMAT_D_M_Y)))
-        plt.plot(x_axis_data, y_axis_data, scale)
-        patch = mpatches.Patch(label=label)
-        plt.legend(handles=[patch])
+        # style
+        plt.style.use('seaborn-darkgrid')
+
+        # create figure and axis objects with subplots()
+        fig, ax1 = plt.subplots()
+
+        axis = [ax1]
+        axis.append(ax1.twinx()) if len(y_axis_data) > 1 else None
+
+        for ax, y_axis, label, scale, y_label, color in zip(
+                axis, y_axis_data, labels, scales, y_labels, colors):
+            # make a plot
+            ax.plot(x_axis_data, y_axis, scale, label=label)
+            # set y-axis label
+            ax.set_ylabel(y_label, color=color, fontsize=10)
+
         plt.gcf().autofmt_xdate(rotation=20)
+        fig.legend(loc="upper right")
         plt.grid('minor')
+
         graph_folder = os.path.dirname(graph_path)
         if not os.path.exists(graph_folder):
             os.makedirs(graph_folder)
-        plt.savefig(graph_path)
+        # save the plot as a file
+        fig.savefig(graph_path,
+                    format='jpeg',
+                    dpi=500,
+                    bbox_inches='tight')
     finally:
         plt.close()

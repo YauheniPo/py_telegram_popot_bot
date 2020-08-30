@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from bot_config import currency_graph_path
 from util.logger import logger
+from util.util_data import DATE_FORMAT_D_M_Y
 from util.util_graph import fetch_plot_graph_image
 
 
@@ -13,6 +14,7 @@ def fetch_currency_graph(currency_data):
 
     fetch_plot_graph_image(
         x_axis_date,
-        y_axis_rate,
+        [y_axis_rate],
         currency_graph_path,
-        y_axis_rate[-1])
+        ['{} today ({})'.format(y_axis_rate[-1],
+                                x_axis_date[-1].strftime(DATE_FORMAT_D_M_Y))])
