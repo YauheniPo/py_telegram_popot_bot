@@ -68,7 +68,6 @@ Click here!</a>"""
 MSG_VIRUS_COVID_DATA = """
 {base_country_statistics}:
 Cases: {world_cases_statistics}
-Deaths: {world_deaths_statistics}
-Recov: {world_recov_statistics}"""
+Deaths: {world_deaths_statistics}"""
 
 DB_LOG_CMD = f"/{os.environ.get('LOG')}"

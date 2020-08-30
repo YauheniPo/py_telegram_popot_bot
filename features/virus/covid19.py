@@ -10,37 +10,17 @@ from systemtools import number
 
 from base.constants import MSG_VIRUS_COVID_DATA
 from bot_config import virus_covid_data_api_url, covid_graph_path, \
-    virus_covid_data_wikipedia_site_url, virus_covid_data_tutby_site_url
+    virus_covid_data_wikipedia_site_url
 from util.util_data import get_current_date, DATE_FORMAT_D_M_Y
 from util.util_graph import fetch_plot_graph_image
 from util.util_request import get_site_request_content
 
 
-def get_tutby_last_virus_covid_dir(location):
-    virus_covid_data_xpath = \
-        f"//div[@id='tab-{location.lower()}']//div[@class='statistic-item'][{{index}}]/*[@class='total']"
-
-    covid_site_content = get_site_request_content(
-        url=virus_covid_data_tutby_site_url)
-    covid_tree_html_content = html.fromstring(covid_site_content)
-
-    location_cases = number.parseNumber(
-        covid_tree_html_content.xpath(
-            virus_covid_data_xpath.format(
-                index=1))[0].text_content())
-    location_deaths = number.parseNumber(
-        covid_tree_html_content.xpath(
-            virus_covid_data_xpath.format(
-                index=3))[0].text_content())
-    location_recov = number.parseNumber(
-        covid_tree_html_content.xpath(
-            virus_covid_data_xpath.format(
-                index=2))[0].text_content())
+def get_tutby_last_virus_covid_dir(location, covid_all_data):
     return {'country': location.upper(),
             'dates': [str(get_current_date())],
-            'cases': [location_cases],
-            'deaths': [location_deaths],
-            'recov.': [location_recov]}
+            'cases': [covid_all_data['cases'][-1]],
+            'deaths': [covid_all_data['deaths'][-1]]}
 
 
 def get_last_virus_covid_dir(location, table_data_xpath):
@@ -69,8 +49,8 @@ def get_last_virus_covid_data_dir():
 
 
 @get_last_virus_covid_data_dir.add
-def get_last_virus_covid_data_dir(country: str):
-    return get_tutby_last_virus_covid_dir(country)
+def get_last_virus_covid_data_dir(country: str, covid_all_data: dict):
+    return get_tutby_last_virus_covid_dir(country, covid_all_data)
 
 
 def get_location_all_virus_covid_data_dir(country):
@@ -96,8 +76,8 @@ def fetch_covid_graph(country_all_data_virus, country_actual_data_virus):
             country_actual_data_virus['deaths'][0])
 
     x_axis_dates = [datetime.strptime(date, '%Y-%m-%d')
-                    for date in country_all_data_virus['dates']]
-    y_axis_cases = country_all_data_virus['cases']
+                    for date in country_all_data_virus['dates']][-120:]
+    y_axis_cases = country_all_data_virus['cases'][-120:]
 
     fetch_plot_graph_image(x_axis_dates,
                            y_axis_cases,
@@ -112,6 +92,5 @@ def get_covid_virus_msg_content(*args):
         MSG_VIRUS_COVID_DATA.format(
             base_country_statistics=virus_data['country'],
             world_cases_statistics=virus_data['cases'][0],
-            world_deaths_statistics=virus_data['deaths'][0],
-            world_recov_statistics=virus_data['recov.'][0]) for virus_data in args]
-    return "\n\n".join(msg_content)
+            world_deaths_statistics=virus_data['deaths'][0]) for virus_data in args]
+    return "\n".join(msg_content)

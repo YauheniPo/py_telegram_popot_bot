@@ -9,8 +9,8 @@ def sent_virus_data(user):
     country = 'Belarus'
     logger().info("Get virus data for country '{}'".format(country))
 
-    country_actual_data_virus = get_last_virus_covid_data_dir(country)
     country_all_data_virus = get_location_all_virus_covid_data_dir(country)
+    country_actual_data_virus = get_last_virus_covid_data_dir(country, country_all_data_virus)
     world_actual_data_virus = get_last_virus_covid_data_dir()
 
     fetch_covid_graph(country_all_data_virus, country_actual_data_virus)

@@ -17,9 +17,13 @@ def fetch_plot_graph_image(
         label,
         scale='-'):
     try:
+        # style
+        plt.style.use('seaborn-darkgrid')
+
         plt.xlabel('Current date is {}'.format(
             x_axis_data[-1].strftime(DATE_FORMAT_D_M_Y)))
         plt.plot(x_axis_data, y_axis_data, scale)
+        # plt.plot(x_axis_data, y_axis_data, scale)
         patch = mpatches.Patch(label=label)
         plt.legend(handles=[patch])
         plt.gcf().autofmt_xdate(rotation=20)
