@@ -74,7 +74,8 @@ def fetch_covid_graph(country_all_data_virus, country_actual_data_virus):
 
     country_per_day_cases = []
     for index in range(1, len(country_all_data_virus['cases'])):
-        country_per_day_cases.append(country_all_data_virus['cases'][index] - country_all_data_virus['cases'][index - 1])
+        country_per_day_cases.append(
+            country_all_data_virus['cases'][index] - country_all_data_virus['cases'][index - 1])
 
     x_axis_dates = [datetime.strptime(date, DATE_FORMAT_Y_M_D)
                     for date in country_all_data_virus['dates']][-120:]
@@ -85,7 +86,7 @@ def fetch_covid_graph(country_all_data_virus, country_actual_data_virus):
                            [y_axis_total_cases, y_axis_cases_per_day],
                            covid_graph_path,
                            ['{} today ({})'.format(y_axis_total_cases[-1],
-                                                      x_axis_dates[-1].strftime(DATE_FORMAT_D_M_Y)),
+                                                   x_axis_dates[-1].strftime(DATE_FORMAT_D_M_Y)),
                             '{} for today ({})'.format(y_axis_cases_per_day[-1],
                                                        x_axis_dates[-1].strftime(DATE_FORMAT_D_M_Y))],
                            ['total cases', 'cases per day'],
