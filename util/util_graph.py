@@ -25,7 +25,8 @@ def fetch_plot_graph_image(
         axis = [ax1]
         axis.append(ax1.twinx()) if len(y_axis_data) > 1 else None
 
-        for ax, y_axis, label, scale, y_label, color in zip(axis, y_axis_data, labels, scales, y_labels, colors):
+        for ax, y_axis, label, scale, y_label, color in zip(
+                axis, y_axis_data, labels, scales, y_labels, colors):
             # make a plot
             ax.plot(x_axis_data, y_axis, scale, label=label)
             # set y-axis label
