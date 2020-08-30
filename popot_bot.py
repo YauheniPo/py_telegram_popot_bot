@@ -136,6 +136,26 @@ def instagram_post_content(message):
     DBConnector().insert_analytics(user, 'insta_link')
 
 
+@bot.message_handler(
+    regexp=r'^\{instagram}'.format(
+        instagram='/insta_followers'))
+@catch_bot_handler_error
+def instagram_followers(message):
+    user = User.get_user(user_id=message.chat.id)
+    s = "https://www.instagram.com/evgeny_popovich_/followers/"
+    # with WebDriverFactory("chrome").get_webdriver_instance() as driver:
+    #     driver.get(s)
+    #     pickle.dump(driver.get_cookies(), open("cookies.pkl", "wb"))
+    with WebDriverFactory("chrome").get_webdriver_instance() as driver:
+        driver.get(s)
+        cookies = pickle.load(open("cookies.pkl", "rb"))
+        for cookie in cookies:
+            # adding the cookies to the session through webdriver instance
+            driver.add_cookie(cookie)
+        driver.refresh()
+    # ff = get_site_request_content(url=s, cookies=browser_cookie3.chrome())
+
+
 @bot.message_handler(regexp=r'^\{geo}'.format(geo=BASE_CMD_GEO))
 @catch_bot_handler_error
 def geo_start(message):

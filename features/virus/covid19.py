@@ -11,7 +11,7 @@ from systemtools import number
 from base.constants import MSG_VIRUS_COVID_DATA
 from bot_config import virus_covid_data_api_url, covid_graph_path, \
     virus_covid_data_wikipedia_site_url
-from util.util_data import get_current_date, DATE_FORMAT_D_M_Y
+from util.util_data import get_current_date, DATE_FORMAT_D_M_Y, DATE_FORMAT_Y_M_D
 from util.util_graph import fetch_plot_graph_image
 from util.util_request import get_site_request_content
 
@@ -33,13 +33,10 @@ def get_last_virus_covid_dir(location, table_data_xpath):
         location_data[-4].text_content().replace(',', ''))
     location_deaths = number.parseNumber(
         location_data[-3].text_content().replace(',', ''))
-    location_recov = number.parseNumber(
-        location_data[-2].text_content().replace(',', ''))
     return {'country': location.upper(),
             'dates': [str(get_current_date())],
             'cases': [location_cases],
-            'deaths': [location_deaths],
-            'recov.': [location_recov]}
+            'deaths': [location_deaths]}
 
 
 @overload
@@ -75,16 +72,25 @@ def fetch_covid_graph(country_all_data_virus, country_actual_data_virus):
         country_all_data_virus['deaths'].append(
             country_actual_data_virus['deaths'][0])
 
-    x_axis_dates = [datetime.strptime(date, '%Y-%m-%d')
+    country_per_day_cases = []
+    for index in range(1, len(country_all_data_virus['cases'])):
+        country_per_day_cases.append(country_all_data_virus['cases'][index] - country_all_data_virus['cases'][index - 1])
+
+    x_axis_dates = [datetime.strptime(date, DATE_FORMAT_Y_M_D)
                     for date in country_all_data_virus['dates']][-120:]
-    y_axis_cases = country_all_data_virus['cases'][-120:]
+    y_axis_total_cases = country_all_data_virus['cases'][-120:]
+    y_axis_cases_per_day = country_per_day_cases[-120:]
 
     fetch_plot_graph_image(x_axis_dates,
-                           y_axis_cases,
+                           [y_axis_total_cases, y_axis_cases_per_day],
                            covid_graph_path,
-                           '{} for today ({})'.format(y_axis_cases[-1],
+                           ['{} today ({})'.format(y_axis_total_cases[-1],
                                                       x_axis_dates[-1].strftime(DATE_FORMAT_D_M_Y)),
-                           'o')
+                            '{} for today ({})'.format(y_axis_cases_per_day[-1],
+                                                       x_axis_dates[-1].strftime(DATE_FORMAT_D_M_Y))],
+                           ['total cases', 'cases per day'],
+                           ['blue', 'red'],
+                           ['o', 'r-'])
 
 
 def get_covid_virus_msg_content(*args):
