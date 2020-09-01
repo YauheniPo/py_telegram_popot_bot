@@ -44,8 +44,8 @@ def test_insta_post_fetching_data(insta_post):
 
 @pytest.mark.parametrize(
     "league",
-    [bot_config.football_ucl_path,
-     bot_config.football_le_path],
+    [pytest.param(bot_config.football_ucl_path, marks=pytest.mark.xfail),
+     pytest.param(bot_config.football_le_path, marks=pytest.mark.xfail)],
     ids=["UEFA Champions League.",
          "UEFA Europa League."]
 )
