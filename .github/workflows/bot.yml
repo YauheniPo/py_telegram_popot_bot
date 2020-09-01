@@ -1,7 +1,7 @@
 name: Python Telegram bot (@popot_bot)
 
 on:
-#  push:
+  push:
   pull_request:
 #  schedule:
 #    - cron: "0 2 * * 1-5"
@@ -58,7 +58,7 @@ jobs:
       - name: Lint with flake8
         run: |
           pip install flake8
-          flake8 .
+          flake8 . --count --show-source --statistics
       - name: Install BOT-test dependencies
         run: |
           pip install -r requirements_test.txt
