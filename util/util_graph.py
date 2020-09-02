@@ -41,7 +41,7 @@ def fetch_plot_graph_image(
             os.makedirs(graph_folder)
         # save the plot as a file
         fig.savefig(graph_path,
-                    format='jpeg',
+                    format='png',
                     dpi=500,
                     bbox_inches='tight')
     finally:
