@@ -35,10 +35,15 @@ button_cinema_soon = {cinema_soon: 'Upcoming New Movies'}
 football_url = "https://matchtv.ru/football"
 football_ucl_path = "/ucl"
 football_le_path = "/le"
-football_url_path_calendar = "/stats/calendar"
-football_leagues = ['UEFA Champions League', 'UEFA Europa League']
-football_leagues_cmd = [football_ucl_path, football_le_path]
+football_spain_path = "/spain"
+football_england_path = "/england"
+football_stats_path = "/stats"
+football_url_path_calendar = f"{football_stats_path}/calendar"
+football_leagues = ['UEFA Champions League', 'UEFA Europa League', 'Country Leagues']
+football_country_leagues = [football_spain_path.upper(), football_england_path.upper()]
+football_leagues_cmd = [football_ucl_path, football_le_path, football_stats_path]
 buttons_football_leagues = dict(zip(football_leagues_cmd, football_leagues))
+buttons_football_country_leagues = dict(zip(football_country_leagues, football_country_leagues))
 
 instagram_link_regexp = r"https?:\/\/www\.instagram\.com\/p\/[a-zA-Z0-9\.\&\/\?\:@\-_=#]*$"
 instagram_url_media_name_regexp = r"[^\/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))"
