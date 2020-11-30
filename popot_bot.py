@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+
 import bot_config
 from base.bot.bot import bot
 from base.bot.bot_step import start_step, catch_bot_handler_error
 from base.constants import BASE_CMD_START, BASE_CMD_CURRENCY, DB_LOG_CMD, BASE_CMD_CINEMA, BASE_CMD_FOOTBALL, \
     MSG_FOOTBALL_BASE_CMD, BASE_CMD_INSTAGRAM, MSG_INSTAGRAM_BOT, BASE_CMD_GEO, BASE_CMD_VIRUS
 from base.models.user import User
-from db.db_connection import DBConnector
+from db.db_connection import DBConnector, fetch_log_table_html, DB_LOG_HTML
 from features.cinema.bot_step import send_cinema_list, send_cinema_soon_list
 from features.currency.bot_step import send_currency_rate, send_msg_alarm_currency, \
     set_currency_alarm_rate, send_currency_graph
@@ -67,8 +68,8 @@ def currency_start(message):
 def db_log(message):
     user = User.get_user(user_id=message.chat.id)
 
-    bot.send_message(user.user_id, str(DBConnector().get_db_all_data()))
-    DBConnector().insert_analytics(user, message.text)
+    fetch_log_table_html()
+    bot.send_document(user.user_id, open(DB_LOG_HTML, "rb"))
 
 
 @bot.callback_query_handler(

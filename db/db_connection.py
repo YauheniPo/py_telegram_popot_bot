@@ -1,10 +1,21 @@
 # -*- coding: utf-8 -*-
 import json
 
+from json2html import json2html
 from tinydb import Query, TinyDB
 
 from db import get_db_json_data_path
 from util.logger import logger
+
+
+DB_LOG_HTML = "popot_bot_log.html"
+
+
+def fetch_log_table_html():
+    db_log_data_str = DBConnector().get_db_all_data()
+    db_log_data_html = json2html.convert(json=db_log_data_str)
+    with open(DB_LOG_HTML, "w") as fp:
+        fp.write(db_log_data_html)
 
 
 class DBConnector(object):
@@ -79,5 +90,5 @@ class DBConnector(object):
                 {'id': user.user_id, 'alarm_rate': alarm_rate})
 
     def get_db_all_data(self):
-        with open(self.db_data_json_file, "rb") as fin:
-            return json.load(fin)
+        with open(self.db_data_json_file, "rb") as fp:
+            return json.load(fp)
