@@ -2,7 +2,7 @@ telebot==0.0.3
 pyTelegramBotAPI==3.6.7
 python-telegram-bot
 
-lxml==4.5.0
+lxml==4.6.1
 apiai==1.2.3
 matplotlib
 overload
