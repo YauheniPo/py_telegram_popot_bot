@@ -10,7 +10,7 @@ from db.db_connection import DBConnector, fetch_log_table_html, DB_LOG_HTML
 from features.cinema.bot_step import send_cinema_list, send_cinema_soon_list
 from features.currency.bot_step import send_currency_rate, send_msg_alarm_currency, \
     set_currency_alarm_rate, send_currency_graph
-from features.football.bot_step import send_football_calendar
+from features.football.bot_step import send_football_calendar, sent_football_message
 from features.instagram.bot_step import send_to_user_insta_post_media_content
 from features.instagram.insta_post import InstaPost
 from features.location.bot_step import send_map_location, geo_request
@@ -32,6 +32,7 @@ __all__ = [
     'cinema_soon_call',
     'football_start',
     'football_calendar',
+    'football_country_leagues',
     'geo_start',
     'instagram_start',
     'instagram_post_content',
@@ -106,10 +107,11 @@ def cinema(message):
 def football_start(message):
     user = User.get_user(user_id=message.chat.id)
 
-    bot.send_message(chat_id=user.user_id,
-                     text=MSG_FOOTBALL_BASE_CMD,
-                     reply_markup=get_message_keyboard(*[{k: v} for (k,
-                                                                     v) in bot_config.buttons_football_leagues.items()]))
+    sent_football_message(user.user_id,
+                          MSG_FOOTBALL_BASE_CMD,
+                          get_message_keyboard(*[{k: v} for (k,
+                                                             v) in
+                                                 bot_config.buttons_football_leagues.items()]))
     DBConnector().insert_analytics(user, message.text)
 
 
@@ -197,6 +199,21 @@ def cinema_soon_call(call):
     user = User.get_user(user_id=call.from_user.id)
 
     send_cinema_soon_list(user)
+    DBConnector().insert_analytics(user, call.data)
+
+
+@bot.callback_query_handler(
+    func=lambda call: call.data == bot_config.football_stats_path)
+@catch_bot_handler_error
+def football_country_leagues(call):
+    logger().info("Button '{}'".format(call.data))
+    user = User.get_user(user_id=call.from_user.id)
+
+    actual_buttons_football = {**bot_config.buttons_football_country_leagues}  # new dict instance
+
+    sent_football_message(user,
+                          MSG_FOOTBALL_BASE_CMD,
+                          get_message_keyboard(*[{k: v} for (k, v) in actual_buttons_football.items()]))
     DBConnector().insert_analytics(user, call.data)
 
 
