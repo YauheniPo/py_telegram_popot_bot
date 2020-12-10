@@ -107,11 +107,8 @@ def cinema(message):
 def football_start(message):
     user = User.get_user(user_id=message.chat.id)
 
-    sent_football_message(user.user_id,
-                          MSG_FOOTBALL_BASE_CMD,
-                          get_message_keyboard(*[{k: v} for (k,
-                                                             v) in
-                                                 bot_config.buttons_football_leagues.items()]))
+    sent_football_message(user.user_id, MSG_FOOTBALL_BASE_CMD, get_message_keyboard(
+        *[{k: v} for (k, v) in bot_config.buttons_football_leagues.items()]))
     DBConnector().insert_analytics(user, message.text)
 
 
@@ -209,11 +206,11 @@ def football_country_leagues(call):
     logger().info("Button '{}'".format(call.data))
     user = User.get_user(user_id=call.from_user.id)
 
-    actual_buttons_football = {**bot_config.buttons_football_country_leagues}  # new dict instance
+    actual_buttons_football = {
+        **bot_config.buttons_football_country_leagues}  # new dict instance
 
-    sent_football_message(user,
-                          MSG_FOOTBALL_BASE_CMD,
-                          get_message_keyboard(*[{k: v} for (k, v) in actual_buttons_football.items()]))
+    sent_football_message(user, MSG_FOOTBALL_BASE_CMD, get_message_keyboard(
+        *[{k: v} for (k, v) in actual_buttons_football.items()]))
     DBConnector().insert_analytics(user, call.data)
 
 
