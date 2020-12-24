@@ -107,7 +107,7 @@ def cinema(message):
 def football_start(message):
     user = User.get_user(user_id=message.chat.id)
 
-    sent_football_message(user.user_id, MSG_FOOTBALL_BASE_CMD, get_message_keyboard(
+    sent_football_message(user, MSG_FOOTBALL_BASE_CMD, get_message_keyboard(
         *[{k: v} for (k, v) in bot_config.buttons_football_leagues.items()]))
     DBConnector().insert_analytics(user, message.text)
 
