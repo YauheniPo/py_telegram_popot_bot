@@ -27,4 +27,4 @@ def send_football_calendar(user, football_league):
     {get_football_data_message(matches)}"""
     sent_football_message(
         user, message, get_message_keyboard(
-            actual_buttons_football, ParseMode.HTML))
+            *actual_buttons_football, ParseMode.HTML))
