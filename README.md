@@ -61,3 +61,7 @@ https://api.telegram.org/bot<bot_token>/deleteWebhook
       from server import app as application
     - click Save
  
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/YauheniPo/py_telegram_popot_bot.svg)](https://starchart.cc/YauheniPo/py_telegram_popot_bot)
+      
